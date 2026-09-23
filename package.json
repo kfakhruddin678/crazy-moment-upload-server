@@ -1,11 +1,14 @@
 {
   "name": "crazy-moment-upload-server",
-  "version": "2.0.0",
-  "description": "Crazy Moment Photo Print Station — scan-QR-and-upload server linking customer smartphones to the kiosk (zero dependencies)",
+  "version": "1.1.0",
+  "description": "Crazy Moment Photo Print Station — cloud server: phone upload, kiosk config/heartbeat/orders, admin dashboard",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "pg": "^8.13.0"
   },
   "engines": {
     "node": ">=18"

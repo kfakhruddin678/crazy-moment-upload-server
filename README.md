@@ -1,64 +1,75 @@
-# Crazy Moment — Scan & Upload Server
+# Crazy Moment — Cloud Server (Fasa 1)
 
-Menghubungkan **smartphone pelanggan** dengan **kiosk Crazy Moment**. Pelanggan imbas QR di kiosk, pilih gambar di telefon, dan gambar terus sampai ke kiosk.
+Satu server untuk **tiga pihak**:
 
-Node.js tulen, tiada dependency. **Semua fail diletakkan terus di dalam repo, tanpa folder.**
+| Pihak | Alamat | Fungsi |
+|---|---|---|
+| Telefon pelanggan | `/u/<id>` | Scan QR & upload gambar (sama seperti dulu) |
+| Kiosk | `/api/kiosk/...` | Tarik produk/harga/templat/tetapan, heartbeat 30 saat, lapor order |
+| **Admin Dashboard** | **`/admin`** | Urus produk, templat, kiosk, order, tetapan & pengguna |
 
-## Fail dalam repo (6 fail)
+## Fail dalam repo (7 fail, semua di atas sekali — tanpa folder)
 
 | Fail | Fungsi |
 |---|---|
-| `server.js` | Server |
-| `package.json` | Beritahu Render cara jalankan server |
-| `upload.html` | Halaman telefon (dibuka selepas imbas QR) |
-| `kiosk-test.html` | Halaman ujian kiosk: buka di laptop |
-| `kiosk-client.js` | Penyambung untuk kiosk software |
-| `index.html` | Halaman utama |
+| `server.js` | Server (API telefon + kiosk + admin) |
+| `store.js` | **Baharu** — simpan data ke PostgreSQL (atau fail sementara) |
+| `admin.html` | **Baharu** — Admin Dashboard |
+| `package.json` | Kini ada pakej `pg` (untuk PostgreSQL) |
+| `upload.html`, `kiosk-test.html`, `kiosk-client.js`, `index.html` | Tidak berubah |
 
-## Tetapan Render
+## Langkah deploy ke Render
 
-| Medan | Nilai |
-|---|---|
-| Language | Node |
-| Region | Singapore |
-| Build Command | `npm install` |
-| Start Command | `npm start` |
-| Instance Type | Free (Starter untuk operasi sebenar) |
+1. **GitHub** → repo `crazy-moment-upload-server` → *Add file → Upload files* → seret `server.js`, `store.js`, `admin.html`, `package.json`, `README.md` → *Commit*.
+2. **Render → New → PostgreSQL** → Region **Singapore** → cipta. Salin **Internal Database URL**.
+   *Nota: pangkalan data Free di Render tamat tempoh selepas 30 hari — pilih pelan berbayar (Basic) untuk operasi sebenar.*
+3. **Render → crazy-moment-upload-server → Environment** → tambah:
 
-Environment Variables (pilihan):
+   | Key | Nilai |
+   |---|---|
+   | `DATABASE_URL` | Internal Database URL dari langkah 2 |
+   | `ADMIN_EMAIL` | emel anda (untuk log masuk) |
+   | `ADMIN_PASSWORD` | kata laluan kuat (min 8 aksara) |
 
-| Key | Nilai |
-|---|---|
-| `KIOSK_API_KEY` | kata laluan rahsia (hanya kiosk boleh buka sesi) |
-| `SESSION_MINUTES` | `10` |
+   Render akan deploy semula secara automatik.
+4. Buka `https://crazy-moment-upload-server.onrender.com/admin` → log masuk.
+   Jika `ADMIN_PASSWORD` tidak diset: emel `admin@crazymoment.my`, kata laluan `crazymoment123` — sistem akan paksa tukar semasa log masuk pertama.
 
-Jika `KIOSK_API_KEY` diset, halaman `/kiosk-test` tak boleh cipta sesi. Jadi biarkan kosong semasa menguji.
+> Tanpa `DATABASE_URL`, data disimpan dalam fail sementara dan **hilang setiap kali Render restart/deploy**. Dashboard akan papar amaran merah.
 
-## Uji
+## Sambung kiosk
 
-1. Laptop: `https://<nama-service>.onrender.com/kiosk-test`
-2. Pilih produk → **Start new session**
-3. Imbas QR dengan telefon → pilih gambar → **Upload**
-4. Gambar muncul di laptop
+1. Guna fail kiosk baharu `crazy_moment_kiosk_software.html` (sudah dikemas kini).
+2. Dashboard → **Kiosks** → pilih kiosk → **Generate key** → **Copy setup link**.
+3. Pada komputer kiosk, buka fail kiosk **sekali** dengan hujung alamat `?kiosk=KIOSK-01&key=ck_xxxx`. Kiosk simpan ID & kunci sendiri.
+4. Dalam 30 saat kiosk muncul **Online** di dashboard.
 
-## Sambung ke kiosk software
+Kiosk tanpa kunci masih diterima (untuk ujian), tetapi dashboard tandakan **No key**. Selepas kunci dijana, hanya kiosk dengan kunci yang betul diterima.
 
-```html
-<script src="kiosk-client.js"></script>
-<script>
-const upload = new CrazyMomentUpload({
-  server: 'https://<nama-service>.onrender.com',
-  kioskId: 'KIOSK-01', location: 'Bandar Hilir', apiKey: '',
-  onStatus:   s => {},        // s.status, s.received, s.required, s.secondsLeft
-  onPhoto:    p => {},        // p.index, p.objectUrl
-  onComplete: photos => {},   // terus ke Edit & Preview
-  onExpired:  () => {},
-});
-upload.wake();                                  // semasa kiosk dihidupkan
-const s = await upload.start('photo-strip');    // photo-strip | duo-photo | single-photo | photo-grid-12
-drawQR(s.uploadUrl);                            // encoder QR offline dalam kiosk
-// await upload.extend();  await upload.finish();
-</script>
+## Apa yang berlaku secara automatik
+
+- Tukar harga / produk / templat / tetapan di dashboard → kiosk ambil perubahan dalam ≤ 30 saat, **hanya bila tiada pelanggan** (skrin pilih produk).
+- Harga order sentiasa dikira oleh server (kiosk tak boleh tetapkan harga sendiri).
+- Kiosk simpan config terakhir & order yang belum dihantar — jika internet putus, order dihantar semula bila internet kembali.
+- Gambar pelanggan kekal dalam memori server sahaja dan dipadam selepas cetak (tidak pernah dipaparkan di dashboard).
+- Semua perubahan oleh admin direkod dalam **Audit Log**.
+
+## Had Fasa 1 (akan datang)
+
+- **Bayaran masih simulasi** — order ditanda *Demo*. Fasa 2: payment gateway DuitNow QR + terminal kad dengan webhook.
+- **Status printer** belum dilaporkan — Fasa 3: agen printer DNP, Restart / Test Print dari dashboard.
+- Tetapan *Language*, *Idle Screen* dan *Printer* disimpan & dihantar ke kiosk, tetapi kiosk belum menggunakannya.
+
+## API ringkas
+
 ```
+Kiosk (header x-kiosk-id, x-kiosk-key)
+  GET  /api/kiosk/config?kioskId=KIOSK-01
+  POST /api/kiosk/heartbeat          {kioskId, state, step, configVersion, printer, session}
+  POST /api/kiosk/orders             {clientRef, productId, qty, payMethod, paymentStatus, status, templateId}
+  PATCH /api/kiosk/orders/:clientRef {status:'completed'}
 
-Nota: pelan Free tidur selepas 15 minit tanpa trafik, dan ambil ~1 minit untuk bangun semula.
+Admin (header Authorization: Bearer <token>)
+  POST /api/admin/login · GET /api/admin/overview?date=&range=
+  /api/admin/products · /templates · /assets · /kiosks · /orders · /orders.csv · /settings · /users · /audit
+```

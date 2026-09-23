@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crazy Moment — Admin Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0D1B2E; --navy-2:#15263D; --navy-line:rgba(255,255,255,.09);
+  --gold:#F5B800; --gold-deep:#C99400; --gold-bg:#FFF6D6; --gold-line:#F6E2A0;
+  --ink:#141B26; --ink-2:#374151; --grey:#6B7280; --muted:#9CA3AF;
+  --line:#E7E9EE; --line-2:#F1F2F5; --bg:#F6F7F9; --card:#FFFFFF;
+  --green:#15803D; --green-bg:#E7F6EC; --green-dot:#22A55A;
+  --red:#C62828; --red-bg:#FDECEC; --red-dot:#E0453A;
+  --amber:#B45309; --amber-bg:#FFF3DC; --amber-dot:#F2A516;
+  --blue:#1D4ED8; --blue-bg:#E8EFFE; --purple:#7C3AED; --purple-bg:#F1EAFE;
+  --pink:#D6246E;
+  --radius:12px; --shadow:0 1px 2px rgba(16,24,40,.04);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:13.5px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:none}
+a{color:var(--blue);text-decoration:none}
+svg{flex:none}
+.hidden{display:none!important}
+
+/* ---------- Brand ---------- */
+.brand{font-family:'Archivo Black',Inter,sans-serif;color:#fff;line-height:1}
+.brand .l1{font-size:30px;letter-spacing:5px}
+.brand .l1 b{color:var(--gold);font-weight:400}
+.brand .l2{font-size:19px;letter-spacing:8.5px;margin-top:4px}
+.brand .l3{font-family:Inter,sans-serif;font-weight:700;font-size:8.5px;letter-spacing:3px;margin-top:7px;opacity:.9}
+
+/* ---------- Login ---------- */
+#login{min-height:100vh;display:grid;place-items:center;background:var(--navy);padding:16px}
+.login-card{background:#fff;border-radius:16px;padding:32px;width:100%;max-width:380px}
+.login-top{background:var(--navy);margin:-32px -32px 26px;padding:30px 32px 26px;border-radius:16px 16px 0 0}
+.login-card h1{font-size:18px;margin-bottom:4px}
+.login-card p.sub{color:var(--grey);margin-bottom:18px}
+.login-err{background:var(--red-bg);color:var(--red);padding:9px 12px;border-radius:8px;margin-bottom:12px;font-weight:600;font-size:12.5px}
+
+/* ---------- App shell ---------- */
+#app{display:flex;min-height:100vh}
+.sidebar{width:228px;background:var(--navy);color:#fff;display:flex;flex-direction:column;position:fixed;inset:0 auto 0 0;z-index:40;transition:transform .2s}
+.sidebar .brand{padding:26px 22px 24px}
+.nav{padding:4px 12px;flex:1;overflow:auto}
+.nav a{display:flex;align-items:center;gap:13px;color:#E6E9EF;padding:11px 12px;border-radius:10px;font-weight:600;font-size:14px;margin-bottom:3px}
+.nav a:hover{background:var(--navy-2)}
+.nav a.active{background:var(--gold);color:var(--ink)}
+.nav a .soon{margin-left:auto;white-space:nowrap;font-size:9.5px;font-weight:700;background:rgba(255,255,255,.12);padding:2px 6px;border-radius:20px;letter-spacing:.3px}
+.nav a.active .soon{background:rgba(0,0,0,.12)}
+.side-foot{padding:14px 22px 18px;border-top:1px solid var(--navy-line);font-size:11.5px;color:#C4CAD5}
+.side-foot .help{display:flex;gap:10px;align-items:center;padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--navy-line)}
+.side-foot .help b{display:block;color:#fff;font-size:13px}
+.main{flex:1;margin-left:228px;min-width:0;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:16px;padding:18px 28px 14px;background:var(--bg);position:sticky;top:0;z-index:30}
+.menu-btn{display:none;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:#fff;align-items:center;justify-content:center}
+.page-title h1{font-size:21px;font-weight:800;letter-spacing:-.2px}
+.page-title p{color:var(--ink-2);font-size:13px}
+.top-right{margin-left:auto;display:flex;align-items:center;gap:18px}
+.bell{position:relative;width:40px;height:40px;display:grid;place-items:center;border-radius:50%}
+.bell:hover{background:#fff}
+.bell .cnt{position:absolute;top:3px;right:3px;background:var(--red-dot);color:#fff;font-size:10px;font-weight:800;min-width:17px;height:17px;border-radius:9px;display:grid;place-items:center;border:2px solid var(--bg);padding:0 3px}
+.userbox{display:flex;align-items:center;gap:10px;padding:4px 8px 4px 4px;border-radius:30px;position:relative}
+.userbox:hover{background:#fff}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:800}
+.userbox .nm{font-weight:700;font-size:13.5px;line-height:1.2}
+.userbox .rl{font-size:11.5px;color:var(--grey)}
+.dropdown{position:absolute;top:calc(100% + 6px);right:0;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px rgba(16,24,40,.12);min-width:190px;padding:6px;z-index:60}
+.dropdown button{display:flex;width:100%;padding:9px 10px;border-radius:7px;text-align:left;gap:8px;align-items:center;font-weight:600}
+.dropdown button:hover{background:var(--bg)}
+.content{padding:6px 28px 28px;flex:1}
+.banner{display:flex;gap:10px;align-items:center;background:var(--amber-bg);border:1px solid #F7D9A6;color:#7A4A06;padding:10px 14px;border-radius:10px;margin-bottom:16px;font-weight:600;font-size:12.5px}
+.banner.red{background:var(--red-bg);border-color:#F6C7C7;color:var(--red)}
+
+/* ---------- Layout grids ---------- */
+.with-panel{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:18px;align-items:start}
+.with-panel.no-panel{grid-template-columns:minmax(0,1fr)}
+.stack{display:flex;flex-direction:column;gap:18px;min-width:0}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.row3{display:grid;grid-template-columns:1.35fr 1.2fr .95fr;gap:16px}
+.row3b{display:grid;grid-template-columns:1.45fr 1fr 1fr;gap:16px}
+
+/* ---------- Cards ---------- */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);min-width:0}
+.card-h{display:flex;align-items:center;gap:10px;padding:16px 20px 10px}
+.card-h h3{font-size:13.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase}
+.card-h .r{margin-left:auto;display:flex;gap:8px;align-items:center}
+.card-b{padding:6px 20px 18px}
+.kpi{display:flex;gap:18px;align-items:center;padding:20px}
+.kpi .ic{width:54px;height:54px;border-radius:50%;display:grid;place-items:center}
+.kpi .lbl{font-size:11.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--ink-2)}
+.kpi .val{font-size:25px;font-weight:800;letter-spacing:-.4px;margin:2px 0}
+.kpi .sub{font-size:12px;color:var(--grey)}
+.chg{font-weight:700}
+.chg.up{color:var(--green)} .chg.down{color:var(--red)}
+.ic.gold{background:var(--gold)} .ic.blue{background:#9FC5F4} .ic.purple{background:#D3B6FA}
+.ic.green{background:#BCE6C8} .ic.grey{background:#E6E8EC} .ic.amber{background:#FBD98A} .ic.red{background:#F8C1BE}
+
+/* ---------- Buttons & inputs ---------- */
+.btn{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 14px;border-radius:8px;border:1px solid var(--line);background:#fff;font-weight:600;font-size:13px;white-space:nowrap}
+.btn:hover{border-color:#CDD1D9}
+.btn.sm{height:30px;padding:0 11px;font-size:12.5px}
+.btn.primary{background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:700}
+.btn.primary:hover{background:#FFC61A}
+.btn.dark{background:var(--ink);border-color:var(--ink);color:#fff}
+.btn.danger{color:var(--red)}
+.btn.block{width:100%;justify-content:center;height:42px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.icon-btn{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);display:grid;place-items:center;background:#fff}
+.icon-btn:hover{border-color:#CDD1D9}
+.field{margin-bottom:14px}
+.field label,.flabel{display:block;font-size:12px;font-weight:700;margin-bottom:6px;color:var(--ink)}
+.field label .req{color:var(--red)} .field label .lk{color:var(--grey);font-weight:500}
+.input,.select,textarea.input{width:100%;height:38px;border:1px solid var(--line);border-radius:8px;padding:0 12px;background:#fff;outline:none}
+textarea.input{height:auto;min-height:74px;padding:10px 12px;resize:vertical}
+.input:focus,.select:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-bg)}
+.input[disabled]{background:var(--bg);color:var(--grey)}
+.select{appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23141B26' stroke-width='2'%3E%3Cpath d='M2 4l4 4 4-4'/%3E%3C/svg%3E") no-repeat right 12px center;padding-right:32px}
+.input-suffix{position:relative}
+.input-suffix span{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--grey);font-size:12.5px;pointer-events:none}
+.search{position:relative;flex:1;min-width:180px;max-width:340px}
+.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--grey)}
+.search input{padding-left:34px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:4px 20px 14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.toggle{position:relative;width:38px;height:22px;flex:none}
+.toggle input{opacity:0;width:0;height:0}
+.toggle span{position:absolute;inset:0;background:#D6D9E0;border-radius:20px;transition:.15s;cursor:pointer}
+.toggle span:before{content:"";position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.toggle input:checked+span{background:var(--gold)}
+.toggle input:checked+span:before{transform:translateX(16px)}
+.radio-row{display:flex;gap:22px}
+.radio-row label{display:flex;gap:7px;align-items:center;font-weight:500;cursor:pointer}
+.radio-row input{accent-color:var(--green)}
+.check-row{display:flex;flex-wrap:wrap;gap:8px}
+.chip-check{display:flex;align-items:center;gap:6px;border:1px solid var(--line);padding:6px 10px;border-radius:8px;cursor:pointer;font-weight:600;font-size:12.5px}
+.chip-check input{accent-color:var(--gold-deep)}
+.hint{font-size:11.5px;color:var(--grey);margin-top:5px}
+
+/* ---------- Tables ---------- */
+.tbl-wrap{overflow-x:auto}
+table.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:11.5px;font-weight:700;color:var(--ink);text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl td{padding:12px 14px;border-bottom:1px solid var(--line-2);vertical-align:middle}
+.tbl tbody tr{cursor:pointer}
+.tbl tbody tr:hover{background:#FAFBFC}
+.tbl tbody tr.sel{background:#F2F6FE}
+.tbl.compact td{padding:9px 12px;font-size:12.5px} .tbl.compact th{padding:8px 12px}
+.tbl .muted,.muted{color:var(--grey)}
+.tbl .strong{font-weight:700}
+.sub-line{font-size:12px;color:var(--grey)}
+.group-row td{background:#F8F9FB;font-weight:700;font-size:12px;letter-spacing:.3px;cursor:default}
+.empty{padding:34px 20px;text-align:center;color:var(--grey)}
+.pager{display:flex;align-items:center;gap:6px;padding:14px 20px;flex-wrap:wrap}
+.pager .info{margin-right:auto;color:var(--grey);font-size:12.5px}
+.pager button{min-width:32px;height:32px;border-radius:8px;border:1px solid var(--line);background:#fff;font-weight:600}
+.pager button.on{background:var(--gold);border-color:var(--gold)}
+.drag{color:var(--muted);cursor:grab;width:18px}
+tr.dragging{opacity:.4} tr.drop-target td{border-top:2px solid var(--gold)}
+
+/* ---------- Badges & dots ---------- */
+.badge{display:inline-flex;flex:none;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap}
+.badge.green{background:var(--green-bg);color:var(--green)}
+.badge.red{background:var(--red-bg);color:var(--red)}
+.badge.amber{background:var(--amber-bg);color:var(--amber)}
+.badge.grey{background:#EEF0F3;color:#4B5563}
+.badge.blue{background:var(--blue-bg);color:var(--blue)}
+.badge.purple{background:var(--purple-bg);color:var(--purple)}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex:none}
+.dot.green{background:var(--green-dot)} .dot.red{background:var(--red-dot)} .dot.amber{background:var(--amber-dot)} .dot.grey{background:#A5ABB6}
+.st{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:12.5px}
+.st.green{color:var(--green)} .st.red{color:var(--red)} .st.amber{color:var(--amber)} .st.grey{color:var(--grey)}
+
+/* ---------- Side panel ---------- */
+.panel{position:sticky;top:78px;max-height:calc(100vh - 96px);overflow:auto;display:flex;flex-direction:column}
+.panel .card-h{padding-top:18px}
+.panel-sec{padding:14px 20px;border-top:1px solid var(--line-2)}
+.panel-sec h4{font-size:12px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.panel-foot{display:flex;gap:10px;padding:14px 20px;border-top:1px solid var(--line);position:sticky;bottom:0;background:#fff;margin-top:auto}
+.panel-foot .btn{flex:1;justify-content:center;height:40px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:9px 14px;font-size:12.5px}
+.kv dt{color:var(--grey)} .kv dd{text-align:right;font-weight:600;word-break:break-word}
+.big-id{font-size:22px;font-weight:800;letter-spacing:-.3px}
+.health{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.health .h{display:flex;gap:10px;align-items:center}
+.health .hi{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--green-bg);color:var(--green)}
+.health .hi.warn{background:var(--amber-bg);color:var(--amber)} .health .hi.bad{background:var(--red-bg);color:var(--red)} .health .hi.na{background:#EEF0F3;color:var(--grey)}
+.health .t{font-size:12px;line-height:1.3} .health .t b{display:block;font-weight:600;color:var(--ink)}
+.note{display:flex;gap:10px;background:var(--gold-bg);border:1px solid var(--gold-line);border-radius:10px;padding:11px 13px;font-size:12px;color:#5E4A0A}
+.note.blue{background:var(--blue-bg);border-color:#CBD9FB;color:#1E3A8A}
+.close-x{margin-left:auto;width:30px;height:30px;border-radius:8px;display:grid;place-items:center}
+.close-x:hover{background:var(--bg)}
+.panel-backdrop{display:none}
+
+/* ---------- Dashboard widgets ---------- */
+.chart-box{position:relative;height:250px}
+.chart-box svg{width:100%;height:100%;overflow:visible}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:#fff;font-size:12px;padding:7px 10px;border-radius:8px;white-space:nowrap;transform:translate(-50%,-110%);box-shadow:0 6px 16px rgba(0,0,0,.18)}
+.tip b{display:block;font-size:13px}
+.klist .it{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line-2)}
+.klist .it:last-child{border-bottom:none}
+.klist .kn{font-weight:600;font-size:13px}
+.klist .rt{margin-left:auto;text-align:right;font-size:12px}
+.donut-wrap{display:flex;align-items:center;gap:18px;padding:8px 20px 20px;flex-wrap:wrap;justify-content:center}
+.legend .lg{display:flex;gap:8px;align-items:flex-start;margin-bottom:10px;font-size:12.5px}
+.legend .lg .dot{margin-top:5px}
+.legend .lg b{display:block;font-weight:600}
+.pay-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line-2)}
+.pay-ic{width:36px;height:36px;border-radius:8px;display:grid;place-items:center}
+.bar{height:6px;border-radius:4px;background:#EEF0F3;margin-top:6px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:4px}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;padding:14px 0 2px}
+.trio div{border-right:1px solid var(--line-2)} .trio div:last-child{border-right:none}
+.trio .n{font-size:24px;font-weight:800}
+.trio .l{font-size:11.5px;color:var(--ink-2);font-weight:600}
+.alertbar{display:flex;align-items:center;gap:20px;background:#FFF8E6;border:1px solid #F6E2A0;border-radius:var(--radius);padding:14px 20px;flex-wrap:wrap}
+.alertbar h3{font-size:14px;font-weight:800;letter-spacing:.3px}
+.alertbar ul{display:flex;gap:26px;list-style:none;flex-wrap:wrap;flex:1}
+.alertbar li{display:flex;gap:8px;align-items:center;font-weight:500}
+.alertbar.ok{background:var(--green-bg);border-color:#BFE3CB}
+.tabs{display:flex;gap:6px;border:1px solid var(--line);border-radius:8px;padding:3px;background:#fff}
+.tabs button{white-space:nowrap;padding:5px 11px;border-radius:6px;font-weight:600;font-size:12.5px;color:var(--grey)}
+.tabs button.on{background:var(--ink);color:#fff}
+
+/* ---------- Layout preview (print) ---------- */
+.lp{border-radius:6px;padding:7%;display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(0,0,0,.12);background-size:cover!important;background-position:center!important;position:relative;overflow:hidden}
+.lp .ph{background:rgba(120,128,140,.35);border-radius:2px;position:relative}
+.lp .ph:after{content:"";position:absolute;left:50%;top:50%;width:34%;height:34%;transform:translate(-50%,-50%);background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='1.6'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21c1-4 4.5-6 8-6s7 2 8 6'/%3E%3C/svg%3E");opacity:.75}
+.lp .brandline{font-family:'Archivo Black',sans-serif;text-align:center;letter-spacing:1px;margin-top:auto;padding-top:6%}
+.swatch{width:34px;height:50px;border-radius:5px;border:1px solid var(--line);background-size:cover!important;background-position:center!important;flex:none}
+.prod-thumb{width:52px;height:64px;border-radius:8px;border:1px solid var(--line);display:grid;place-items:center;font-size:24px;flex:none}
+
+/* ---------- Settings ---------- */
+.set-grid{display:grid;grid-template-columns:220px minmax(0,1fr);gap:18px;align-items:start}
+.set-nav{padding:10px}
+.set-nav a{display:flex;gap:11px;align-items:center;padding:11px 12px;border-radius:9px;color:var(--ink);font-weight:600}
+.set-nav a:hover{background:var(--bg)} .set-nav a.on{background:var(--gold-bg)}
+.set-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.srow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:13px}
+.srow label{font-weight:600;font-size:12.5px}
+.srow .select,.srow .input{width:150px}
+.mtoggle{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin-bottom:10px}
+.mtoggle b{display:block;font-size:13px}
+.logo-box{width:170px;height:150px;border:1px solid var(--line);border-radius:10px;display:grid;place-items:center;background:#FAFAFB}
+.logo-box .brand{color:var(--ink);transform:scale(.72)}
+.foot-meta{display:flex;justify-content:space-between;color:var(--grey);font-size:12.5px;padding:18px 4px 0}
+
+/* ---------- Modal & toast ---------- */
+.modal-bg{position:fixed;inset:0;background:rgba(13,27,46,.5);z-index:90;display:grid;place-items:center;padding:16px}
+.modal{background:#fff;border-radius:14px;width:100%;max-width:460px;max-height:calc(100vh - 32px);overflow:auto}
+.modal-h{display:flex;align-items:center;padding:18px 22px 6px}
+.modal-h h3{font-size:16px;font-weight:800}
+.modal-b{padding:10px 22px 6px}
+.modal-f{display:flex;gap:10px;justify-content:flex-end;padding:14px 22px 20px}
+.keybox{font-family:ui-monospace,Consolas,monospace;background:var(--bg);border:1px dashed #C9CED8;padding:12px;border-radius:8px;word-break:break-all;font-size:13px;margin:8px 0}
+code{font-family:ui-monospace,Consolas,monospace;font-size:12px;background:var(--bg);padding:1px 5px;border-radius:4px}
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:100;display:flex;flex-direction:column;gap:8px;align-items:center}
+.toast{background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;font-weight:600;box-shadow:0 10px 24px rgba(0,0,0,.2);font-size:13px}
+.toast.err{background:var(--red)}
+.spinner{width:22px;height:22px;border:3px solid var(--line);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;margin:40px auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- Responsive ---------- */
+@media (max-width:1320px){
+  .row3{grid-template-columns:1fr 1fr} .row3>.card:first-child{grid-column:1/-1}
+  .row3b{grid-template-columns:1fr 1fr} .row3b>.card:first-child{grid-column:1/-1}
+}
+@media (max-width:1180px){
+  .with-panel{grid-template-columns:minmax(0,1fr)}
+  .panel{position:fixed;top:0;right:0;bottom:0;width:min(400px,100vw);max-height:none;z-index:80;border-radius:0;box-shadow:-10px 0 30px rgba(0,0,0,.15)}
+  .panel-backdrop{display:block;position:fixed;inset:0;background:rgba(13,27,46,.35);z-index:79}
+}
+@media (max-width:900px){
+  .sidebar{transform:translateX(-100%)} body.nav-open .sidebar{transform:none}
+  body.nav-open:after{content:"";position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:35}
+  .main{margin-left:0} .menu-btn{display:flex}
+  .topbar,.content{padding-left:16px;padding-right:16px}
+  .row3,.row3b{grid-template-columns:1fr}
+  .set-grid{grid-template-columns:1fr}
+  .userbox .who{display:none}
+  .page-title p{display:none}
+}
+@media (max-width:560px){
+  .kpis{grid-template-columns:1fr 1fr} .kpi{flex-direction:column;align-items:flex-start;gap:10px;padding:16px}
+  .kpi .ic{width:42px;height:42px} .kpi .val{font-size:20px}
+  .grid2{grid-template-columns:1fr}
+  .top-right{gap:6px}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<div id="login" class="hidden">
+  <form class="login-card" id="loginForm">
+    <div class="login-top"><div class="brand"><div class="l1">CR<b>A</b>ZY</div><div class="l2">MOMENT</div><div class="l3">PHOTO PRINT STATION</div></div></div>
+    <h1>Admin Dashboard</h1>
+    <p class="sub">Sign in to manage your kiosks.</p>
+    <div class="login-err hidden" id="loginErr"></div>
+    <div class="field"><label>Email</label><input class="input" name="email" type="email" autocomplete="username" required></div>
+    <div class="field"><label>Password</label><input class="input" name="password" type="password" autocomplete="current-password" required></div>
+    <button class="btn primary block" type="submit">Sign in</button>
+  </form>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="app" class="hidden">
+  <aside class="sidebar">
+    <div class="brand"><div class="l1">CR<b>A</b>ZY</div><div class="l2">MOMENT</div><div class="l3">PHOTO PRINT STATION</div></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="side-foot">
+      <div class="help"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 14v-2a8 8 0 0116 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/></svg><div><b>Need Help?</b>Contact Support</div></div>
+      © <span id="yr"></span> Crazy Moment<br>All rights reserved.
+    </div>
+  </aside>
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-btn" onclick="document.body.classList.toggle('nav-open')" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <div class="page-title"><h1 id="pgTitle">Dashboard</h1><p id="pgSub"></p></div>
+      <div class="top-right">
+        <button class="bell" onclick="go('dashboard');setTimeout(()=>{const a=document.getElementById('alertsBar');a&&a.scrollIntoView({behavior:'smooth'})},250)" title="Alerts">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 8a6 6 0 1112 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 20a2 2 0 004 0"/></svg>
+          <span class="cnt hidden" id="bellCnt">0</span>
+        </button>
+        <div class="userbox" id="userbox" onclick="toggleUserMenu(event)" style="cursor:pointer">
+          <div class="avatar" id="avatar">A</div>
+          <div class="who"><div class="nm" id="uName">Admin</div><div class="rl" id="uRole">Super Admin</div></div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+    </header>
+    <main class="content" id="content"></main>
+  </div>
+</div>
+<div id="toast"></div>
+<div id="modalRoot"></div>
+
+<script>
+/* =====================================================================
+   Crazy Moment — Admin Dashboard (Fasa 1)
+   Dihidangkan oleh server yang sama di /admin, jadi API = origin semasa.
+   ===================================================================== */
+const API = location.origin.startsWith('http') ? location.origin : 'https://crazy-moment-upload-server.onrender.com';
+const TOKEN_KEY = 'cm_admin_token';
+let ME = null, STORAGE = 'file', LAYOUTS = {};
+let refreshTimer = null;
+
+// ---------- Icons ----------
+const I = {
+  home:'<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
+  products:'<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
+  templates:'<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16M10 10v10"/>',
+  kiosk:'<rect x="6" y="2.5" width="12" height="13" rx="1.5"/><rect x="8.5" y="5" width="7" height="6" rx=".6"/><path d="M9 15.5v6M15 15.5v6M7 21.5h10"/>',
+  printer:'<path d="M7 9V3h10v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/>',
+  orders:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3v2h6V3M9 10h6M9 14h6M9 18h3"/>',
+  payments:'<rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 9h18"/><rect x="8" y="12" width="8" height="5" rx="1"/><circle cx="12" cy="14.5" r="1"/>',
+  settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/>',
+  money:'<path d="M9 4h6l-1.5 3h-3z"/><path d="M8 7h8c3 3 4 6 4 9a4 4 0 01-4 4H8a4 4 0 01-4-4c0-3 1-6 4-9z"/><path d="M12 10v8M14 11.5c-.5-.6-1.2-.9-2-.9-1.1 0-2 .6-2 1.5s.9 1.3 2 1.5 2 .6 2 1.5-.9 1.5-2 1.5c-.8 0-1.6-.3-2-.9"/>',
+  bag:'<path d="M5 8h14l-1 13H6z"/><path d="M9 8V6a3 3 0 016 0v2"/><path d="M9.5 14l2 2 3.5-4"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  x:'<path d="M6 6l12 12M18 6L6 18"/>',
+  more:'<circle cx="12" cy="5" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="12" cy="19" r="1.4" fill="currentColor"/>',
+  grip:'<circle cx="9" cy="6" r="1.3" fill="currentColor"/><circle cx="15" cy="6" r="1.3" fill="currentColor"/><circle cx="9" cy="12" r="1.3" fill="currentColor"/><circle cx="15" cy="12" r="1.3" fill="currentColor"/><circle cx="9" cy="18" r="1.3" fill="currentColor"/><circle cx="15" cy="18" r="1.3" fill="currentColor"/>',
+  check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  pause:'<path d="M9 6v12M15 6v12"/>',
+  lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>',
+  up:'<path d="M12 19V5M6 11l6-6 6 6"/>',
+  down:'<path d="M12 5v14M6 13l6 6 6-6"/>',
+  wifi:'<path d="M2 9a15 15 0 0120 0M5.5 12.5a10 10 0 0113 0M9 16a5 5 0 016 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/>',
+  power:'<path d="M12 3v9"/><path d="M6.3 7a8 8 0 1011.4 0"/>',
+  key:'<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3M14 9l2 2"/>',
+  shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>',
+  refresh:'<path d="M20 11a8 8 0 00-14.3-4.9L4 8"/><path d="M4 3v5h5"/><path d="M4 13a8 8 0 0014.3 4.9L20 16"/><path d="M20 21v-5h-5"/>',
+  export:'<path d="M12 15V3M7 8l5-5 5 5"/><path d="M4 15v4a2 2 0 002 2h12a2 2 0 002-2v-4"/>',
+  calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  warn:'<path d="M12 3l10 18H2z"/><path d="M12 10v5"/><circle cx="12" cy="18" r=".8" fill="currentColor"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><circle cx="12" cy="7.5" r=".9" fill="currentColor"/>',
+  bulb:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 00-3.5 10.9c.6.4 1 1.1 1 1.8V16h5v-.3c0-.7.4-1.4 1-1.8A6 6 0 0012 3z"/>',
+  upload:'<path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3"/>',
+  trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',
+  edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/>',
+  logout:'<path d="M15 4h4a1 1 0 011 1v14a1 1 0 01-1 1h-4"/><path d="M10 17l5-5-5-5M15 12H4"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/>',
+  users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.5-5 6.5-5s5.7 1.5 6.5 5"/><circle cx="17" cy="9" r="2.8"/><path d="M17 14.5c2.3 0 4 1.2 4.6 4"/>',
+  building:'<path d="M4 21V5l8-2v18M12 8l8 2v11M8 8h.01M8 12h.01M8 16h.01M16 13h.01M16 17h.01"/>',
+  qr:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M17 20h4v-3"/>',
+  card:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  image:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/>',
+  list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+  server:'<rect x="3" y="4" width="18" height="7" rx="1.5"/><rect x="3" y="13" width="18" height="7" rx="1.5"/><path d="M7 7.5h.01M7 16.5h.01"/>',
+};
+const icon = (n, s = 20, sw = 1.8) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${I[n] || ''}</svg>`;
+
+// ---------- Utils ----------
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const rm = (n) => 'RM ' + Number(n || 0).toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const rm0 = (n) => 'RM' + Number(n || 0).toFixed(2);
+const MYT = 8 * 3600e3;
+const todayKey = () => new Date(Date.now() + MYT).toISOString().slice(0, 10);
+const fmtDate = (isoStr) => { if (!isoStr) return '—'; const d = new Date(Date.parse(isoStr) + MYT); return `${d.getUTCDate()} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getUTCMonth()]} ${d.getUTCFullYear()}`; };
+const fmtTime = (isoStr) => { if (!isoStr) return '—'; const d = new Date(Date.parse(isoStr) + MYT); return d.toISOString().slice(11, 16); };
+const fmtDT = (isoStr) => isoStr ? `${fmtDate(isoStr)}, ${fmtTime(isoStr)}` : '—';
+const fmtDayLabel = (k) => { if (k === todayKey()) return fmtDate(k + 'T04:00:00Z') + ' (Today)'; return fmtDate(k + 'T04:00:00Z'); };
+function ago(isoStr) {
+  if (!isoStr) return 'Never';
+  const s = Math.max(0, Math.round((Date.now() - Date.parse(isoStr)) / 1000));
+  if (s < 45) return 'Just now'; if (s < 3600) return `${Math.round(s / 60) || 1} min ago`;
+  if (s < 86400) return `${Math.round(s / 3600)} hr ago`; return `${Math.round(s / 86400)} days ago`;
+}
+const mmss = (s) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+const isAdmin = () => ME && ME.role === 'superadmin';
+function change(v, label = 'vs yesterday') {
+  if (v == null) return `<span class="muted">No data yesterday</span>`;
+  const up = v >= 0;
+  return `<span class="chg ${up ? 'up' : 'down'}">${icon(up ? 'up' : 'down', 13, 2.6)} ${Math.abs(v)}%</span> <span class="muted">${label}</span>`;
+}
+function toast(msg, err) {
+  const t = document.createElement('div'); t.className = 'toast' + (err ? ' err' : ''); t.textContent = msg;
+  $('#toast').appendChild(t); setTimeout(() => t.remove(), 3200);
+}
+
+// ---------- API ----------
+async function api(method, path, body, raw) {
+  const opts = { method, headers: {} };
+  const tok = localStorage.getItem(TOKEN_KEY);
+  if (tok) opts.headers.Authorization = 'Bearer ' + tok;
+  if (raw) { opts.body = body; opts.headers['Content-Type'] = raw; }
+  else if (body !== undefined) { opts.body = JSON.stringify(body); opts.headers['Content-Type'] = 'application/json'; }
+  let r;
+  try { r = await fetch(API + path, opts); } catch (e) { throw new Error('Cannot reach server. Check your internet connection.'); }
+  if (r.status === 401 && !path.endsWith('/login')) { logout(true); throw new Error('Session expired, please sign in again'); }
+  const ct = r.headers.get('content-type') || '';
+  const data = ct.includes('json') ? await r.json() : await r.text();
+  if (!r.ok) throw new Error((data && data.error) || `Error ${r.status}`);
+  return data;
+}
+
+// ---------- Status helpers ----------
+const ORDER_ST = { completed: ['green', 'Completed'], printing: ['amber', 'Printing'], pending: ['amber', 'Processing'], cancelled: ['red', 'Cancelled'], failed: ['red', 'Failed'] };
+const orderBadge = (s) => { const [c, l] = ORDER_ST[s] || ['grey', s]; return `<span class="badge ${c}">${l}</span>`; };
+const PAY_ST = { paid: ['green', 'Paid'], failed: ['red', 'Failed'], pending: ['amber', 'Pending'] };
+const payBadge = (s) => { const [c, l] = PAY_ST[s] || ['grey', s]; return `<span class="badge ${c}">${l}</span>`; };
+const KST = { online: ['green', 'Online'], busy: ['amber', 'In Use'], offline: ['red', 'Offline'], disabled: ['grey', 'Disabled'] };
+const kState = (s) => { const [c, l] = KST[s] || ['grey', s]; return `<span class="st ${c}"><span class="dot ${c}"></span>${l}</span>`; };
+const PRN = { ready: ['green', 'Ready'], printing: ['amber', 'Printing'], low_media: ['amber', 'Low Media'], error: ['red', 'Error'], offline: ['red', 'Offline'], unknown: ['grey', 'Not reported'] };
+const printerSt = (p) => { const [c, l] = PRN[(p && p.status) || 'unknown'] || PRN.unknown; return `<span class="st ${c}">${l}</span>`; };
+const payMethod = (m) => m === 'card'
+  ? `<span style="display:inline-flex;gap:7px;align-items:center"><span style="color:var(--blue)">${icon('card', 18)}</span>Debit / Credit Card</span>`
+  : `<span style="display:inline-flex;gap:7px;align-items:center"><span style="color:var(--pink)">${icon('qr', 18)}</span>DuitNow QR</span>`;
+
+// ---------- Print layout preview ----------
+function layoutPreview(layout, bg, textColor, width = 130) {
+  const h = Math.round(width * 1.5);
+  const tc = !textColor || textColor === 'var(--grey)' ? '#6B7280' : textColor;
+  let inner = '';
+  const cell = (st) => `<div class="ph" style="${st}"></div>`;
+  if (layout === 'strip') {
+    const col = (x) => `<div style="flex:1;display:flex;flex-direction:column;gap:${width * .03}px">${Array(4).fill(cell('flex:1')).join('')}<div class="brandline" style="font-size:${width * .035}px;color:${tc};padding-top:2px">CRAZY MOMENT</div></div>`;
+    inner = `<div style="display:flex;gap:${width * .07}px;flex:1">${col()}${col()}</div>`;
+    return `<div class="lp" style="width:${width}px;height:${h}px;background:${bg}">${inner}</div>`;
+  }
+  if (layout === 'grid12') inner = `<div style="display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(4,1fr);gap:${width * .03}px;flex:1">${Array(12).fill(cell('')).join('')}</div>`;
+  else if (layout === 'duo') inner = `<div style="display:flex;flex-direction:column;gap:${width * .05}px;flex:1;padding:0 8%">${Array(2).fill(`<div style="flex:1;background:#fff;padding:5% 5% 14%;box-shadow:0 1px 2px rgba(0,0,0,.15)">${cell('height:100%')}</div>`).join('')}</div>`;
+  else inner = `<div style="flex:1;display:flex">${cell('flex:1')}</div>`;
+  return `<div class="lp" style="width:${width}px;height:${h}px;background:${bg}">${inner}<div class="brandline" style="font-size:${width * .06}px;color:${tc}">CRAZY MOMENT</div></div>`;
+}
+const tmplBg = (t) => t.bgImage ? `url('${API}/api/assets/${t.bgImage}') center/cover no-repeat` : (t.pattern === 'dots' ? `radial-gradient(${t.patternColor || 'rgba(255,255,255,.22)'} 1.4px, transparent 1.8px) 0 0/9px 9px, ${t.bg}` : t.bg);
+
+// ---------- Modal ----------
+function modal(title, bodyHtml, actions) {
+  const root = $('#modalRoot');
+  root.innerHTML = `<div class="modal-bg"><div class="modal" role="dialog"><div class="modal-h"><h3>${esc(title)}</h3><button class="close-x" data-close>${icon('x', 18)}</button></div><div class="modal-b">${bodyHtml}</div><div class="modal-f" id="modalF"></div></div></div>`;
+  const f = $('#modalF');
+  (actions || [{ label: 'Close' }]).forEach((a) => {
+    const b = document.createElement('button');
+    b.className = 'btn ' + (a.cls || ''); b.textContent = a.label;
+    b.onclick = async () => { if (a.onClick) { b.disabled = true; try { const keep = await a.onClick(); if (keep === false) { b.disabled = false; return; } } catch (e) { toast(e.message, true); b.disabled = false; return; } } closeModal(); };
+    f.appendChild(b);
+  });
+  root.querySelector('[data-close]').onclick = closeModal;
+  root.querySelector('.modal-bg').onclick = (e) => { if (e.target.classList.contains('modal-bg') && !root.dataset.locked) closeModal(); };
+  const first = root.querySelector('input,select,textarea'); if (first) setTimeout(() => first.focus(), 30);
+}
+function closeModal() { $('#modalRoot').innerHTML = ''; delete $('#modalRoot').dataset.locked; }
+function confirmBox(title, text, okLabel, fn, danger) {
+  modal(title, `<p style="color:var(--ink-2)">${text}</p>`, [{ label: 'Cancel' }, { label: okLabel, cls: danger ? 'dark' : 'primary', onClick: fn }]);
+}
+
+// =====================================================================
+//  AUTH
+// =====================================================================
+$('#loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const f = new FormData(e.target), err = $('#loginErr');
+  err.classList.add('hidden');
+  try {
+    const d = await api('POST', '/api/admin/login', { email: f.get('email'), password: f.get('password') });
+    localStorage.setItem(TOKEN_KEY, d.token);
+    await boot();
+  } catch (ex) { err.textContent = ex.message; err.classList.remove('hidden'); }
+});
+function logout(silent) {
+  localStorage.removeItem(TOKEN_KEY); ME = null; clearInterval(refreshTimer);
+  $('#app').classList.add('hidden'); $('#login').classList.remove('hidden');
+  if (!silent) toast('Signed out');
+}
+function toggleUserMenu(e) {
+  e.stopPropagation();
+  const box = $('#userbox'); const ex = box.querySelector('.dropdown');
+  if (ex) return ex.remove();
+  const d = document.createElement('div'); d.className = 'dropdown';
+  d.innerHTML = `<div style="padding:8px 10px 10px;border-bottom:1px solid var(--line);margin-bottom:4px"><b>${esc(ME.name)}</b><div class="muted" style="font-size:12px">${esc(ME.email)}</div></div>
+    <button data-a="pw">${icon('key', 16)} Change password</button><button data-a="out">${icon('logout', 16)} Sign out</button>`;
+  d.onclick = (ev) => { ev.stopPropagation(); const a = ev.target.closest('button'); if (!a) return; d.remove(); a.dataset.a === 'pw' ? changePassword() : logout(); };
+  box.appendChild(d);
+  setTimeout(() => document.addEventListener('click', () => d.remove(), { once: true }), 0);
+}
+function changePassword(forced) {
+  modal(forced ? 'Set a new password' : 'Change password', `
+    ${forced ? `<div class="note" style="margin-bottom:14px">${icon('shield', 18)}<div>You are using the default password. Please set your own password before continuing.</div></div>` : ''}
+    <div class="field"><label>Current password</label><input class="input" type="password" id="pwCur"></div>
+    <div class="field"><label>New password</label><input class="input" type="password" id="pwNew" placeholder="At least 8 characters"></div>
+    <div class="field"><label>Confirm new password</label><input class="input" type="password" id="pwNew2"></div>`,
+  [...(forced ? [] : [{ label: 'Cancel' }]), { label: 'Save password', cls: 'primary', onClick: async () => {
+    if ($('#pwNew').value !== $('#pwNew2').value) { toast('Passwords do not match', true); return false; }
+    const d = await api('POST', '/api/admin/password', { current: $('#pwCur').value, next: $('#pwNew').value });
+    localStorage.setItem(TOKEN_KEY, d.token); ME = d.user; toast('Password updated');
+  } }]);
+  if (forced) { $('#modalRoot').dataset.locked = '1'; $('#modalRoot [data-close]').remove(); }
+}
+
+// =====================================================================
+//  ROUTER
+// =====================================================================
+const PAGES = [
+  { id: 'dashboard', label: 'Dashboard', icon: 'home', title: 'Dashboard', sub: 'Overview of your kiosk operations' },
+  { id: 'products', label: 'Products', icon: 'products', title: 'Products', sub: 'Manage your print products, pricing and settings.' },
+  { id: 'templates', label: 'Templates', icon: 'templates', title: 'Templates', sub: 'Manage photo templates for your products.' },
+  { id: 'kiosks', label: 'Kiosks', icon: 'kiosk', title: 'Kiosks', sub: 'Monitor and manage all kiosks in your network.' },
+  { id: 'printer', label: 'Printer', icon: 'printer', title: 'Printers', sub: 'Monitor printers connected to your kiosks.', soon: 'Phase 3' },
+  { id: 'orders', label: 'Orders', icon: 'orders', title: 'Orders', sub: 'View and manage all customer orders.' },
+  { id: 'payments', label: 'Payments', icon: 'payments', title: 'Payments', sub: 'Track payments made via DuitNow QR and Debit/Credit Card.', soon: 'Phase 2' },
+  { id: 'settings', label: 'Settings', icon: 'settings', title: 'Settings', sub: 'Manage your Crazy Moment system.' },
+];
+let route = 'dashboard', sel = {}; // sel[page] = selected item id
+function renderNav() {
+  $('#nav').innerHTML = PAGES.map((p) => `<a href="#/${p.id}" class="${route === p.id ? 'active' : ''}">${icon(p.icon, 21)}<span>${p.label}</span>${p.soon ? `<span class="soon">${p.soon}</span>` : ''}</a>`).join('');
+}
+function go(id) { location.hash = '#/' + id; }
+window.addEventListener('hashchange', () => { const r = (location.hash.slice(2) || 'dashboard').split('/')[0]; if (PAGES.some((p) => p.id === r)) { route = r; render(); } });
+function render() {
+  document.body.classList.remove('nav-open');
+  clearInterval(refreshTimer);
+  const pg = PAGES.find((p) => p.id === route);
+  $('#pgTitle').textContent = pg.title; $('#pgSub').textContent = pg.sub;
+  document.title = `${pg.title} — Crazy Moment Admin`;
+  renderNav();
+  $('#content').innerHTML = '<div class="spinner"></div>';
+  ({ dashboard: pageDashboard, products: pageProducts, templates: pageTemplates, kiosks: pageKiosks, orders: pageOrders, settings: pageSettings, printer: pagePrinter, payments: pagePayments })[route]()
+    .catch((e) => { $('#content').innerHTML = `<div class="card empty">${esc(e.message)}</div>`; });
+}
+function storageBanner() {
+  return STORAGE === 'postgres' ? '' : `<div class="banner red">${icon('warn', 18)}<div>Temporary storage: data is saved to a file on the server and will be <b>lost when Render restarts or redeploys</b>. Add a PostgreSQL database and set <code>DATABASE_URL</code> before going live.</div></div>`;
+}
+function panelShell(page, inner) {
+  return `<div class="panel-backdrop" onclick="closePanel('${page}')"></div><aside class="card panel">${inner}</aside>`;
+}
+function closePanel(page) { sel[page] = null; render(); }
+
+// =====================================================================
+//  DASHBOARD
+// =====================================================================
+let dashDate = todayKey(), dashRange = 'today';
+async function pageDashboard() {
+  const d = await api('GET', `/api/admin/overview?date=${dashDate}&range=${dashRange}`);
+  STORAGE = d.storage;
+  const errs = d.alerts.filter((a) => a.level !== 'info').length;
+  $('#bellCnt').textContent = errs; $('#bellCnt').classList.toggle('hidden', !errs);
+  const k = d.kpi;
+  const ks = d.kioskSummary, kTotal = d.kiosks.length;
+  const pm = d.payments.byMethod, payTotal = (pm.duitnow.amount + pm.card.amount) || 0;
+  const pp = (v) => payTotal ? Math.round((v / payTotal) * 1000) / 10 : 0;
+
+  $('#content').innerHTML = `${storageBanner()}
+  <div class="stack">
+    <div style="display:flex;justify-content:flex-end;margin-top:-4px">
+      <label class="btn" style="position:relative">${icon('calendar', 16)} <span>${fmtDayLabel(dashDate)}</span>
+        <input type="date" value="${dashDate}" max="${todayKey()}" onchange="dashDate=this.value||todayKey();render()" style="position:absolute;inset:0;opacity:0;cursor:pointer"></label>
+    </div>
+    <div class="kpis">
+      <div class="card kpi"><div class="ic gold">${icon('money', 26)}</div><div><div class="lbl">Total Sales</div><div class="val">${rm(k.sales)}</div><div class="sub">${change(k.salesChange)}</div></div></div>
+      <div class="card kpi"><div class="ic blue">${icon('bag', 26)}</div><div><div class="lbl">Total Orders</div><div class="val">${k.orders}</div><div class="sub">${change(k.ordersChange)}</div></div></div>
+      <div class="card kpi"><div class="ic purple">${icon('printer', 26)}</div><div><div class="lbl">Prints</div><div class="val">${k.prints}</div><div class="sub">${change(k.printsChange)}</div></div></div>
+    </div>
+    <div class="row3">
+      <div class="card"><div class="card-h"><h3>Sales Overview</h3><div class="r"><div class="tabs">${[['today', 'Day'], ['7d', '7 Days'], ['30d', '30 Days']].map(([v, l]) => `<button class="${dashRange === v ? 'on' : ''}" onclick="dashRange='${v}';render()">${l}</button>`).join('')}</div></div></div>
+        <div class="card-b"><div class="chart-box" id="salesChart"></div></div></div>
+      <div class="card"><div class="card-h"><h3>Kiosk Status</h3><div class="r"><button class="btn sm" onclick="go('kiosks')">View All</button></div></div>
+        <div class="card-b klist">${d.kiosks.map((x) => `<div class="it" style="cursor:pointer" onclick="sel.kiosks='${x.id}';go('kiosks')">
+          <span style="color:var(--ink-2)">${icon('kiosk', 26, 1.6)}</span>
+          <div><div class="kn">${esc(x.name)} - ${esc(x.location)}</div>${kState(x.state)}</div>
+          <div class="rt"><div>Printer: ${printerSt(x.printer)}</div><div class="muted">Last seen: ${ago(x.lastSeen)}</div></div></div>`).join('') || '<div class="empty">No kiosks yet</div>'}</div></div>
+      <div class="card"><div class="card-h"><h3>Kiosk Summary</h3></div>
+        <div class="donut-wrap"><div id="donut"></div>
+          <div class="legend">${[['online', 'green', 'Online'], ['busy', 'amber', 'In Use'], ['offline', 'red', 'Offline'], ['disabled', 'grey', 'Disabled']].filter(([s]) => s !== 'disabled' || ks.disabled).map(([s, c, l]) => `<div class="lg"><span class="dot ${c}"></span><div><b>${l}</b>${ks[s] || 0} (${kTotal ? Math.round(((ks[s] || 0) / kTotal) * 100) : 0}%)</div></div>`).join('')}</div>
+        </div></div>
+    </div>
+    <div class="row3b">
+      <div class="card"><div class="card-h"><h3>Recent Orders</h3><div class="r"><button class="btn sm" onclick="go('orders')">View All</button></div></div>
+        <div class="tbl-wrap">${d.recentOrders.length ? `<table class="tbl compact"><thead><tr><th>Order ID</th><th>Kiosk</th><th>Product</th><th>Total</th><th>Status</th><th>Time</th></tr></thead><tbody>
+          ${d.recentOrders.map((o) => `<tr onclick="sel.orders='${o.id}';ordersFilter.date='${o.createdAt ? new Date(Date.parse(o.createdAt) + MYT).toISOString().slice(0, 10) : ''}';go('orders')"><td>${o.id}</td><td>${esc(o.kioskName)}</td><td>${esc(o.productName)}${o.qty > 1 ? ` <span class="muted">×${o.qty}</span>` : ''}</td><td style="white-space:nowrap">${rm0(o.total)}</td><td>${orderBadge(o.status)}</td><td>${fmtTime(o.createdAt)}</td></tr>`).join('')}</tbody></table>` : '<div class="empty">No orders on this day yet</div>'}</div></div>
+      <div class="card"><div class="card-h"><h3>Payment Summary</h3><div class="r"><button class="btn sm" onclick="go('orders')">View All</button></div></div>
+        <div class="card-b">
+          <div class="pay-row"><div class="pay-ic" style="background:#E7F6EC;color:var(--green)">${icon('qr', 20)}</div><div style="flex:1"><div style="display:flex;justify-content:space-between"><b style="font-weight:600">DuitNow QR</b><span>${rm(pm.duitnow.amount)} <span class="muted">· ${pp(pm.duitnow.amount)}%</span></span></div><div class="bar"><i style="width:${pp(pm.duitnow.amount)}%;background:var(--green-dot)"></i></div></div></div>
+          <div class="pay-row"><div class="pay-ic" style="background:var(--blue-bg);color:var(--blue)">${icon('card', 20)}</div><div style="flex:1"><div style="display:flex;justify-content:space-between"><b style="font-weight:600">Credit / Debit Card</b><span>${rm(pm.card.amount)} <span class="muted">· ${pp(pm.card.amount)}%</span></span></div><div class="bar"><i style="width:${pp(pm.card.amount)}%;background:#3B82F6"></i></div></div></div>
+          <div style="display:flex;justify-content:space-between;padding:14px 0 4px;font-weight:800;font-size:15px"><span>Total</span><span>${rm(d.payments.total)}</span></div>
+          <div class="trio"><div><div class="l">Successful</div><div class="n" style="color:var(--green)">${d.payments.successful}</div></div><div><div class="l">Failed</div><div class="n" style="color:var(--red)">${d.payments.failed}</div></div><div><div class="l">Refunded</div><div class="n" style="color:var(--amber)">${d.payments.refunded}</div></div></div>
+        </div></div>
+      <div class="card"><div class="card-h"><h3>Active Photo Sessions</h3></div>
+        <div class="card-b">
+          <div class="trio" style="padding-top:0"><div><div class="l">Active</div><div class="n">${d.sessions.active}</div></div><div><div class="l">Expired today</div><div class="n">${d.sessions.expired}</div></div><div><div class="l">Photos uploaded</div><div class="n">${d.sessions.photos}</div></div></div>
+          ${d.sessions.list.length ? `<div class="tbl-wrap"><table class="tbl compact" style="margin-top:12px"><thead><tr><th>Session</th><th>Kiosk</th><th>Photos</th><th>Time Left</th></tr></thead><tbody>${d.sessions.list.map((s) => `<tr style="cursor:default"><td>${esc(s.id)}</td><td>${esc(s.kioskId)}</td><td>${s.received} / ${s.required}</td><td style="color:var(--green);font-weight:700">${mmss(s.secondsLeft)}</td></tr>`).join('')}</tbody></table></div>` : `<div class="empty" style="padding:22px 0 6px">No customer is uploading right now</div>`}
+          <div class="hint" style="margin-top:8px">${icon('shield', 13)} Customer photos are never shown here and are deleted after printing.</div>
+        </div></div>
+    </div>
+    ${d.alerts.filter((a) => a.level !== 'info').length ? `<div class="alertbar" id="alertsBar"><span style="color:var(--amber)">${icon('warn', 30, 1.6)}</span><h3>ATTENTION REQUIRED</h3>
+      <ul>${d.alerts.filter((a) => a.level !== 'info').map((a) => `<li><span class="dot ${a.level === 'error' ? 'red' : 'amber'}"></span><a href="#/${a.target}" style="color:var(--ink)">${esc(a.text)}</a></li>`).join('')}</ul></div>`
+      : `<div class="alertbar ok" id="alertsBar"><span style="color:var(--green)">${icon('check', 26, 2.2)}</span><h3>ALL SYSTEMS NORMAL</h3><ul><li>No issues need your attention.</li></ul></div>`}
+    ${d.alerts.filter((a) => a.level === 'info').map((a) => `<div class="note blue">${icon('info', 18)}<div>${esc(a.text)}</div></div>`).join('')}
+  </div>`;
+  drawAreaChart($('#salesChart'), d.series, dashRange);
+  window.onresize = () => { const el = $('#salesChart'); if (el) { clearTimeout(window._rz); window._rz = setTimeout(() => drawAreaChart(el, d.series, dashRange), 150); } };
+  drawDonut($('#donut'), [[ks.online, '#22A55A'], [ks.busy, '#F2A516'], [ks.offline, '#E0453A'], [ks.disabled, '#A5ABB6']], kTotal);
+  refreshTimer = setInterval(() => { if (!document.hidden && route === 'dashboard' && !$('#modalRoot').innerHTML) render(); }, 20000);
+}
+
+function drawAreaChart(box, series, range) {
+  const W = Math.max(280, Math.round(box.clientWidth || 560)), H = 250, L = 44, R = 10, T = 12, B = 28;
+  const vals = series.map((s) => s.value);
+  const maxV = Math.max(10, ...vals);
+  const step = niceStep(maxV / 3);
+  const top = Math.ceil(maxV / step) * step;
+  const x = (i) => L + (i * (W - L - R)) / Math.max(1, series.length - 1);
+  const y = (v) => T + (H - T - B) * (1 - v / top);
+  let grid = '';
+  for (let v = 0; v <= top + 1e-9; v += step) grid += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="#EEF0F3"/><text x="${L - 8}" y="${y(v) + 4}" text-anchor="end" font-size="11" fill="#6B7280">${v >= 1000 ? (v / 1000) + 'K' : v}</text>`;
+  const lblEvery = range === 'today' ? (W < 420 ? 6 : 4) : range === '7d' ? 1 : (W < 420 ? 10 : 5);
+  const xl = series.map((s, i) => (i % lblEvery === 0 || i === series.length - 1) && !(i === series.length - 1 && i % lblEvery && i % lblEvery < lblEvery / 2) ? `<text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="11" fill="#6B7280">${range === 'today' ? hourLbl(i) : shortDay(s.label)}</text>` : '').join('');
+  const pts = series.map((s, i) => `${x(i)},${y(s.value)}`).join(' ');
+  box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Sales chart">
+    <defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F5B800" stop-opacity=".28"/><stop offset="1" stop-color="#F5B800" stop-opacity="0"/></linearGradient></defs>
+    ${grid}${xl}
+    <polygon points="${x(0)},${y(0)} ${pts} ${x(series.length - 1)},${y(0)}" fill="url(#ga)"/>
+    <polyline points="${pts}" fill="none" stroke="#E5A800" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+    <line id="xh" y1="${T}" y2="${H - B}" stroke="#141B26" stroke-dasharray="3 3" opacity="0" vector-effect="non-scaling-stroke"/>
+    <rect x="${L}" y="${T}" width="${W - L - R}" height="${H - T - B}" fill="transparent" id="hit"/>
+  </svg><div class="tip hidden" id="ctip"></div><div id="cdot" style="position:absolute;width:10px;height:10px;border-radius:50%;background:#E5A800;border:2px solid #fff;box-shadow:0 0 0 1px #E5A800;transform:translate(-50%,-50%);display:none;pointer-events:none"></div>`;
+  const svg = box.querySelector('svg'), tip = box.querySelector('#ctip'), dot = box.querySelector('#cdot'), xh = box.querySelector('#xh');
+  const move = (ev) => {
+    const r = svg.getBoundingClientRect();
+    const px = ((ev.clientX - r.left) / r.width) * W;
+    const i = Math.max(0, Math.min(series.length - 1, Math.round(((px - L) / (W - L - R)) * (series.length - 1))));
+    const sx = (x(i) / W) * r.width, sy = (y(series[i].value) / H) * r.height;
+    xh.setAttribute('x1', x(i)); xh.setAttribute('x2', x(i)); xh.setAttribute('opacity', '.35');
+    dot.style.display = 'block'; dot.style.left = sx + 'px'; dot.style.top = sy + 'px';
+    tip.classList.remove('hidden'); tip.style.left = sx + 'px'; tip.style.top = sy - 6 + 'px';
+    tip.innerHTML = `${range === 'today' ? hourLbl(i) + ' – ' + hourLbl(i + 1) : fmtDate(series[i].label + 'T04:00:00Z')}<b>${rm(series[i].value)}</b>`;
+  };
+  svg.addEventListener('pointermove', move);
+  svg.addEventListener('pointerleave', () => { tip.classList.add('hidden'); dot.style.display = 'none'; xh.setAttribute('opacity', '0'); });
+}
+const niceStep = (raw) => { const p = Math.pow(10, Math.floor(Math.log10(raw || 1))); const n = raw / p; return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * p; };
+const hourLbl = (h) => { h = h % 24; return h === 0 ? '12 AM' : h < 12 ? `${h} AM` : h === 12 ? '12 PM' : `${h - 12} PM`; };
+const shortDay = (k) => { const d = new Date(k + 'T04:00:00Z'); return `${d.getUTCDate()}/${d.getUTCMonth() + 1}`; };
+function drawDonut(el, parts, total) {
+  const R = 62, r = 44, C = 80;
+  let a = -Math.PI / 2, paths = '';
+  const nonZero = parts.filter((p) => p[0] > 0);
+  if (!total) paths = `<circle cx="${C}" cy="${C}" r="${(R + r) / 2}" fill="none" stroke="#EEF0F3" stroke-width="${R - r}"/>`;
+  else if (nonZero.length === 1) paths = `<circle cx="${C}" cy="${C}" r="${(R + r) / 2}" fill="none" stroke="${nonZero[0][1]}" stroke-width="${R - r}"/>`;
+  else for (const [v, c] of nonZero) {
+    const b = a + (v / total) * Math.PI * 2;
+    const lg = b - a > Math.PI ? 1 : 0;
+    const p = (ang, rad) => `${C + rad * Math.cos(ang)} ${C + rad * Math.sin(ang)}`;
+    paths += `<path d="M${p(a, R)} A${R} ${R} 0 ${lg} 1 ${p(b, R)} L${p(b, r)} A${r} ${r} 0 ${lg} 0 ${p(a, r)}Z" fill="${c}" stroke="#fff" stroke-width="2"/>`;
+    a = b;
+  }
+  el.innerHTML = `<svg width="160" height="160" viewBox="0 0 160 160">${paths}<text x="80" y="80" text-anchor="middle" font-size="24" font-weight="800" fill="#141B26">${total}</text><text x="80" y="99" text-anchor="middle" font-size="11.5" fill="#374151">Total Kiosks</text></svg>`;
+}
+
+// =====================================================================
+//  PRODUCTS
+// =====================================================================
+let prodCache = null, prodFilter = { q: '', status: '' }, prodDraft = null;
+async function pageProducts() {
+  const d = await api('GET', '/api/admin/products');
+  prodCache = d.products; LAYOUTS = d.layouts;
+  const list = prodCache.filter((p) => (!prodFilter.status || p.status === prodFilter.status) && (!prodFilter.q || p.name.toLowerCase().includes(prodFilter.q.toLowerCase())));
+  const active = prodCache.filter((p) => p.status === 'active').length;
+  const cur = sel.products === '__new' ? prodDraft : prodCache.find((p) => p.id === sel.products);
+  $('#content').innerHTML = `${storageBanner()}
+  ${isAdmin() ? `<div style="display:flex;justify-content:flex-end;margin:-4px 0 14px"><button class="btn primary" onclick="newProduct()">${icon('plus', 16, 2.4)} Add New Product</button></div>` : ''}
+  <div class="with-panel ${cur ? '' : 'no-panel'}"><div class="stack">
+    <div class="kpis">
+      <div class="card kpi"><div class="ic gold">${icon('products', 24)}</div><div><div class="lbl">Total Products</div><div class="val">${prodCache.length}</div><div class="sub">All products</div></div></div>
+      <div class="card kpi"><div class="ic green" style="background:#86CFA0">${icon('check', 24, 2.6)}</div><div><div class="lbl">Active Products</div><div class="val">${active}</div><div class="sub">${prodCache.length ? Math.round((active / prodCache.length) * 100) : 0}% of total</div></div></div>
+      <div class="card kpi"><div class="ic grey">${icon('pause', 24, 2.8)}</div><div><div class="lbl">Inactive Products</div><div class="val">${prodCache.length - active}</div><div class="sub">Hidden from kiosks</div></div></div>
+    </div>
+    <div class="card"><div class="card-h"><h3>Products List</h3></div>
+      <div class="toolbar">
+        <div class="search">${icon('search', 16)}<input class="input" placeholder="Search by product name..." value="${esc(prodFilter.q)}" oninput="prodFilter.q=this.value;clearTimeout(window._pq);window._pq=setTimeout(()=>{render();setTimeout(()=>{const i=document.querySelector('.search input');i.focus();i.setSelectionRange(i.value.length,i.value.length)},0)},250)"></div>
+        <select class="select" style="width:150px" onchange="prodFilter.status=this.value;render()"><option value="">All Status</option><option value="active" ${prodFilter.status === 'active' ? 'selected' : ''}>Active</option><option value="inactive" ${prodFilter.status === 'inactive' ? 'selected' : ''}>Inactive</option></select>
+        ${isAdmin() ? `<span class="hint" style="margin-left:auto">${icon('grip', 14)} Drag rows to change the order on the kiosk</span>` : ''}
+      </div>
+      <div class="tbl-wrap"><table class="tbl" id="prodTbl"><thead><tr>${isAdmin() ? '<th></th>' : ''}<th>Product</th><th>Photos</th><th>Output</th><th>Print Size</th><th>Price (RM)</th><th>Sold</th><th>Status</th></tr></thead><tbody>
+        ${list.map((p) => `<tr data-id="${p.id}" class="${sel.products === p.id ? 'sel' : ''}" ${isAdmin() ? 'draggable="true"' : ''} onclick="sel.products='${p.id}';render()">
+          ${isAdmin() ? `<td class="drag">${icon('grip', 16)}</td>` : ''}
+          <td><div style="display:flex;gap:12px;align-items:center">${layoutPreview(p.layout, '#F3EEE2', null, 40)}<div><div class="strong">${esc(p.name)} ${p.popular ? '<span class="badge amber" style="margin-left:4px">Popular</span>' : ''}</div><div class="sub-line">${esc(p.description)}</div></div></div></td>
+          <td>${p.photos}<div class="sub-line">photo${p.photos > 1 ? 's' : ''}</div></td><td>${esc(p.output)}</td><td>${esc(p.size)}</td>
+          <td class="strong">${Number(p.price).toFixed(2)}</td><td>${p.sold}</td>
+          <td>${p.status === 'active' ? '<span class="badge green">Active</span>' : '<span class="badge grey">Inactive</span>'}</td></tr>`).join('') || `<tr><td colspan="8" class="empty">No products match</td></tr>`}
+      </tbody></table></div>
+      <div class="pager"><span class="info">Showing ${list.length} of ${prodCache.length} products</span></div>
+    </div>
+  </div>
+  ${cur ? panelShell('products', productPanel(cur)) : ''}</div>`;
+  if (isAdmin()) enableRowDrag($('#prodTbl tbody'), async (ids) => { await api('POST', '/api/admin/products/reorder', { ids }); toast('Order saved — kiosks will update'); });
+}
+function productPanel(p) {
+  const L = LAYOUTS[p.layout] || {};
+  const ro = !isAdmin();
+  return `<div class="card-h"><h3>${p.id ? (ro ? 'Product' : 'Edit Product') : 'New Product'}</h3><button class="close-x" onclick="closePanel('products')">${icon('x', 18)}</button></div>
+  <form id="prodForm" onsubmit="saveProduct(event)" style="display:contents">
+  <div class="panel-sec" style="border-top:none"><h4>Product Preview</h4>
+    <div style="display:flex;gap:16px;align-items:flex-start"><div style="background:var(--bg);padding:12px;border-radius:10px;text-align:center">${layoutPreview(p.layout, '#F3EEE2', null, 100)}<div class="hint">${esc(L.size || '')}</div></div>
+    <div style="flex:1"><div class="field"><label>Product Name <span class="req">*</span></label><input class="input" name="name" value="${esc(p.name)}" ${ro ? 'disabled' : ''} required maxlength="60"></div>
+    <div class="field" style="margin:0"><label>Description</label><textarea class="input" name="description" rows="2" ${ro ? 'disabled' : ''} maxlength="200">${esc(p.description)}</textarea></div></div></div>
+  </div>
+  <div class="panel-sec"><h4>Print Setup</h4>
+    <div class="grid2">
+      <div class="field"><label>Layout ${p.id ? '<span class="lk">(Locked)</span>' : ''}</label>${p.id ? `<div class="input-suffix"><input class="input" disabled value="${esc(L.name)}"><span>${icon('lock', 14)}</span></div>` : `<select class="select" name="layout" onchange="prodDraft.layout=this.value;render()">${Object.entries(LAYOUTS).map(([k, v]) => `<option value="${k}" ${k === p.layout ? 'selected' : ''}>${v.name}</option>`).join('')}</select>`}</div>
+      <div class="field"><label>Print Size <span class="lk">(Locked)</span></label><div class="input-suffix"><input class="input" disabled value="${esc(L.size)}"><span>${icon('lock', 14)}</span></div></div>
+      <div class="field"><label>Photos Required <span class="lk">(Locked)</span></label><div class="input-suffix"><input class="input" disabled value="${L.photos}"><span>photos</span></div></div>
+      <div class="field"><label>Output <span class="lk">(Locked)</span></label><div class="input-suffix"><input class="input" disabled value="${esc(L.output)}"></div></div>
+    </div>
+    <div class="hint">${icon('info', 13)} Photo count and size follow the kiosk print layout, so they can't be changed here.</div>
+  </div>
+  <div class="panel-sec"><h4>Pricing</h4>
+    <div class="field" style="max-width:170px"><label>Price (RM) <span class="req">*</span></label><input class="input" name="price" type="number" min="0.5" step="0.5" value="${p.price}" ${ro ? 'disabled' : ''} required></div>
+  </div>
+  <div class="panel-sec"><h4>Quantity</h4>
+    <div class="srow"><label>Allow Quantity Selection</label><label class="toggle"><input type="checkbox" name="allowQty" ${p.allowQty !== false ? 'checked' : ''} ${ro ? 'disabled' : ''}><span></span></label></div>
+    <div class="grid2"><div class="field"><label>Minimum Quantity</label><input class="input" type="number" name="minQty" min="1" max="99" value="${p.minQty || 1}" ${ro ? 'disabled' : ''}></div>
+    <div class="field"><label>Maximum Quantity</label><input class="input" type="number" name="maxQty" min="1" max="99" value="${p.maxQty || 20}" ${ro ? 'disabled' : ''}></div></div>
+  </div>
+  <div class="panel-sec"><h4>Display</h4>
+    <div class="srow"><label>Show "Popular" badge</label><label class="toggle"><input type="checkbox" name="popular" ${p.popular ? 'checked' : ''} ${ro ? 'disabled' : ''}><span></span></label></div>
+    <div class="field" style="margin:0"><label>Status</label><div class="radio-row"><label><input type="radio" name="status" value="active" ${p.status !== 'inactive' ? 'checked' : ''} ${ro ? 'disabled' : ''}> Active</label><label><input type="radio" name="status" value="inactive" ${p.status === 'inactive' ? 'checked' : ''} ${ro ? 'disabled' : ''}> Inactive</label></div></div>
+    ${p.id && !ro ? `<button type="button" class="btn sm danger" style="margin-top:16px" onclick="deleteProduct('${p.id}')">${icon('trash', 14)} Delete product</button>` : ''}
+  </div>
+  ${ro ? '' : `<div class="panel-foot"><button type="button" class="btn" onclick="closePanel('products')">Cancel</button><button class="btn primary" type="submit">Save Changes</button></div>`}
+  </form>`;
+}
+function newProduct() {
+  prodDraft = { layout: 'strip', name: '', description: '', price: 15, allowQty: true, minQty: 1, maxQty: 20, status: 'active', popular: false };
+  sel.products = '__new'; render();
+}
+async function saveProduct(e) {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  const body = { name: f.get('name'), description: f.get('description'), price: Number(f.get('price')), allowQty: f.get('allowQty') === 'on', minQty: Number(f.get('minQty')), maxQty: Number(f.get('maxQty')), popular: f.get('popular') === 'on', status: f.get('status') };
+  try {
+    if (sel.products === '__new') { const p = await api('POST', '/api/admin/products', { ...body, layout: prodDraft.layout }); sel.products = p.id; toast('Product created — kiosks will update'); }
+    else { await api('PUT', '/api/admin/products/' + sel.products, body); toast('Saved — kiosks will pick up the change within a minute'); }
+    render();
+  } catch (ex) { toast(ex.message, true); }
+}
+function deleteProduct(id) {
+  confirmBox('Delete product?', 'The product will disappear from all kiosks. Past orders stay in your records.', 'Delete', async () => { await api('DELETE', '/api/admin/products/' + id); sel.products = null; toast('Product deleted'); render(); }, true);
+}
+function enableRowDrag(tbody, onDone) {
+  let dragEl = null;
+  tbody.querySelectorAll('tr[draggable]').forEach((tr) => {
+    tr.addEventListener('dragstart', (e) => { dragEl = tr; tr.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; });
+    tr.addEventListener('dragend', () => { tr.classList.remove('dragging'); tbody.querySelectorAll('.drop-target').forEach((x) => x.classList.remove('drop-target')); });
+    tr.addEventListener('dragover', (e) => { e.preventDefault(); tbody.querySelectorAll('.drop-target').forEach((x) => x.classList.remove('drop-target')); if (tr !== dragEl) tr.classList.add('drop-target'); });
+    tr.addEventListener('drop', async (e) => {
+      e.preventDefault(); if (!dragEl || dragEl === tr) return;
+      tbody.insertBefore(dragEl, tr);
+      const ids = [...tbody.querySelectorAll('tr[data-id]')].map((x) => x.dataset.id);
+      try { await onDone(ids); } catch (ex) { toast(ex.message, true); } render();
+    });
+  });
+}
+
+// =====================================================================
+//  TEMPLATES
+// =====================================================================
+let tmplCache = null, tmplCats = [], tmplFilter = { q: '', layout: '', category: '', status: '' }, tmplDraft = null;
+async function pageTemplates() {
+  const d = await api('GET', '/api/admin/templates');
+  tmplCache = d.templates; tmplCats = d.categories; LAYOUTS = d.layouts;
+  const f = tmplFilter;
+  const match = (t) => (!f.q || t.name.toLowerCase().includes(f.q.toLowerCase())) && (!f.category || t.category === f.category) && (!f.status || t.status === f.status) && (!f.layout || t.scope === 'simple' || (t.layouts || []).includes(f.layout));
+  const list = tmplCache.filter(match);
+  const active = tmplCache.filter((t) => t.status === 'active').length;
+  const groups = [{ key: 'simple', title: 'SIMPLE — works with every product', items: list.filter((t) => t.scope === 'simple'), ic: 'templates' },
+    ...Object.entries(LAYOUTS).map(([k, L]) => ({ key: k, title: `SPECIAL · ${L.name.toUpperCase()} (${L.size}) – ${L.photos} photo${L.photos > 1 ? 's' : ''}`, items: list.filter((t) => t.scope === 'special' && (t.layouts || []).includes(k)), ic: 'image' }))]
+    .filter((g) => g.items.length);
+  const cur = sel.templates === '__new' ? tmplDraft : (tmplDraft && tmplDraft.id === sel.templates ? tmplDraft : tmplCache.find((t) => t.id === sel.templates));
+  if (cur && cur !== tmplDraft) tmplDraft = JSON.parse(JSON.stringify(cur));
+  $('#content').innerHTML = `${storageBanner()}
+  ${isAdmin() ? `<div style="display:flex;justify-content:flex-end;margin:-4px 0 14px"><button class="btn primary" onclick="newTemplate()">${icon('plus', 16, 2.4)} Add New Template</button></div>` : ''}
+  <div class="with-panel ${cur ? '' : 'no-panel'}"><div class="stack">
+    <div class="kpis">
+      <div class="card kpi"><div class="ic gold">${icon('templates', 24)}</div><div><div class="lbl">Total Templates</div><div class="val">${tmplCache.length}</div><div class="sub">All templates</div></div></div>
+      <div class="card kpi"><div class="ic green" style="background:#86CFA0">${icon('check', 24, 2.6)}</div><div><div class="lbl">Active Templates</div><div class="val">${active}</div><div class="sub">${tmplCache.length ? Math.round((active / tmplCache.length) * 1000) / 10 : 0}% of total</div></div></div>
+      <div class="card kpi"><div class="ic grey">${icon('pause', 24, 2.8)}</div><div><div class="lbl">Inactive Templates</div><div class="val">${tmplCache.length - active}</div><div class="sub">Hidden from kiosks</div></div></div>
+      <div class="card kpi"><div class="ic purple">${icon('products', 24)}</div><div><div class="lbl">Layouts</div><div class="val">${Object.keys(LAYOUTS).length}</div><div class="sub">${Object.values(LAYOUTS).map((l) => l.name.replace(' Photo', '').replace('Photo ', '')).join(', ')}</div></div></div>
+    </div>
+    <div class="card">
+      <div class="toolbar" style="padding-top:16px">
+        <div class="search">${icon('search', 16)}<input class="input" placeholder="Search templates by name..." value="${esc(f.q)}" oninput="tmplFilter.q=this.value;clearTimeout(window._tq);window._tq=setTimeout(()=>{render();setTimeout(()=>{const i=document.querySelector('.search input');i.focus();i.setSelectionRange(i.value.length,i.value.length)},0)},250)"></div>
+        <select class="select" style="width:150px" onchange="tmplFilter.layout=this.value;render()"><option value="">All Layouts</option>${Object.entries(LAYOUTS).map(([k, v]) => `<option value="${k}" ${f.layout === k ? 'selected' : ''}>${v.name}</option>`).join('')}</select>
+        <select class="select" style="width:150px" onchange="tmplFilter.category=this.value;render()"><option value="">All Categories</option>${tmplCats.map((c) => `<option ${f.category === c ? 'selected' : ''}>${esc(c)}</option>`).join('')}</select>
+        <select class="select" style="width:130px" onchange="tmplFilter.status=this.value;render()"><option value="">All Status</option><option value="active" ${f.status === 'active' ? 'selected' : ''}>Active</option><option value="inactive" ${f.status === 'inactive' ? 'selected' : ''}>Inactive</option></select>
+      </div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Template</th><th>Layout</th><th>Category</th><th>Status</th><th>Updated</th></tr></thead><tbody>
+      ${groups.map((g) => `<tr class="group-row"><td colspan="4"><span style="display:inline-flex;gap:8px;align-items:center">${icon(g.ic, 16)} ${g.title}</span></td><td style="text-align:right;font-weight:600">${g.items.length} Template${g.items.length > 1 ? 's' : ''}</td></tr>
+        ${g.items.map((t) => `<tr class="${sel.templates === t.id ? 'sel' : ''}" onclick="tmplDraft=null;sel.templates='${t.id}';render()">
+          <td><div style="display:flex;gap:12px;align-items:center"><div class="swatch" style="background:${tmplBg(t)}"></div><div><div class="strong">${esc(t.name)}</div>${t.bgImage ? `<div class="sub-line">${icon('image', 12)} Background image</div>` : ''}</div></div></td>
+          <td>${t.scope === 'simple' ? 'All layouts' : (t.layouts || []).map((l) => LAYOUTS[l] ? LAYOUTS[l].name : l).join(', ')}</td>
+          <td>${esc(t.category)}</td><td>${t.status === 'active' ? '<span class="badge green">Active</span>' : '<span class="badge grey">Inactive</span>'}</td><td>${fmtDate(new Date(t.updatedAt || t.createdAt).toISOString())}</td></tr>`).join('')}`).join('') || `<tr><td colspan="5" class="empty">No templates match</td></tr>`}
+      </tbody></table></div>
+      <div class="pager"><span class="info">Showing ${list.length} of ${tmplCache.length} templates</span></div>
+    </div>
+  </div>
+  ${cur ? panelShell('templates', templatePanel(tmplDraft)) : ''}</div>`;
+}
+const BG_PRESETS = ['#FFFFFF', '#F3EEE2', '#17130E', 'linear-gradient(135deg,#FBD8E6,#FCE9F0)', 'linear-gradient(135deg,#DCEBD8,#F1F7EE)', 'linear-gradient(135deg,#FBE3C7,#FCEFE0)', 'linear-gradient(160deg,#D9AA4F,#B9812E)', 'linear-gradient(135deg,#CFE3F7,#EEF5FC)'];
+const TEXT_PRESETS = [['var(--grey)', 'Grey'], ['#17130E', 'Black'], ['rgba(255,255,255,0.7)', 'White'], ['#3A2A0E', 'Brown'], ['#B23D6E', 'Pink']];
+function templatePanel(t) {
+  const ro = !isAdmin();
+  const pvLayout = t.scope === 'special' && t.layouts && t.layouts[0] ? t.layouts[0] : (tmplFilter.layout || 'grid12');
+  const dis = ro ? 'disabled' : '';
+  return `<div class="card-h"><h3>${t.id ? (ro ? 'Template' : 'Edit Template') : 'New Template'}</h3><button class="close-x" onclick="tmplDraft=null;closePanel('templates')">${icon('x', 18)}</button></div>
+  <div class="panel-sec" style="border-top:none;padding-top:4px"><div class="note">${icon('bulb', 18)}<div>Photo positions and sizes are fixed for each layout. A template only changes the background, pattern and text colour.</div></div></div>
+  <div class="panel-sec"><h4>1. Template Info</h4>
+    <div class="field"><label>Template Name <span class="req">*</span></label><input class="input" value="${esc(t.name)}" maxlength="60" ${dis} oninput="tmplDraft.name=this.value"></div>
+    <div class="field"><label>Type</label><div class="radio-row"><label><input type="radio" name="tscope" ${t.scope !== 'special' ? 'checked' : ''} ${dis} onchange="tmplDraft.scope='simple';render()"> Simple (all products)</label><label><input type="radio" name="tscope" ${t.scope === 'special' ? 'checked' : ''} ${dis} onchange="tmplDraft.scope='special';if(!tmplDraft.layouts||!tmplDraft.layouts.length)tmplDraft.layouts=['grid12'];render()"> Special</label></div></div>
+    ${t.scope === 'special' ? `<div class="field"><label>Layouts</label><div class="check-row">${Object.entries(LAYOUTS).map(([k, v]) => `<label class="chip-check"><input type="checkbox" ${(t.layouts || []).includes(k) ? 'checked' : ''} ${dis} onchange="toggleTLayout('${k}',this.checked)"> ${v.name}</label>`).join('')}</div></div>` : ''}
+    <div class="field"><label>Category</label><select class="select" ${dis} onchange="tmplDraft.category=this.value">${[...new Set([...tmplCats, t.category].filter(Boolean))].map((c) => `<option ${c === t.category ? 'selected' : ''}>${esc(c)}</option>`).join('')}</select></div>
+  </div>
+  <div class="panel-sec"><h4>2. Template Design</h4>
+    <div style="display:flex;justify-content:center;background:var(--bg);border-radius:10px;padding:14px;margin-bottom:12px">${layoutPreview(pvLayout, tmplBg(t), t.textColor, 150)}</div>
+    <div class="hint" style="text-align:center;margin:-4px 0 12px">Preview: ${esc((LAYOUTS[pvLayout] || {}).name || '')}</div>
+    ${ro ? '' : `
+    <div class="field"><label>Background image <span class="lk">(optional)</span></label>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <label class="btn sm">${icon('upload', 14)} ${t.bgImage ? 'Change Background Image' : 'Upload Image'}<input type="file" accept="image/png,image/jpeg,image/webp" hidden onchange="uploadTmplBg(this.files[0])"></label>
+        ${t.bgImage ? `<button class="btn sm danger" onclick="tmplDraft.bgImage=null;render()">${icon('trash', 14)} Remove</button>` : ''}
+      </div>
+      <div class="hint">Recommended size: 1200 × 1800 px (4×6 inch at 300 DPI). PNG, JPG or WEBP, max 6 MB. Leave the photo areas plain — photos are placed on top.</div></div>
+    <div class="field"><label>Background colour</label><div class="check-row">${BG_PRESETS.map((b) => `<button title="${esc(b)}" class="swatch" style="width:30px;height:30px;background:${b};${t.bg === b ? 'outline:2px solid var(--gold-deep);outline-offset:2px' : ''}" onclick="tmplDraft.bg='${b}';render()"></button>`).join('')}</div>
+      <input class="input" style="margin-top:8px" value="${esc(t.bg)}" placeholder="#FFFFFF or linear-gradient(...)" onchange="tmplDraft.bg=this.value;render()"></div>
+    <div class="grid2">
+      <div class="field"><label>Brand text colour</label><select class="select" onchange="tmplDraft.textColor=this.value;render()">${TEXT_PRESETS.map(([v, l]) => `<option value="${v}" ${t.textColor === v ? 'selected' : ''}>${l}</option>`).join('')}${TEXT_PRESETS.some(([v]) => v === t.textColor) ? '' : `<option selected value="${esc(t.textColor)}">Custom</option>`}</select></div>
+      <div class="field"><label>Pattern</label><select class="select" onchange="tmplDraft.pattern=this.value;render()"><option value="none" ${t.pattern !== 'dots' ? 'selected' : ''}>None</option><option value="dots" ${t.pattern === 'dots' ? 'selected' : ''}>Dots</option></select></div>
+    </div>`}
+    ${(t.corners && t.corners.length) || (t.captions && t.captions.length) ? `<div class="hint">${icon('info', 13)} This template also has corner decorations/captions set in the kiosk design. They are kept when you save.</div>` : ''}
+  </div>
+  <div class="panel-sec"><h4>3. Status</h4><div class="radio-row"><label><input type="radio" name="tst" ${t.status !== 'inactive' ? 'checked' : ''} ${dis} onchange="tmplDraft.status='active'"> Active</label><label><input type="radio" name="tst" ${t.status === 'inactive' ? 'checked' : ''} ${dis} onchange="tmplDraft.status='inactive'"> Inactive</label></div>
+    ${t.id && !ro ? `<button class="btn sm danger" style="margin-top:16px" onclick="deleteTemplate('${t.id}')">${icon('trash', 14)} Delete template</button>` : ''}</div>
+  ${ro ? '' : `<div class="panel-foot"><button class="btn" onclick="tmplDraft=null;closePanel('templates')">Cancel</button><button class="btn primary" onclick="saveTemplate()">Save Template</button></div>`}`;
+}
+function toggleTLayout(k, on) { const s = new Set(tmplDraft.layouts || []); on ? s.add(k) : s.delete(k); tmplDraft.layouts = [...s]; render(); }
+function newTemplate() { tmplDraft = { name: '', scope: 'simple', layouts: [], category: tmplCats[0] || 'General', bg: '#FFFFFF', textColor: 'var(--grey)', pattern: 'none', status: 'active', bgImage: null }; sel.templates = '__new'; render(); }
+async function uploadTmplBg(file) {
+  if (!file) return;
+  if (file.size > 6 * 1024 * 1024) return toast('Image must be under 6 MB', true);
+  toast('Uploading…');
+  try {
+    const r = await api('POST', '/api/admin/assets', file, file.type || 'image/png');
+    tmplDraft.bgImage = r.id; render(); toast('Image uploaded — press Save Template to apply');
+  } catch (e) { toast(e.message, true); }
+}
+async function saveTemplate() {
+  const t = tmplDraft;
+  const body = { name: t.name, scope: t.scope, layouts: t.layouts, category: t.category, bg: t.bg, textColor: t.textColor, pattern: t.pattern, patternColor: t.patternColor, status: t.status, bgImage: t.bgImage || null };
+  try {
+    if (sel.templates === '__new') { const r = await api('POST', '/api/admin/templates', body); sel.templates = r.id; toast('Template created'); }
+    else { await api('PUT', '/api/admin/templates/' + sel.templates, body); toast('Template saved — kiosks will update'); }
+    tmplDraft = null; render();
+  } catch (e) { toast(e.message, true); }
+}
+function deleteTemplate(id) {
+  confirmBox('Delete template?', 'It will disappear from all kiosks.', 'Delete', async () => { await api('DELETE', '/api/admin/templates/' + id); sel.templates = null; tmplDraft = null; toast('Template deleted'); render(); }, true);
+}
+
+// =====================================================================
+//  KIOSKS
+// =====================================================================
+let kioskFilter = { q: '', status: '' };
+async function pageKiosks() {
+  const d = await api('GET', '/api/admin/kiosks');
+  const all = d.kiosks;
+  const list = all.filter((k) => (!kioskFilter.status || k.state === kioskFilter.status) && (!kioskFilter.q || `${k.name} ${k.id} ${k.location} ${k.city}`.toLowerCase().includes(kioskFilter.q.toLowerCase())));
+  const cnt = (s) => all.filter((k) => k.state === s).length;
+  let detail = null;
+  if (sel.kiosks) { try { detail = await api('GET', '/api/admin/kiosks/' + sel.kiosks); } catch { sel.kiosks = null; } }
+  $('#content').innerHTML = `${storageBanner()}
+  ${isAdmin() ? `<div style="display:flex;justify-content:flex-end;margin:-4px 0 14px"><button class="btn primary" onclick="addKiosk()">${icon('plus', 16, 2.4)} Add Kiosk</button></div>` : ''}
+  <div class="with-panel ${detail ? '' : 'no-panel'}"><div class="stack">
+    <div class="kpis">
+      <div class="card kpi"><div class="ic blue">${icon('kiosk', 26)}</div><div><div class="lbl">Total Kiosks</div><div class="val">${all.length}</div><div class="sub">All kiosks</div></div></div>
+      <div class="card kpi"><div class="ic green">${icon('wifi', 26)}</div><div><div class="lbl">Online</div><div class="val">${cnt('online') + cnt('busy')}</div><div class="sub">${cnt('busy')} in use now</div></div></div>
+      <div class="card kpi"><div class="ic amber">${icon('power', 26)}</div><div><div class="lbl">Offline</div><div class="val">${cnt('offline')}</div><div class="sub">No signal for 90 s+</div></div></div>
+      <div class="card kpi"><div class="ic red">${icon('shield', 26)}</div><div><div class="lbl">Unprotected</div><div class="val">${all.filter((k) => !k.protected).length}</div><div class="sub">No security key yet</div></div></div>
+    </div>
+    <div class="card"><div class="card-h"><h3>Kiosks List</h3></div>
+      <div class="toolbar"><div class="search">${icon('search', 16)}<input class="input" placeholder="Search kiosk or location..." value="${esc(kioskFilter.q)}" onchange="kioskFilter.q=this.value;render()"></div>
+        <select class="select" style="width:150px" onchange="kioskFilter.status=this.value;render()"><option value="">All Status</option>${Object.entries(KST).map(([k, [, l]]) => `<option value="${k}" ${kioskFilter.status === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Kiosk</th><th>Location</th><th>Status</th><th>Printer</th><th>Security</th><th>Last Seen</th></tr></thead><tbody>
+      ${list.map((k) => `<tr class="${sel.kiosks === k.id ? 'sel' : ''}" onclick="sel.kiosks='${k.id}';render()">
+        <td><div style="display:flex;gap:12px;align-items:center"><span style="color:var(--ink)">${icon('kiosk', 30, 1.5)}</span><div><div class="strong">${esc(k.name)}</div><div class="sub-line">${esc(k.id)}</div></div></div></td>
+        <td>${esc(k.location)}<div class="sub-line">${esc(k.city)}</div></td>
+        <td>${kState(k.state)}${k.state === 'busy' && k.session ? `<div class="sub-line">${esc(k.session.product)} · ${k.session.received}/${k.session.required}</div>` : ''}</td>
+        <td>${printerSt(k.printer)}${k.printer && k.printer.mediaRemaining != null ? `<div class="sub-line">${k.printer.mediaRemaining} prints left</div>` : ''}</td>
+        <td>${k.protected ? '<span class="badge green">Key set</span>' : '<span class="badge red">No key</span>'}</td>
+        <td>${ago(k.lastSeen)}<div class="sub-line">${k.lastSeen ? fmtTime(k.lastSeen) : ''}</div></td></tr>`).join('') || `<tr><td colspan="6" class="empty">No kiosks match</td></tr>`}
+      </tbody></table></div>
+      <div class="pager"><span class="info">Showing ${list.length} of ${all.length} kiosks · Config version ${d.configVersion}</span></div>
+    </div>
+  </div>
+  ${detail ? panelShell('kiosks', kioskPanel(detail, d.configVersion)) : ''}</div>`;
+  refreshTimer = setInterval(() => { if (!document.hidden && route === 'kiosks' && !$('#modalRoot').innerHTML) render(); }, 15000);
+}
+function kioskPanel(d, cfgVer) {
+  const k = d.kiosk, t = d.today;
+  const hi = (cls, ic, label, val) => `<div class="h"><div class="hi ${cls}">${icon(ic, 17)}</div><div class="t">${label}<b>${val}</b></div></div>`;
+  const s = k.session;
+  return `<div class="card-h"><h3>Kiosk Details</h3><button class="close-x" onclick="closePanel('kiosks')">${icon('x', 18)}</button></div>
+  <div class="panel-sec" style="border-top:none;padding-top:2px">
+    <div>${kState(k.state)}</div>
+    <div style="display:flex;gap:10px;align-items:baseline;margin-top:6px"><span class="big-id">${esc(k.name)}</span><span class="muted">${esc(k.id)}</span></div>
+    <div style="color:var(--ink-2)">${esc(k.location)}${k.city ? ', ' + esc(k.city) : ''}</div>
+    ${k.autoRegistered ? `<div class="note" style="margin-top:10px">${icon('info', 16)}<div>This kiosk registered itself. Set its name and location with <b>Edit</b>.</div></div>` : ''}
+  </div>
+  <div class="panel-sec"><h4>${icon('orders', 16)} Current Session</h4>
+    ${s ? `<div class="kv"><dt>Product</dt><dd>${esc(s.product)}</dd><dt>Photos</dt><dd>${s.received} / ${s.required}</dd><dt>Time left</dt><dd>${mmss(s.secondsLeft)}</dd><dt>Screen</dt><dd>Step ${k.step} of 5</dd></div>
+      <div class="bar" style="margin-top:10px"><i style="width:${s.required ? (s.received / s.required) * 100 : 0}%;background:var(--gold)"></i></div>` : `<div class="muted">${k.state === 'busy' ? `Finishing an order (screen step ${k.step} of 5)` : k.online ? 'Idle — waiting for a customer' : 'Kiosk is not connected'}</div>`}
+  </div>
+  <div class="panel-sec"><h4>${icon('shield', 16)} Kiosk Health</h4><div class="health">
+    ${hi(k.online ? '' : 'bad', 'wifi', 'Internet', k.online ? 'Connected' : 'Offline')}
+    ${hi(k.printer.status === 'ready' ? '' : k.printer.status === 'unknown' ? 'na' : 'warn', 'printer', 'Printer', (PRN[k.printer.status] || PRN.unknown)[1])}
+    ${hi(k.configCurrent ? '' : k.configCurrent === false ? 'warn' : 'na', 'refresh', 'Configuration', k.configCurrent ? 'Up to date' : k.configCurrent === false ? `v${k.configVersion} (latest v${cfgVer})` : '—')}
+    ${hi(k.protected ? '' : 'bad', 'key', 'Security key', k.protected ? 'Set' : 'Not set')}
+    ${hi('na', 'server', 'App version', k.appVersion || '—')}
+    ${hi('na', 'clock', 'Last seen', ago(k.lastSeen))}
+  </div>
+  <div class="hint" style="margin-top:10px">Printer details (media, errors) arrive in Phase 3 with the printer agent.</div></div>
+  <div class="panel-sec"><h4>${icon('money', 16)} Today</h4><div class="trio" style="padding:0"><div><div class="l">Sales</div><div class="n" style="font-size:17px">${rm(t.sales)}</div></div><div><div class="l">Orders</div><div class="n" style="font-size:17px">${t.orders}</div></div><div><div class="l">Prints</div><div class="n" style="font-size:17px">${t.prints}</div></div></div></div>
+  ${d.recent.length ? `<div class="panel-sec"><h4>Recent Orders</h4>${d.recent.map((o) => `<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:12.5px;cursor:pointer" onclick="sel.orders='${o.id}';ordersFilter.date='';go('orders')"><span>${o.id}<div class="sub-line">${esc(o.productName)} · ${fmtDT(o.createdAt)}</div></span><span style="text-align:right">${rm0(o.total)}<div>${orderBadge(o.status)}</div></span></div>`).join('')}</div>` : ''}
+  ${isAdmin() ? `<div class="panel-sec"><h4>${icon('settings', 16)} Actions</h4><div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn sm" onclick="editKiosk('${k.id}')">${icon('edit', 14)} Edit</button>
+    <button class="btn sm" onclick="kioskKey('${k.id}',${k.protected})">${icon('key', 14)} ${k.protected ? 'New key' : 'Generate key'}</button>
+    <button class="btn sm" onclick="kioskSetup('${k.id}')">${icon('info', 14)} Setup guide</button>
+    <button class="btn sm danger" onclick="deleteKiosk('${k.id}')">${icon('trash', 14)} Remove</button></div>
+    <div class="hint" style="margin-top:10px">Restart and test print arrive in Phase 3.</div></div>` : ''}`;
+}
+function kioskFields(k) {
+  return `<div class="field"><label>Kiosk name</label><input class="input" id="kName" value="${esc(k.name || '')}" placeholder="Kiosk 04"></div>
+  <div class="field"><label>Location</label><input class="input" id="kLoc" value="${esc(k.location || '')}" placeholder="e.g. Jonker Walk"></div>
+  <div class="field"><label>City / State</label><input class="input" id="kCity" value="${esc(k.city || '')}" placeholder="Melaka"></div>`;
+}
+function addKiosk() {
+  const n = String(Math.max(0, ...[...document.querySelectorAll('.tbl .sub-line')].map((e) => (e.textContent.match(/KIOSK-(\d+)/) || [])[1] || 0).map(Number)) + 1).padStart(2, '0');
+  modal('Add Kiosk', `<div class="field"><label>Kiosk ID</label><input class="input" id="kId" value="KIOSK-${n}"><div class="hint">Used inside the kiosk software. Cannot be changed later.</div></div>${kioskFields({ name: 'Kiosk ' + n, city: 'Melaka' })}`,
+    [{ label: 'Cancel' }, { label: 'Add Kiosk', cls: 'primary', onClick: async () => {
+      const r = await api('POST', '/api/admin/kiosks', { id: $('#kId').value, name: $('#kName').value, location: $('#kLoc').value, city: $('#kCity').value });
+      sel.kiosks = r.kiosk.id; setTimeout(() => showKey(r.kiosk.id, r.key), 50); render();
+    } }]);
+}
+function editKiosk(id) {
+  api('GET', '/api/admin/kiosks/' + id).then(({ kiosk: k }) => modal('Edit ' + k.id, `${kioskFields(k)}<div class="field"><label>Status</label><div class="radio-row"><label><input type="radio" name="kst" value="active" ${k.status !== 'disabled' ? 'checked' : ''}> Active</label><label><input type="radio" name="kst" value="disabled" ${k.status === 'disabled' ? 'checked' : ''}> Disabled</label></div><div class="hint">A disabled kiosk cannot start sessions or report orders.</div></div>`,
+    [{ label: 'Cancel' }, { label: 'Save', cls: 'primary', onClick: async () => {
+      await api('PUT', '/api/admin/kiosks/' + id, { name: $('#kName').value, location: $('#kLoc').value, city: $('#kCity').value, status: document.querySelector('input[name=kst]:checked').value });
+      toast('Kiosk saved'); render();
+    } }]));
+}
+function kioskKey(id, has) {
+  confirmBox(has ? 'Generate a new key?' : 'Generate security key?', has ? 'The old key stops working immediately. You must enter the new key on the kiosk.' : 'After this, the kiosk must send this key or it will be refused. Enter it on the kiosk straight away.', 'Generate', async () => {
+    const r = await api('POST', `/api/admin/kiosks/${id}/key`); setTimeout(() => showKey(id, r.key), 50); render();
+  });
+}
+function showKey(id, key) {
+  const url = `crazy_moment_kiosk_software.html?kiosk=${encodeURIComponent(id)}&key=${encodeURIComponent(key)}`;
+  modal('Kiosk key for ' + id, `<div class="note" style="margin-bottom:10px">${icon('key', 18)}<div><b>Copy this now.</b> It will not be shown again.</div></div>
+    <div class="keybox">${esc(key)}</div>
+    <p style="margin:12px 0 6px;font-weight:700">Set up the kiosk (once):</p>
+    <p class="muted" style="font-size:12.5px">Open the kiosk software on the kiosk computer with this address once. It remembers the ID and key after that.</p>
+    <div class="keybox" style="font-size:11.5px">${esc(url)}</div>`,
+  [{ label: 'Copy key', onClick: async () => { await navigator.clipboard.writeText(key).catch(() => {}); toast('Key copied'); return false; } }, { label: 'Copy setup link', onClick: async () => { await navigator.clipboard.writeText(url).catch(() => {}); toast('Link copied'); return false; } }, { label: 'Done', cls: 'primary' }]);
+}
+function kioskSetup(id) {
+  modal('Kiosk setup guide', `<ol style="padding-left:18px;display:flex;flex-direction:column;gap:9px;color:var(--ink-2)">
+    <li>Copy <code>crazy_moment_kiosk_software.html</code> to the kiosk computer.</li>
+    <li>Open it once with <code>?kiosk=${esc(id)}&amp;key=YOUR_KEY</code> at the end of the address. Use <b>Generate key</b> to get the key.</li>
+    <li>The kiosk saves the ID and key, downloads products and templates, and appears here as <b>Online</b> within 30 seconds.</li>
+    <li>Changes you make in Products, Templates or Settings reach the kiosk automatically when no customer is using it.</li></ol>`);
+}
+function deleteKiosk(id) {
+  confirmBox('Remove ' + id + '?', 'The kiosk will be removed from this list. Its past orders stay. If the kiosk is still running without a key it will register itself again.', 'Remove', async () => { await api('DELETE', '/api/admin/kiosks/' + id); sel.kiosks = null; toast('Kiosk removed'); render(); }, true);
+}
+
+// =====================================================================
+//  ORDERS
+// =====================================================================
+let ordersFilter = { q: '', status: '', kiosk: '', date: todayKey(), page: 1 };
+let kioskListCache = [];
+async function pageOrders() {
+  const f = ordersFilter;
+  const qs = new URLSearchParams({ q: f.q, status: f.status, kiosk: f.kiosk, date: f.date || 'all', page: f.page, pageSize: 10 });
+  const [d, kl] = await Promise.all([api('GET', '/api/admin/orders?' + qs), kioskListCache.length ? { kiosks: kioskListCache } : api('GET', '/api/admin/kiosks')]);
+  kioskListCache = kl.kiosks;
+  let cur = null;
+  if (sel.orders) { try { cur = await api('GET', '/api/admin/orders/' + sel.orders); } catch { sel.orders = null; } }
+  const s = d.summary, pages = Math.max(1, Math.ceil(d.total / d.pageSize));
+  $('#content').innerHTML = `${storageBanner()}
+  <div class="with-panel ${cur ? '' : 'no-panel'}"><div class="stack">
+    <div class="kpis">
+      <div class="card kpi"><div class="ic blue">${icon('bag', 24)}</div><div><div class="lbl">Total Orders</div><div class="val">${s.total}</div><div class="sub">${f.date ? change(s.ordersChange) : 'All dates'}</div></div></div>
+      <div class="card kpi"><div class="ic green">${icon('check', 24, 2.4)}</div><div><div class="lbl">Completed</div><div class="val">${s.completed}</div><div class="sub">${s.total ? Math.round((s.completed / s.total) * 1000) / 10 : 0}% of total</div></div></div>
+      <div class="card kpi"><div class="ic amber">${icon('clock', 24)}</div><div><div class="lbl">Processing</div><div class="val">${s.processing}</div><div class="sub">${s.total ? Math.round((s.processing / s.total) * 1000) / 10 : 0}% of total</div></div></div>
+      <div class="card kpi"><div class="ic purple">${icon('money', 24)}</div><div><div class="lbl">Revenue</div><div class="val">${rm(s.sales)}</div><div class="sub">${f.date ? change(s.salesChange) : 'All dates'}</div></div></div>
+    </div>
+    <div class="card">
+      <div class="toolbar" style="padding-top:16px">
+        <div class="search">${icon('search', 16)}<input class="input" placeholder="Search order ID or product..." value="${esc(f.q)}" onchange="ordersFilter.q=this.value;ordersFilter.page=1;render()"></div>
+        <select class="select" style="width:140px" onchange="ordersFilter.status=this.value;ordersFilter.page=1;render()"><option value="">All Status</option>${[['completed', 'Completed'], ['processing', 'Processing'], ['cancelled', 'Cancelled'], ['failed', 'Failed']].map(([v, l]) => `<option value="${v}" ${f.status === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
+        <select class="select" style="width:140px" onchange="ordersFilter.kiosk=this.value;ordersFilter.page=1;render()"><option value="">All Kiosks</option>${kioskListCache.map((k) => `<option value="${k.id}" ${f.kiosk === k.id ? 'selected' : ''}>${esc(k.name)}</option>`).join('')}</select>
+        <input class="input" type="date" style="width:160px" value="${f.date}" max="${todayKey()}" onchange="ordersFilter.date=this.value;ordersFilter.page=1;render()">
+        ${f.date ? `<button class="btn sm" onclick="ordersFilter.date='';ordersFilter.page=1;render()">All dates</button>` : ''}
+        <button class="btn" style="margin-left:auto" onclick="exportOrders()">${icon('export', 16)} Export</button>
+      </div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Order ID</th><th>Kiosk</th><th>Product</th><th>Qty</th><th>Total (RM)</th><th>Payment</th><th>Status</th></tr></thead><tbody>
+      ${d.orders.map((o) => `<tr class="${sel.orders === o.id ? 'sel' : ''}" onclick="sel.orders='${o.id}';render()">
+        <td><div class="strong">${o.id}</div><div class="sub-line">${fmtDT(o.createdAt)}</div></td>
+        <td>${esc(o.kioskName)}<div class="sub-line">${esc(o.location)}</div></td>
+        <td><div style="display:flex;gap:10px;align-items:center">${o.layout ? layoutPreview(o.layout, '#F3EEE2', null, 28) : ''}<div>${esc(o.productName)}<div class="sub-line">${esc(o.size)}</div></div></div></td>
+        <td>${o.qty}</td><td class="strong">${rm0(o.total)}</td>
+        <td>${payMethod(o.payMethod)}<div class="sub-line">${payBadge(o.paymentStatus)} ${o.paymentVerified ? '' : '<span class="badge grey">Demo</span>'}</div></td>
+        <td>${orderBadge(o.status)}</td></tr>`).join('') || `<tr><td colspan="7" class="empty">No orders ${f.date ? 'on ' + fmtDate(f.date + 'T04:00:00Z') : 'yet'}</td></tr>`}
+      </tbody></table></div>
+      <div class="pager"><span class="info">Showing ${d.total ? (d.page - 1) * d.pageSize + 1 : 0} to ${Math.min(d.total, d.page * d.pageSize)} of ${d.total} orders</span>
+        ${pages > 1 ? `<button ${d.page <= 1 ? 'disabled' : ''} onclick="ordersFilter.page--;render()">‹</button>${pageNums(d.page, pages).map((n) => n === '…' ? '<span class="muted">…</span>' : `<button class="${n === d.page ? 'on' : ''}" onclick="ordersFilter.page=${n};render()">${n}</button>`).join('')}<button ${d.page >= pages ? 'disabled' : ''} onclick="ordersFilter.page++;render()">›</button>` : ''}</div>
+    </div>
+  </div>
+  ${cur ? panelShell('orders', orderPanel(cur)) : ''}</div>`;
+}
+const pageNums = (p, n) => { const s = new Set([1, n, p - 1, p, p + 1].filter((x) => x >= 1 && x <= n)); const a = [...s].sort((x, y) => x - y), out = []; a.forEach((x, i) => { if (i && x - a[i - 1] > 1) out.push('…'); out.push(x); }); return out; };
+function orderPanel(o) {
+  return `<div class="card-h"><h3>Order Details</h3><button class="close-x" onclick="closePanel('orders')">${icon('x', 18)}</button></div>
+  <div class="panel-sec" style="border-top:none;padding-top:2px">${orderBadge(o.status)}
+    <div class="big-id" style="margin:8px 0 6px">${o.id}</div>
+    <div style="display:flex;gap:16px;color:var(--ink-2);flex-wrap:wrap"><span style="display:flex;gap:6px;align-items:center">${icon('kiosk', 16)} ${esc(o.kioskName)}</span><span style="display:flex;gap:6px;align-items:center">${icon('calendar', 16)} ${fmtDT(o.createdAt)}</span></div></div>
+  <div class="panel-sec"><h4>Product</h4><div style="display:flex;gap:16px">${o.layout ? layoutPreview(o.layout, '#F3EEE2', null, 70) : ''}
+    <dl class="kv" style="flex:1"><dt>Product</dt><dd>${esc(o.productName)}</dd><dt>Size</dt><dd>${esc(o.size)}</dd><dt>Template</dt><dd>${esc(o.templateName || '—')}</dd><dt>Quantity</dt><dd>${o.qty}</dd><dt>Unit Price</dt><dd>${rm0(o.unitPrice)}</dd><dt>Total</dt><dd>${rm0(o.total)}</dd></dl></div></div>
+  <div class="panel-sec"><h4>Payment</h4><dl class="kv"><dt>Method</dt><dd>${o.payMethod === 'card' ? 'Debit / Credit Card' : 'DuitNow QR'}</dd><dt>Reference</dt><dd>${esc(o.paymentRef || '—')}</dd><dt>Amount</dt><dd>${rm0(o.total)}</dd><dt>Status</dt><dd>${payBadge(o.paymentStatus)}</dd><dt>Paid at</dt><dd>${fmtDT(o.paidAt)}</dd></dl>
+    ${o.paymentVerified ? '' : `<div class="note blue" style="margin-top:12px">${icon('info', 16)}<div>Demo payment — the kiosk simulated this payment. Real DuitNow/card confirmation comes in Phase 2.</div></div>`}</div>
+  <div class="panel-sec"><h4>Print</h4><dl class="kv"><dt>Print Status</dt><dd>${orderBadge(o.status)}</dd><dt>Location</dt><dd>${esc(o.location)}</dd><dt>Copies</dt><dd>${o.qty}</dd><dt>Completed</dt><dd>${fmtDT(o.completedAt)}</dd></dl>
+    ${o.note ? `<div class="hint" style="margin-top:8px">Note: ${esc(o.note)}</div>` : ''}</div>
+  ${isAdmin() && o.status !== 'completed' ? `<div class="panel-foot">${o.status !== 'cancelled' ? `<button class="btn" onclick="setOrderStatus('${o.id}','cancelled')">Mark Cancelled</button>` : ''}<button class="btn primary" onclick="setOrderStatus('${o.id}','completed')">Mark Completed</button></div>` : ''}`;
+}
+function setOrderStatus(id, status) {
+  confirmBox(status === 'completed' ? 'Mark as completed?' : 'Mark as cancelled?', 'This is recorded in the audit log.', 'Confirm', async () => { await api('PATCH', '/api/admin/orders/' + id, { status }); toast('Order updated'); render(); });
+}
+async function exportOrders() {
+  const f = ordersFilter;
+  const qs = new URLSearchParams({ q: f.q, status: f.status, kiosk: f.kiosk, date: f.date || 'all' });
+  try {
+    const r = await fetch(API + '/api/admin/orders.csv?' + qs, { headers: { Authorization: 'Bearer ' + localStorage.getItem(TOKEN_KEY) } });
+    if (!r.ok) throw new Error('Export failed');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(await r.blob()); a.download = `crazy-moment-orders-${f.date || 'all'}.csv`; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  } catch (e) { toast(e.message, true); }
+}
+
+// =====================================================================
+//  SETTINGS
+// =====================================================================
+let setCache = null;
+async function pageSettings() {
+  const [s, users, auditLog] = await Promise.all([api('GET', '/api/admin/settings'), isAdmin() ? api('GET', '/api/admin/users') : { users: [] }, isAdmin() ? api('GET', '/api/admin/audit') : { entries: [] }]);
+  setCache = s; STORAGE = s.storage;
+  const ro = isAdmin() ? '' : 'disabled';
+  const b = s.business, k = s.kiosk, p = s.printer, pay = s.payment;
+  const opt = (arr, v) => arr.map(([val, l]) => `<option value="${val}" ${String(v) === String(val) ? 'selected' : ''}>${l}</option>`).join('');
+  $('#content').innerHTML = `${storageBanner()}
+  <div class="set-grid">
+    <div class="card set-nav">${[['business', 'building', 'Business Profile'], ['kiosk', 'kiosk', 'Kiosk Settings'], ['printer', 'printer', 'Printer Settings'], ['payment', 'payments', 'Payment Settings'], ['users', 'users', 'Users & Roles'], ['categories', 'templates', 'Template Categories'], ['audit', 'list', 'Audit Log'], ['system', 'server', 'System']].map(([id, ic, l], i) => `<a href="javascript:void 0" class="${i === 0 ? 'on' : ''}" onclick="document.getElementById('sec-${id}').scrollIntoView({behavior:'smooth',block:'start'});document.querySelectorAll('.set-nav a').forEach(a=>a.classList.remove('on'));this.classList.add('on')">${icon(ic, 19)} ${l}</a>`).join('')}</div>
+    <div class="stack">
+      <div class="card" id="sec-business"><div class="card-h" style="padding-top:20px"><div><h3 style="text-transform:none;font-size:17px;letter-spacing:0">Business Profile</h3><div class="muted">Manage your business information and branding.</div></div>${isAdmin() ? `<div class="r"><button class="btn primary" onclick="saveSettings('business')">${icon('check', 16, 2.4)} Save Changes</button></div>` : ''}</div>
+        <div class="card-b" style="display:grid;grid-template-columns:auto 1fr 1fr;gap:18px;padding-top:14px">
+          <div><div class="flabel">Business Logo</div><div class="logo-box"><div class="brand"><div class="l1">CR<b>A</b>ZY</div><div class="l2">MOMENT</div><div class="l3">PHOTO PRINT STATION</div></div></div><div class="hint">Logo upload arrives in a later phase.</div></div>
+          <div><div class="field"><label>Business Name</label><input class="input" id="bName" value="${esc(b.name)}" ${ro}></div><div class="field"><label>Phone</label><input class="input" id="bPhone" value="${esc(b.phone)}" placeholder="+60 12-345 6789" ${ro}></div><div class="field"><label>Timezone</label><input class="input" value="(GMT+08:00) Kuala Lumpur" disabled></div></div>
+          <div><div class="field"><label>Email</label><input class="input" id="bEmail" value="${esc(b.email)}" placeholder="hello@crazymoment.my" ${ro}></div><div class="field"><label>Currency</label><input class="input" value="MYR - Malaysian Ringgit (RM)" disabled></div><div class="field"><label>Business Address</label><textarea class="input" id="bAddr" rows="3" ${ro}>${esc(b.address)}</textarea></div></div>
+        </div></div>
+      <div class="set-cards">
+        <div class="card" id="sec-kiosk"><div class="card-h" style="padding-top:18px"><div class="ic amber" style="width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--gold-bg);color:var(--gold-deep)">${icon('kiosk', 22)}</div><div><h3 style="text-transform:none;font-size:15px;letter-spacing:0">Kiosk Settings</h3><div class="muted" style="font-size:12px">Default kiosk behaviour.</div></div></div>
+          <div class="card-b" style="padding-top:12px">
+            <div class="srow"><label>Session Timeout</label><select class="select" id="kTimeout" ${ro}>${opt([[5, '5 minutes'], [8, '8 minutes'], [10, '10 minutes'], [12, '12 minutes'], [15, '15 minutes'], [20, '20 minutes']], k.sessionMinutes)}</select></div>
+            <div class="srow"><label>Extend adds</label><select class="select" id="kExtend" ${ro}>${opt([[3, '3 minutes'], [5, '5 minutes'], [10, '10 minutes']], k.extendMinutes)}</select></div>
+            <div class="srow"><label>Idle Screen After</label><select class="select" id="kIdle" ${ro}>${opt([[30, '30 seconds'], [60, '1 minute'], [120, '2 minutes'], [300, '5 minutes']], k.idleSeconds)}</select></div>
+            <div class="srow"><label>Language</label><select class="select" id="kLang" ${ro}>${opt([['en', 'English'], ['ms', 'Bahasa Melayu']], k.language)}</select></div>
+            <div class="srow"><label>Show Product Price</label><label class="toggle"><input type="checkbox" id="kPrice" ${k.showPrice ? 'checked' : ''} ${ro}><span></span></label></div>
+            ${isAdmin() ? `<button class="btn block" onclick="saveSettings('kiosk')">${icon('check', 16)} Save Changes</button>` : ''}</div></div>
+        <div class="card" id="sec-printer"><div class="card-h" style="padding-top:18px"><div style="width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--blue-bg);color:var(--blue)">${icon('printer', 22)}</div><div><h3 style="text-transform:none;font-size:15px;letter-spacing:0">Printer Settings</h3><div class="muted" style="font-size:12px">Default printer options.</div></div></div>
+          <div class="card-b" style="padding-top:12px">
+            <div class="srow"><label>Auto Cut</label><label class="toggle"><input type="checkbox" id="pCut" ${p.autoCut ? 'checked' : ''} ${ro}><span></span></label></div>
+            <div class="srow"><label>Default Print Quality</label><select class="select" id="pQual" ${ro}>${opt([['standard', 'Standard'], ['fine', 'Fine']], p.quality)}</select></div>
+            <div class="srow"><label>Border</label><select class="select" id="pBorder" ${ro}>${opt([['white', 'White Border'], ['none', 'Borderless']], p.border)}</select></div>
+            <div class="hint" style="margin-bottom:12px">Sent to kiosks now; applied by the printer agent in Phase 3.</div>
+            ${isAdmin() ? `<button class="btn block" onclick="saveSettings('printer')">${icon('check', 16)} Save Changes</button>` : ''}</div></div>
+        <div class="card" id="sec-payment"><div class="card-h" style="padding-top:18px"><div style="width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--red-bg);color:var(--red)">${icon('payments', 22)}</div><div><h3 style="text-transform:none;font-size:15px;letter-spacing:0">Payment Settings</h3><div class="muted" style="font-size:12px">Payment methods and timeout.</div></div></div>
+          <div class="card-b" style="padding-top:12px">
+            <div class="mtoggle"><div><b>DuitNow QR</b><span class="muted" style="font-size:12px">Customer scans QR to pay</span></div><label class="toggle"><input type="checkbox" id="payQR" ${pay.duitnow ? 'checked' : ''} ${ro}><span></span></label></div>
+            <div class="mtoggle"><div><b>Debit / Credit Card</b><span class="muted" style="font-size:12px">Pay using card terminal</span></div><label class="toggle"><input type="checkbox" id="payCard" ${pay.card ? 'checked' : ''} ${ro}><span></span></label></div>
+            <div class="srow"><label>Payment Timeout</label><select class="select" id="payTO" ${ro}>${opt([[2, '2 minutes'], [3, '3 minutes'], [5, '5 minutes'], [10, '10 minutes']], pay.timeoutMinutes)}</select></div>
+            ${isAdmin() ? `<button class="btn block" onclick="saveSettings('payment')">${icon('check', 16)} Save Changes</button>` : ''}</div></div>
+        <div class="card" id="sec-users"><div class="card-h" style="padding-top:18px"><div style="width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--purple-bg);color:var(--purple)">${icon('users', 22)}</div><div><h3 style="text-transform:none;font-size:15px;letter-spacing:0">Users & Roles</h3><div class="muted" style="font-size:12px">Admin users and roles.</div></div></div>
+          <div class="card-b" style="padding-top:8px">
+            <table class="tbl compact"><thead><tr><th>Role</th><th>Can do</th></tr></thead><tbody>
+              <tr style="cursor:default"><td><b>Super Admin</b></td><td class="muted">Everything, including prices, templates and settings</td></tr>
+              <tr style="cursor:default"><td><b>Operator</b></td><td class="muted">View dashboard, orders and kiosks</td></tr></tbody></table>
+            ${isAdmin() ? `<div style="margin:12px 0 6px;font-weight:700;font-size:12px">USERS (${users.users.length})</div>${users.users.map((u) => `<div style="display:flex;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line-2)"><div class="avatar" style="width:30px;height:30px;font-size:12px;background:${u.role === 'superadmin' ? 'var(--purple)' : 'var(--blue)'}">${esc(u.name[0] || '?').toUpperCase()}</div><div style="flex:1;min-width:0"><div style="font-weight:600;font-size:12.5px">${esc(u.name)} ${u.status === 'disabled' ? '<span class="badge grey">Disabled</span>' : ''}</div><div class="sub-line" style="overflow:hidden;text-overflow:ellipsis">${esc(u.email)} · ${u.role === 'superadmin' ? 'Super Admin' : 'Operator'}</div></div><button class="icon-btn" title="Edit" onclick="editUser('${u.id}')">${icon('edit', 14)}</button></div>`).join('')}
+            <button class="btn block" style="margin-top:12px" onclick="editUser()">${icon('plus', 16)} Add User</button>` : ''}</div></div>
+      </div>
+      <div class="card" id="sec-categories"><div class="card-h"><h3>Template Categories</h3></div><div class="card-b">
+        <div class="check-row" id="catList">${(s.templateCategories || []).map((c, i) => `<span class="chip-check">${esc(c)}${isAdmin() ? ` <button onclick="removeCat(${i})" title="Remove">${icon('x', 12, 2.4)}</button>` : ''}</span>`).join('')}</div>
+        ${isAdmin() ? `<div style="display:flex;gap:8px;margin-top:12px;max-width:360px"><input class="input" id="newCat" placeholder="New category, e.g. Wedding"><button class="btn" onclick="addCat()">Add</button></div>` : ''}</div></div>
+      ${isAdmin() ? `<div class="card" id="sec-audit"><div class="card-h"><h3>Audit Log</h3><div class="r muted" style="font-size:12px">Last 200 changes</div></div>
+        <div class="tbl-wrap" style="max-height:340px;overflow:auto"><table class="tbl compact"><thead><tr><th>When</th><th>Who</th><th>Action</th><th>Target</th><th>Detail</th></tr></thead><tbody>
+        ${auditLog.entries.map((a) => `<tr style="cursor:default"><td style="white-space:nowrap">${fmtDT(a.at)}</td><td>${esc(a.userName)}</td><td><code>${esc(a.action)}</code></td><td>${esc(a.target)}</td><td class="muted">${esc(a.detail)}</td></tr>`).join('') || '<tr><td colspan="5" class="empty">No changes yet</td></tr>'}</tbody></table></div></div>` : '<div id="sec-audit"></div>'}
+      <div class="card" id="sec-system"><div class="card-h"><h3>System</h3></div><div class="card-b"><dl class="kv" style="max-width:520px">
+        <dt>Storage</dt><dd>${s.storage === 'postgres' ? '<span class="badge green">PostgreSQL</span>' : '<span class="badge red">Temporary file</span>'}</dd>
+        <dt>Kiosk configuration version</dt><dd>v${s.configVersion}</dd><dt>Server</dt><dd>${esc(API)}</dd><dt>Dashboard version</dt><dd>1.1.0 · Phase 1</dd></dl></div></div>
+      <div class="foot-meta"><span>Version 1.1.0</span><span>Last Updated: ${fmtDT(new Date(s.updatedAt).toISOString())}</span></div>
+    </div>
+  </div>`;
+}
+async function saveSettings(part) {
+  const v = (id) => $('#' + id).value, c = (id) => $('#' + id).checked;
+  const body = {
+    business: { business: { name: v('bName'), email: v('bEmail'), phone: v('bPhone'), address: v('bAddr') } },
+    kiosk: { kiosk: { sessionMinutes: Number(v('kTimeout')), extendMinutes: Number(v('kExtend')), idleSeconds: Number(v('kIdle')), language: v('kLang'), showPrice: c('kPrice') } },
+    printer: { printer: { autoCut: c('pCut'), quality: v('pQual'), border: v('pBorder') } },
+    payment: { payment: { duitnow: c('payQR'), card: c('payCard'), timeoutMinutes: Number(v('payTO')) } },
+  }[part];
+  try { await api('PUT', '/api/admin/settings', body); toast('Settings saved' + (part === 'business' ? '' : ' — kiosks will update')); render(); } catch (e) { toast(e.message, true); }
+}
+async function addCat() { const n = $('#newCat').value.trim(); if (!n) return; try { await api('PUT', '/api/admin/settings', { templateCategories: [...setCache.templateCategories, n] }); render(); } catch (e) { toast(e.message, true); } }
+async function removeCat(i) { const l = [...setCache.templateCategories]; l.splice(i, 1); try { await api('PUT', '/api/admin/settings', { templateCategories: l }); render(); } catch (e) { toast(e.message, true); } }
+async function editUser(id) {
+  const u = id ? (await api('GET', '/api/admin/users')).users.find((x) => x.id === id) : { name: '', email: '', role: 'operator', status: 'active' };
+  modal(id ? 'Edit user' : 'Add user', `
+    <div class="field"><label>Name</label><input class="input" id="uNm" value="${esc(u.name)}"></div>
+    <div class="field"><label>Email</label><input class="input" id="uEm" type="email" value="${esc(u.email)}" ${id ? 'disabled' : ''}></div>
+    <div class="field"><label>Role</label><select class="select" id="uRl"><option value="operator" ${u.role === 'operator' ? 'selected' : ''}>Operator</option><option value="superadmin" ${u.role === 'superadmin' ? 'selected' : ''}>Super Admin</option></select></div>
+    <div class="field"><label>${id ? 'Reset password' : 'Temporary password'}</label><input class="input" id="uPw" type="text" placeholder="${id ? 'Leave blank to keep' : 'At least 8 characters'}"><div class="hint">The user must change it at first sign-in.</div></div>
+    ${id ? `<div class="field"><label>Status</label><div class="radio-row"><label><input type="radio" name="ust" value="active" ${u.status !== 'disabled' ? 'checked' : ''}> Active</label><label><input type="radio" name="ust" value="disabled" ${u.status === 'disabled' ? 'checked' : ''}> Disabled</label></div></div>` : ''}`,
+  [...(id && id !== ME.id ? [{ label: 'Delete', cls: 'danger', onClick: async () => { await api('DELETE', '/api/admin/users/' + id); toast('User deleted'); render(); } }] : []), { label: 'Cancel' }, { label: 'Save', cls: 'primary', onClick: async () => {
+    const body = { name: $('#uNm').value, role: $('#uRl').value, password: $('#uPw').value || undefined };
+    if (id) await api('PUT', '/api/admin/users/' + id, { ...body, status: document.querySelector('input[name=ust]:checked').value });
+    else await api('POST', '/api/admin/users', { ...body, email: $('#uEm').value });
+    toast('User saved'); render();
+  } }]);
+}
+
+// =====================================================================
+//  PHASE 2 / 3 placeholders
+// =====================================================================
+async function pagePrinter() {
+  const d = await api('GET', '/api/admin/kiosks');
+  $('#content').innerHTML = `<div class="stack">
+    <div class="note blue">${icon('info', 18)}<div><b>Coming in Phase 3.</b> A small printer agent on each kiosk will report media left, paper jams and errors from the DNP printer, and let you run Test Print and Restart from here. For now this page shows what each kiosk reports.</div></div>
+    <div class="card"><div class="card-h"><h3>Printer List</h3></div><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Kiosk</th><th>Location</th><th>Kiosk status</th><th>Printer</th><th>Media</th></tr></thead><tbody>
+    ${d.kiosks.map((k) => `<tr onclick="sel.kiosks='${k.id}';go('kiosks')"><td class="strong">${esc(k.name)}</td><td>${esc(k.location)}</td><td>${kState(k.state)}</td><td>${printerSt(k.printer)}</td><td>${k.printer && k.printer.mediaRemaining != null ? k.printer.mediaRemaining + ' prints' : '<span class="muted">—</span>'}</td></tr>`).join('')}
+    </tbody></table></div></div></div>`;
+}
+async function pagePayments() {
+  const d = await api('GET', `/api/admin/overview?date=${todayKey()}&range=today`);
+  const pm = d.payments.byMethod;
+  $('#content').innerHTML = `<div class="stack">
+    <div class="note blue">${icon('info', 18)}<div><b>Coming in Phase 2.</b> The kiosk will get real DuitNow QR and card terminal payments through a payment gateway. The gateway tells the server directly when a payment succeeds, so every payment here will be verified. Until then, payments are simulated on the kiosk and marked <span class="badge grey">Demo</span> in Orders.</div></div>
+    <div class="kpis">
+      <div class="card kpi"><div class="ic green">${icon('money', 24)}</div><div><div class="lbl">Collected today (demo)</div><div class="val">${rm(d.payments.total)}</div><div class="sub">${d.payments.successful} payments</div></div></div>
+      <div class="card kpi"><div class="ic red">${icon('qr', 24)}</div><div><div class="lbl">DuitNow QR</div><div class="val">${rm(pm.duitnow.amount)}</div><div class="sub">${pm.duitnow.count} payments</div></div></div>
+      <div class="card kpi"><div class="ic blue">${icon('card', 24)}</div><div><div class="lbl">Card</div><div class="val">${rm(pm.card.amount)}</div><div class="sub">${pm.card.count} payments</div></div></div>
+    </div>
+    <div><button class="btn" onclick="go('orders')">${icon('orders', 16)} See each payment in Orders</button></div></div>`;
+}
+
+// =====================================================================
+//  BOOT
+// =====================================================================
+async function boot() {
+  $('#yr').textContent = new Date().getFullYear();
+  if (!localStorage.getItem(TOKEN_KEY)) { $('#login').classList.remove('hidden'); $('#app').classList.add('hidden'); return; }
+  try {
+    const me = await api('GET', '/api/admin/me');
+    ME = me.user; STORAGE = me.storage; LAYOUTS = me.layouts;
+  } catch (e) { if (!ME) { $('#login').classList.remove('hidden'); } return; }
+  $('#login').classList.add('hidden'); $('#app').classList.remove('hidden');
+  $('#uName').textContent = ME.name; $('#uRole').textContent = ME.role === 'superadmin' ? 'Super Admin' : 'Operator';
+  $('#avatar').textContent = (ME.name[0] || 'A').toUpperCase();
+  route = (location.hash.slice(2) || 'dashboard').split('/')[0];
+  if (!PAGES.some((p) => p.id === route)) route = 'dashboard';
+  render();
+  if (ME.mustChange) changePassword(true);
+}
+boot();
+</script>
+</body>
+</html>
