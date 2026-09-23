@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crazy Moment · Kiosk Upload Test</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#141414;--gold:#F5B800;--gold-bg:#FFF6D6;--bg:#FBF8F1;--line:#E8E1D0;--grey:#6E6A60;--ok:#1E9E5A;--err:#D6453D}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif}
+  header{background:var(--ink);color:#fff;padding:16px 28px;display:flex;justify-content:space-between;align-items:center}
+  header .t{font-family:'Archivo Black';font-size:20px}
+  header small{color:#BDB6A5;font-weight:700;letter-spacing:.5px}
+  .wrap{max-width:1180px;margin:24px auto;padding:0 20px;display:grid;grid-template-columns:360px 1fr;gap:20px}
+  .card{background:#fff;border:1.5px solid var(--line);border-radius:18px;padding:22px}
+  h2{font-family:'Archivo Black';font-size:18px;margin:0 0 12px}
+  label{font-size:12px;font-weight:800;color:var(--grey);letter-spacing:.3px;display:block;margin:12px 0 5px;text-transform:uppercase}
+  select{width:100%;padding:11px;border-radius:10px;border:1.5px solid var(--line);font:600 14px Inter}
+  button{border:none;border-radius:12px;padding:13px 16px;font:800 14px Inter;cursor:pointer}
+  .gold{background:var(--gold);color:var(--ink);width:100%;margin-top:16px}
+  .dark{background:var(--ink);color:#fff}
+  .qr{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:14px;margin:14px 0;text-align:center;min-height:240px;display:flex;align-items:center;justify-content:center}
+  .qr img{width:220px;height:220px}
+  .url{font-size:11px;word-break:break-all;color:var(--grey)}
+  .status{display:flex;align-items:center;gap:8px;font-weight:800;font-size:14px;margin:6px 0}
+  .dot{width:10px;height:10px;border-radius:50%;background:#C9C1AE}
+  .dot.waiting{background:#C9C1AE;animation:pulse 1.2s infinite}
+  .dot.connected,.dot.uploading{background:var(--gold)}
+  .dot.complete{background:var(--ok)}
+  .dot.expired{background:var(--err)}
+  @keyframes pulse{50%{opacity:.35}}
+  .timer{font-family:'Archivo Black';font-size:28px}
+  .row{display:flex;gap:8px;margin-top:12px}.row button{flex:1}
+  .slots{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:10px}
+  .slot{aspect-ratio:1;border-radius:12px;background:#F6F2E7;border:2px dashed var(--line);display:flex;align-items:center;justify-content:center;color:#B3AC9C;font-weight:800;overflow:hidden;position:relative}
+  .slot img{width:100%;height:100%;object-fit:cover}
+  .slot .n{position:absolute;top:6px;left:6px;background:rgba(0,0,0,.6);color:#fff;border-radius:50%;width:22px;height:22px;font-size:11px;display:flex;align-items:center;justify-content:center}
+  .track{height:10px;background:#EEE9DD;border-radius:6px;overflow:hidden;margin:10px 0}
+  .fill{height:100%;background:var(--gold);width:0;transition:width .3s}
+  .log{font:12px ui-monospace,monospace;background:#141414;color:#D8D2C2;border-radius:12px;padding:12px;height:150px;overflow:auto;margin-top:16px;white-space:pre-wrap}
+  .banner{background:var(--gold-bg);border:1.5px solid var(--gold);border-radius:12px;padding:10px 14px;font-size:13px;margin-bottom:12px}
+  @media(max-width:860px){.wrap{grid-template-columns:1fr}.slots{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<header><div><div class="t">CRAZY MOMENT</div><small>KIOSK UPLOAD TEST · STEP 2</small></div><small id="srv"></small></header>
+<div class="wrap">
+  <div class="card">
+    <h2>Scan &amp; Upload</h2>
+    <label>Kiosk location</label>
+    <select id="loc"><option>Bandar Hilir</option><option>Jonker Walk</option><option>Pantai Klebang</option></select>
+    <label>Product</label>
+    <select id="prod"></select>
+    <button class="gold" id="startBtn">Start new session</button>
+    <div class="qr" id="qr"><span style="color:#B3AC9C;font-weight:700">QR appears here</span></div>
+    <div class="url" id="url"></div>
+    <div class="status"><span class="dot" id="dot"></span><span id="stat">No session</span></div>
+    <div class="timer" id="timer">--:--</div>
+    <div class="row"><button class="dark" id="extBtn" disabled>+5 min</button><button class="dark" id="endBtn" disabled>Finish &amp; wipe</button></div>
+  </div>
+  <div class="card">
+    <div class="banner">Open this page on a laptop, scan the QR with a real phone, upload photos — they appear below live. This is exactly what the kiosk software does in Step 2.</div>
+    <h2>Received photos <span id="count" style="float:right">0 / 0</span></h2>
+    <div class="track"><div class="fill" id="fill"></div></div>
+    <div class="slots" id="slots"></div>
+    <div class="log" id="log"></div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="/kiosk-client.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const log = (m) => { $('log').textContent += `[${new Date().toLocaleTimeString()}] ${m}\n`; $('log').scrollTop = 1e9; };
+$('srv').textContent = location.host;
+
+let required = 0, deadline = 0, tInt = null;
+const up = new CrazyMomentUpload({
+  server: location.origin,
+  onStatus: (s) => {
+    $('dot').className = 'dot ' + s.status;
+    $('stat').textContent = { waiting:'Waiting for phone…', connected:'Phone connected', uploading:'Receiving photos…', complete:'All photos received ✓', expired:'Session expired' }[s.status];
+    $('count').textContent = `${s.received} / ${s.required}`;
+    $('fill').style.width = (s.received / s.required * 100) + '%';
+    deadline = Date.now() + s.secondsLeft * 1000;
+  },
+  onPhoto: (p) => {
+    const slot = $('slots').children[p.index - 1];
+    if (slot) slot.innerHTML = `<img src="${p.objectUrl}"><span class="n">${p.index}</span>`;
+    log(`Photo ${p.index} received (${Math.round(p.blob.size/1024)} KB)`);
+  },
+  onComplete: (photos) => log(`COMPLETE — ${photos.length} photos ready → kiosk moves to Edit & Preview`),
+  onExpired: () => { log('Session expired'); $('dot').className = 'dot expired'; $('stat').textContent = 'Session expired'; },
+  onError: (e) => log('Error: ' + e.message),
+});
+
+fetch('/api/products').then(r => r.json()).then(p => {
+  $('prod').innerHTML = Object.entries(p).map(([k, v]) => `<option value="${k}">${v.name} — ${v.required} photo${v.required>1?'s':''}</option>`).join('');
+});
+
+$('startBtn').onclick = async () => {
+  await up.finish();
+  up.location = $('loc').value;
+  const s = await up.start($('prod').value);
+  required = s.required;
+  if (window.qrcode) {
+    const q = qrcode(0, 'M'); q.addData(s.uploadUrl); q.make();
+    $('qr').innerHTML = q.createSvgTag({ cellSize: 6, margin: 2, scalable: true });
+    $('qr').firstChild.style.cssText = 'width:220px;height:220px';
+  } else {
+    $('qr').innerHTML = '<span style="color:#B3AC9C;font-weight:700">QR library unavailable — open the link below on your phone</span>';
+  }
+  $('url').innerHTML = `<a href="${s.uploadUrl}" target="_blank">${s.uploadUrl}</a>`;
+  $('slots').innerHTML = Array.from({ length: required }, (_, i) => `<div class="slot">${i + 1}</div>`).join('');
+  $('extBtn').disabled = $('endBtn').disabled = false;
+  log(`Session ${s.id} created · ${s.productName} · ${s.location}`);
+  clearInterval(tInt);
+  tInt = setInterval(() => {
+    const x = Math.max(0, Math.round((deadline - Date.now()) / 1000));
+    $('timer').textContent = `${String(Math.floor(x/60)).padStart(2,'0')}:${String(x%60).padStart(2,'0')}`;
+  }, 500);
+};
+$('extBtn').onclick = async () => { await up.extend(); log('Session extended +5 min'); };
+$('endBtn').onclick = async () => {
+  await up.finish(); clearInterval(tInt);
+  $('qr').innerHTML = '<span style="color:#B3AC9C;font-weight:700">QR appears here</span>'; $('url').textContent = '';
+  $('slots').innerHTML = ''; $('timer').textContent = '--:--'; $('stat').textContent = 'No session'; $('dot').className = 'dot';
+  $('extBtn').disabled = $('endBtn').disabled = true; log('Session finished — photos wiped from server');
+};
+</script>
+</body>
+</html>

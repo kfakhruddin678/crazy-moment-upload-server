@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#141414">
+<title>Crazy Moment · Upload Photos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#141414; --gold:#F5B800; --gold-deep:#C99700; --gold-bg:#FFF6D6;
+    --bg:#FBF8F1; --panel:#FFFFFF; --line:#E8E1D0; --grey:#6E6A60; --grey-light:#B3AC9C;
+    --ok:#1E9E5A; --err:#D6453D;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,sans-serif}
+  .disp{font-family:'Archivo Black',Inter,sans-serif;letter-spacing:.3px}
+  .app{max-width:480px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column}
+
+  header{background:var(--ink);color:#fff;padding:14px 18px calc(14px) ;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5}
+  .brand{display:flex;align-items:center;gap:10px}
+  .logo{width:34px;height:34px;border-radius:9px;background:var(--gold);color:var(--ink);display:flex;align-items:center;justify-content:center;font-family:'Archivo Black';font-size:15px}
+  .brand .t1{font-family:'Archivo Black';font-size:15px;line-height:1}
+  .brand .t2{font-size:10.5px;color:#BDB6A5;letter-spacing:.6px;margin-top:3px}
+  .hdr-right{display:flex;align-items:center;gap:8px}
+  .timer{background:#2A2A2A;border-radius:20px;padding:6px 11px;font-size:12px;font-weight:700;display:flex;gap:6px;align-items:center}
+  .timer b{font-family:'Archivo Black';font-size:13px;color:var(--gold)}
+  .timer.low b{color:#FF7A6E}
+  .lang{background:none;border:1.5px solid #444;color:#fff;border-radius:20px;padding:5px 9px;font-weight:800;font-size:11px}
+
+  .steps{display:flex;gap:6px;padding:14px 18px 0}
+  .steps span{flex:1;height:5px;border-radius:4px;background:var(--line)}
+  .steps span.on{background:var(--gold)}
+
+  main{flex:1;padding:18px}
+  .card{background:var(--panel);border:1.5px solid var(--line);border-radius:18px;padding:18px}
+  h1{font-family:'Archivo Black';font-size:24px;margin:4px 0 6px;line-height:1.15}
+  .sub{color:var(--grey);font-size:14px;line-height:1.45;margin:0 0 16px}
+  .pill{display:inline-flex;align-items:center;gap:6px;background:#E9F7EF;color:var(--ok);font-weight:800;font-size:12px;padding:6px 11px;border-radius:20px}
+  .pill .dot{width:8px;height:8px;border-radius:50%;background:var(--ok)}
+
+  .info{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+  .info div{background:var(--bg);border-radius:12px;padding:11px 12px}
+  .info small{display:block;font-size:11px;color:var(--grey);font-weight:700;letter-spacing:.3px;text-transform:uppercase}
+  .info b{font-size:15px}
+  .need{background:var(--gold-bg);border:1.5px solid var(--gold);border-radius:14px;padding:14px;display:flex;gap:12px;align-items:center}
+  .need .n{font-family:'Archivo Black';font-size:34px;line-height:1}
+  .need p{margin:0;font-size:13.5px;line-height:1.4}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+  .thumb{position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#EEE9DD}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .thumb .no{position:absolute;top:6px;left:6px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;font-weight:800;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+  .thumb .x{position:absolute;top:5px;right:5px;width:26px;height:26px;border-radius:50%;border:none;background:rgba(0,0,0,.65);color:#fff;font-size:15px;font-weight:800}
+  .thumb.add{border:2px dashed var(--grey-light);background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--grey);font-weight:800;font-size:12px;gap:4px}
+  .thumb.add .plus{font-size:26px;line-height:1}
+  .thumb .state{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(20,20,20,.45);color:#fff;font-size:22px;font-weight:800}
+  .thumb .state.done{background:rgba(30,158,90,.55)}
+  .thumb .state.fail{background:rgba(214,69,61,.7);font-size:12px;padding:6px;text-align:center}
+
+  .counter{display:flex;justify-content:space-between;align-items:baseline;margin-top:4px}
+  .counter .c{font-family:'Archivo Black';font-size:22px}
+  .warn{margin-top:12px;background:#FDECEA;color:#A5302A;border-radius:12px;padding:10px 12px;font-size:13px;font-weight:600;display:none}
+  .warn.show{display:block}
+
+  .track{height:10px;background:#EEE9DD;border-radius:6px;overflow:hidden;margin:14px 0 4px}
+  .fill{height:100%;width:0;background:var(--gold);border-radius:6px;transition:width .25s}
+
+  .tips{margin-top:14px;font-size:12.5px;color:var(--grey);line-height:1.5}
+  .tips li{margin-bottom:3px}
+
+  footer{position:sticky;bottom:0;padding:12px 18px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(to top,var(--bg) 75%,rgba(251,248,241,0))}
+  .cta{width:100%;border:none;border-radius:14px;padding:17px;font-size:16px;font-weight:800;background:var(--gold);color:var(--ink);font-family:Inter}
+  .cta:disabled{background:#E3DCCB;color:#9A937F}
+  .cta.dark{background:var(--ink);color:#fff}
+  .ghost{width:100%;border:none;background:none;color:var(--grey);font-weight:700;font-size:14px;padding:12px 0 2px}
+
+  .center{text-align:center}
+  .big-icon{width:84px;height:84px;border-radius:50%;margin:10px auto 16px;display:flex;align-items:center;justify-content:center;font-size:40px}
+  .big-icon.ok{background:#E9F7EF;color:var(--ok)}
+  .big-icon.err{background:#FDECEA;color:var(--err)}
+  .big-icon.wait{background:var(--gold-bg)}
+  .spinner{width:34px;height:34px;border:4px solid var(--line);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">
+      <div class="logo">CM</div>
+      <div><div class="t1">CRAZY MOMENT</div><div class="t2">PHOTO PRINT STATION</div></div>
+    </div>
+    <div class="hdr-right">
+      <div class="timer hidden" id="timer">⏱ <b id="timerVal">--:--</b></div>
+      <button class="lang" id="langBtn">BM</button>
+    </div>
+  </header>
+  <div class="steps" id="steps"><span></span><span></span><span></span><span></span></div>
+  <main id="main"><div class="card center" style="padding:40px 18px"><div class="spinner"></div><p class="sub" style="margin-top:16px" data-t="connecting"></p></div></main>
+  <footer id="footer"></footer>
+</div>
+<input type="file" id="picker" accept="image/*" multiple hidden>
+
+<script>
+// ================= i18n =================
+const T = {
+  en: {
+    connecting:'Connecting to kiosk…',
+    connected:'Connected to kiosk',
+    welcome:'Upload your photos',
+    welcomeSub:'Pick photos from your gallery. They go straight to the kiosk screen — no app, no sign-up.',
+    location:'Kiosk', product:'Product',
+    needTxt:(n,p)=>`Select <b>exactly ${n} photo${n>1?'s':''}</b> for your ${p}.`,
+    selectBtn:'Select Photos',
+    pickTitle:'Your photos', pickSub:'Tap ✕ to remove a photo. Tap + to add more.',
+    add:'Add',
+    tooMany:(n)=>`Too many photos — please keep only ${n}.`,
+    uploadBtn:(n)=>`Upload ${n} Photo${n>1?'s':''} to Kiosk`,
+    needMore:(n)=>`Select ${n} more`,
+    upTitle:'Sending to kiosk…', upSub:'Keep this page open until all photos are sent.',
+    retry:'Retry failed photos',
+    doneTitle:'All done!', doneSub:'Your photos are on the kiosk. Head back to the screen to edit, pay and print.',
+    doneHint:'You can close this page now.',
+    expTitle:'Session expired', expSub:'For your privacy, this upload link has ended. Please start a new session at the kiosk and scan the new QR code.',
+    notFound:'Session not found', notFoundSub:'This QR code is no longer valid. Please scan the QR code currently shown on the kiosk.',
+    already:'Upload already complete', alreadySub:'This kiosk already has all the photos it needs. Continue on the kiosk screen.',
+    wake:'Waking up the server… this can take up to a minute the first time.',
+    tips:['Portrait or landscape both work — you can adjust on the kiosk.','Large photos are resized automatically for a faster upload.','Photos are deleted automatically after your session.'],
+    netErr:'Network problem. Check your connection and try again.',
+  },
+  ms: {
+    connecting:'Menyambung ke kiosk…',
+    connected:'Bersambung ke kiosk',
+    welcome:'Muat naik gambar anda',
+    welcomeSub:'Pilih gambar dari galeri. Gambar terus dihantar ke skrin kiosk — tiada aplikasi, tiada pendaftaran.',
+    location:'Kiosk', product:'Produk',
+    needTxt:(n,p)=>`Pilih <b>tepat ${n} keping gambar</b> untuk ${p} anda.`,
+    selectBtn:'Pilih Gambar',
+    pickTitle:'Gambar anda', pickSub:'Tekan ✕ untuk buang. Tekan + untuk tambah.',
+    add:'Tambah',
+    tooMany:(n)=>`Terlalu banyak gambar — kekalkan ${n} sahaja.`,
+    uploadBtn:(n)=>`Hantar ${n} Gambar ke Kiosk`,
+    needMore:(n)=>`Pilih ${n} lagi`,
+    upTitle:'Menghantar ke kiosk…', upSub:'Jangan tutup halaman ini sehingga semua gambar dihantar.',
+    retry:'Cuba semula gambar yang gagal',
+    doneTitle:'Siap!', doneSub:'Gambar anda sudah berada di kiosk. Kembali ke skrin untuk edit, bayar dan cetak.',
+    doneHint:'Anda boleh tutup halaman ini sekarang.',
+    expTitle:'Sesi tamat', expSub:'Demi privasi anda, pautan ini telah tamat. Sila mulakan sesi baharu di kiosk dan imbas kod QR yang baharu.',
+    notFound:'Sesi tidak dijumpai', notFoundSub:'Kod QR ini tidak lagi sah. Sila imbas kod QR yang sedang dipaparkan di kiosk.',
+    already:'Muat naik sudah lengkap', alreadySub:'Kiosk sudah menerima semua gambar. Teruskan di skrin kiosk.',
+    wake:'Menghidupkan server… kali pertama boleh ambil masa sehingga seminit.',
+    tips:['Potret atau landskap — boleh dilaraskan di kiosk.','Gambar besar dikecilkan secara automatik supaya lebih cepat.','Gambar dipadam secara automatik selepas sesi tamat.'],
+    netErr:'Masalah rangkaian. Semak sambungan anda dan cuba lagi.',
+  }
+};
+let lang = (navigator.language||'').toLowerCase().startsWith('ms') ? 'ms' : 'en';
+try { lang = localStorage.getItem('cm_lang') || lang; } catch(e){}
+const t = (k, ...a) => { const v = T[lang][k]; return typeof v === 'function' ? v(...a) : v; };
+
+// ================= State =================
+const SESSION_ID = location.pathname.split('/').filter(Boolean).pop();
+const API = `/api/sessions/${SESSION_ID}`;
+let session = null;
+let screen = 'loading';            // loading | welcome | pick | uploading | done | expired | notfound | already
+let picked = [];                   // {file, url, status:'queued'|'sending'|'done'|'fail'}
+let deadline = 0;
+let timerInt = null;
+
+const $ = (id) => document.getElementById(id);
+const main = $('main'), footer = $('footer');
+
+$('langBtn').onclick = () => {
+  lang = lang === 'en' ? 'ms' : 'en';
+  try { localStorage.setItem('cm_lang', lang); } catch(e){}
+  render();
+};
+
+// ================= Networking =================
+async function api(path = '', opts = {}) {
+  const r = await fetch(API + path, opts);
+  let body = null; try { body = await r.json(); } catch(e){}
+  return { ok: r.ok, status: r.status, body };
+}
+
+async function boot() {
+  // Render free tier may be asleep: show a friendly note if it takes long
+  const slow = setTimeout(() => { const p = main.querySelector('.sub'); if (p) p.textContent = t('wake'); }, 4000);
+  try {
+    const r = await api('');
+    clearTimeout(slow);
+    if (r.status === 404) return go('notfound');
+    session = r.body;
+    if (session.status === 'expired') return go('expired');
+    if (session.status === 'complete') return go('already');
+    await api('/connect', { method: 'POST' });
+    setDeadline(session.secondsLeft);
+    go('welcome');
+  } catch (e) {
+    clearTimeout(slow);
+    main.innerHTML = `<div class="card center"><div class="big-icon err">!</div><h1>${t('netErr')}</h1></div>`;
+    footer.innerHTML = `<button class="cta" onclick="location.reload()">↻</button>`;
+  }
+}
+
+function setDeadline(secs) {
+  deadline = Date.now() + secs * 1000;
+  $('timer').classList.remove('hidden');
+  clearInterval(timerInt);
+  timerInt = setInterval(tick, 1000); tick();
+}
+function tick() {
+  const s = Math.max(0, Math.round((deadline - Date.now()) / 1000));
+  $('timerVal').textContent = `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+  $('timer').classList.toggle('low', s <= 60);
+  if (s === 0 && !['done','expired','uploading'].includes(screen)) { clearInterval(timerInt); go('expired'); }
+}
+// Re-sync with server every 15s (the kiosk may have pressed "Extend Session")
+setInterval(async () => {
+  if (!session || ['done','expired','notfound'].includes(screen)) return;
+  try {
+    const r = await api('');
+    if (r.status === 404) return go('expired');
+    if (r.ok) { session = r.body; deadline = Date.now() + session.secondsLeft * 1000; }
+  } catch(e){}
+}, 15000);
+
+// ================= Image resize (faster upload over mobile data) =================
+async function shrink(file, maxSide = 2400, quality = 0.9) {
+  try {
+    const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+    const scale = Math.min(1, maxSide / Math.max(bmp.width, bmp.height));
+    if (scale === 1 && file.type === 'image/jpeg' && file.size < 4e6) { bmp.close?.(); return file; }
+    const c = document.createElement('canvas');
+    c.width = Math.round(bmp.width * scale); c.height = Math.round(bmp.height * scale);
+    c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+    bmp.close?.();
+    const blob = await new Promise(res => c.toBlob(res, 'image/jpeg', quality));
+    if (!blob) return file;
+    return new File([blob], (file.name || 'photo').replace(/\.\w+$/, '') + '.jpg', { type: 'image/jpeg' });
+  } catch (e) {
+    return file; // browser can't decode (e.g. HEIC on some Androids) → send original, server accepts HEIC
+  }
+}
+
+function sendOne(file, onProgress) {
+  return new Promise((resolve, reject) => {
+    const x = new XMLHttpRequest();
+    x.open('POST', API + '/photos');
+    const type = file.type || (/\.(heic|heif)$/i.test(file.name) ? 'image/heic' : /\.png$/i.test(file.name) ? 'image/png' : 'image/jpeg');
+    x.setRequestHeader('Content-Type', type);
+    x.setRequestHeader('X-File-Name', encodeURIComponent(file.name || 'photo.jpg'));
+    x.upload.onprogress = (e) => e.lengthComputable && onProgress(e.loaded / e.total);
+    x.onload = () => {
+      let b = null; try { b = JSON.parse(x.responseText); } catch(e){}
+      x.status < 300 ? resolve(b) : reject(Object.assign(new Error(b?.error || 'Upload failed'), { status: x.status }));
+    };
+    x.onerror = () => reject(new Error(t('netErr')));
+    x.send(file);
+  });
+}
+
+// ================= Flow =================
+function remaining() { return session.required - session.received; }
+
+function openPicker() { $('picker').value = ''; $('picker').click(); }
+$('picker').onchange = (e) => {
+  const files = [...e.target.files].filter(f => f.type.startsWith('image/') || /\.(heic|heif)$/i.test(f.name));
+  files.forEach(f => picked.push({ file: f, url: URL.createObjectURL(f), status: 'queued' }));
+  if (picked.length) go('pick');
+};
+function removePick(i) { URL.revokeObjectURL(picked[i].url); picked.splice(i, 1); picked.length ? render() : go('welcome'); }
+
+async function startUpload() {
+  go('uploading');
+  const queue = picked.filter(p => p.status !== 'done');
+  const total = picked.length;
+  for (const p of queue) {
+    p.status = 'sending'; render();
+    try {
+      const small = await shrink(p.file);
+      const res = await sendOne(small, (f) => { p.progress = f; updateBar(total); });
+      session = res; p.status = 'done';
+    } catch (e) {
+      p.status = 'fail'; p.error = e.message;
+      if (e.status === 410) return go('expired');
+      if (e.status === 409) return go('already');
+    }
+    render();
+  }
+  if (picked.every(p => p.status === 'done')) setTimeout(() => go('done'), 500);
+}
+async function retryFailed() { picked.forEach(p => { if (p.status === 'fail') p.status = 'queued'; }); startUpload(); }
+
+function updateBar(total) {
+  const done = picked.filter(p => p.status === 'done').length;
+  const cur = picked.find(p => p.status === 'sending');
+  const frac = (done + (cur?.progress || 0)) / total;
+  const fill = document.querySelector('.fill'); if (fill) fill.style.width = (frac * 100).toFixed(1) + '%';
+  const c = document.querySelector('.counter .c'); if (c) c.textContent = `${done} / ${total}`;
+}
+
+function go(s) { screen = s; if (['done','expired','notfound','already'].includes(s)) { clearInterval(timerInt); if (s !== 'done') $('timer').classList.add('hidden'); } render(); window.scrollTo(0,0); }
+
+// ================= Render =================
+function steps(n) { [...$('steps').children].forEach((el, i) => el.classList.toggle('on', i < n)); }
+
+function render() {
+  $('langBtn').textContent = lang === 'en' ? 'BM' : 'EN';
+  document.documentElement.lang = lang;
+  const tipsHtml = `<ul class="tips">${T[lang].tips.map(x => `<li>${x}</li>`).join('')}</ul>`;
+
+  if (screen === 'loading') { main.querySelectorAll('[data-t]').forEach(el => el.textContent = t(el.dataset.t)); return; }
+
+  if (screen === 'welcome') {
+    steps(1);
+    const n = remaining();
+    main.innerHTML = `
+      <span class="pill"><span class="dot"></span>${t('connected')}</span>
+      <h1>${t('welcome')}</h1>
+      <p class="sub">${t('welcomeSub')}</p>
+      <div class="card">
+        <div class="need"><div class="n">${n}</div><p>${t('needTxt', n, session.productName)}</p></div>
+        <div class="info">
+          <div><small>${t('location')}</small><b>${esc(session.location)}</b></div>
+          <div><small>${t('product')}</small><b>${esc(session.productName)}</b></div>
+        </div>
+        ${tipsHtml}
+      </div>`;
+    footer.innerHTML = `<button class="cta" onclick="openPicker()">📷 ${t('selectBtn')}</button>`;
+  }
+
+  else if (screen === 'pick') {
+    steps(2);
+    const n = remaining(), k = picked.length, over = k > n;
+    main.innerHTML = `
+      <div class="counter"><h1 style="margin:0">${t('pickTitle')}</h1><span class="c">${k} / ${n}</span></div>
+      <p class="sub" style="margin-top:4px">${t('pickSub')}</p>
+      <div class="grid">
+        ${picked.map((p, i) => `<div class="thumb"><img src="${p.url}" alt=""><span class="no">${i+1}</span><button class="x" onclick="removePick(${i})" aria-label="Remove">✕</button></div>`).join('')}
+        ${k < n ? `<button class="thumb add" onclick="openPicker()"><span class="plus">+</span>${t('add')}</button>` : ''}
+      </div>
+      <div class="warn ${over ? 'show' : ''}">${t('tooMany', n)}</div>`;
+    const ready = k === n;
+    footer.innerHTML = `<button class="cta" ${ready ? '' : 'disabled'} onclick="startUpload()">${ready ? '⬆ ' + t('uploadBtn', n) : t('needMore', Math.max(0, n - k)) }</button>`;
+  }
+
+  else if (screen === 'uploading') {
+    steps(3);
+    const total = picked.length, done = picked.filter(p => p.status === 'done').length;
+    const failed = picked.some(p => p.status === 'fail') && !picked.some(p => p.status === 'sending' || p.status === 'queued');
+    main.innerHTML = `
+      <div class="counter"><h1 style="margin:0">${t('upTitle')}</h1><span class="c">${done} / ${total}</span></div>
+      <div class="track"><div class="fill" style="width:${done/total*100}%"></div></div>
+      <p class="sub">${t('upSub')}</p>
+      <div class="grid">
+        ${picked.map((p, i) => `<div class="thumb"><img src="${p.url}" alt=""><span class="no">${i+1}</span>
+          ${p.status === 'done' ? '<div class="state done">✓</div>'
+            : p.status === 'sending' ? '<div class="state"><div class="spinner" style="border-color:rgba(255,255,255,.35);border-top-color:#fff"></div></div>'
+            : p.status === 'fail' ? `<div class="state fail">${esc(p.error || 'Failed')}</div>`
+            : '<div class="state" style="background:rgba(255,255,255,.5)"></div>'}
+        </div>`).join('')}
+      </div>`;
+    footer.innerHTML = failed ? `<button class="cta" onclick="retryFailed()">↻ ${t('retry')}</button>` : '';
+  }
+
+  else if (screen === 'done') {
+    steps(4);
+    main.innerHTML = `
+      <div class="card center">
+        <div class="big-icon ok">✓</div>
+        <h1>${t('doneTitle')}</h1>
+        <p class="sub">${t('doneSub')}</p>
+        <div class="grid">${picked.map(p => `<div class="thumb"><img src="${p.url}" alt=""></div>`).join('')}</div>
+        <p class="tips">${t('doneHint')}</p>
+      </div>`;
+    footer.innerHTML = '';
+  }
+
+  else {
+    steps(0);
+    const map = { expired: ['⏱', 'expTitle', 'expSub'], notfound: ['?', 'notFound', 'notFoundSub'], already: ['✓', 'already', 'alreadySub'] };
+    const [ic, a, b] = map[screen];
+    main.innerHTML = `<div class="card center"><div class="big-icon ${screen === 'already' ? 'ok' : 'err'}">${ic}</div><h1>${t(a)}</h1><p class="sub">${t(b)}</p></div>`;
+    footer.innerHTML = '';
+  }
+}
+
+function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
+
+render();
+boot();
+</script>
+</body>
+</html>
