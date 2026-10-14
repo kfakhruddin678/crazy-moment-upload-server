@@ -70,20 +70,41 @@ const LAYOUT_SPEC = {
   grid12: { printType: '4x6', slots: mmSlots('4x6', Array.from({ length: 12 }, (_, i) => [9.3 + (i % 3) * (24.8 + 4.3), 14 + Math.floor(i / 3) * (24.8 + 4.7333), 24.8, 24.8])) },
 };
 const isCustom = (p) => p && p.layout === 'custom' && PRINT_TYPES[p.printType] && Array.isArray(p.slots) && p.slots.length > 0;
+// Landskap: media fizikal KEKAL 4R potret — reka bentuk landskap diputar 90° oleh kiosk semasa cetak.
+const orientationOf = (p) => (isCustom(p) && p.orientation === 'landscape' ? 'landscape' : 'portrait');
+function designDims(type, orient) { const t = PRINT_TYPES[type]; return orient === 'landscape' ? { w: t.h, h: t.w } : { w: t.w, h: t.h }; }
 const printTypeOf = (p) => (isCustom(p) ? p.printType : (LAYOUT_SPEC[p && p.layout] || LAYOUT_SPEC.single).printType);
 const slotsOf = (p) => (isCustom(p) ? p.slots : (LAYOUT_SPEC[p && p.layout] || LAYOUT_SPEC.single).slots);
 const photosOf = (p) => slotsOf(p).length;
-const sizeOf = (p) => PRINT_TYPES[printTypeOf(p)].size;
+const sizeOf = (p) => (orientationOf(p) === 'landscape' ? (printTypeOf(p) === '2x6x2' ? '6 × 2 inch' : '6 × 4 inch') : PRINT_TYPES[printTypeOf(p)].size);
 const outputOf = (p) => PRINT_TYPES[printTypeOf(p)].output;
 const sameSlots = (a, b) => a.length === b.length && a.every((s, i) => ['x', 'y', 'w', 'h'].every((k) => Math.abs(s[k] - b[i][k]) < 0.0015));
 function productView(p) {
-  return { ...p, printType: printTypeOf(p), slots: slotsOf(p), photos: photosOf(p), size: sizeOf(p), output: outputOf(p) };
+  return { ...p, printType: printTypeOf(p), orientation: orientationOf(p), slots: slotsOf(p), photos: photosOf(p), size: sizeOf(p), output: outputOf(p) };
 }
-function cleanSlots(type, raw) {
+// Logo setiap produk custom: { auto, show, style:'full'|'compact', x, y (pusat, pecahan kawasan),
+// w (lebar, pecahan lebar kawasan), rot (darjah), assetId (PNG sendiri) }. auto=true → kiosk
+// kira kedudukan lalai sendiri (tengah ruang kosong di bawah petak foto).
+function cleanLogo(l) {
+  if (!l || typeof l !== 'object') return undefined;
+  if (l.auto) return { auto: true };
+  const n = (v, lo, hi, d) => { const x = Number(v); return Number.isFinite(x) ? Math.min(hi, Math.max(lo, x)) : d; };
+  return {
+    auto: false, show: l.show !== false, style: l.style === 'compact' ? 'compact' : 'full',
+    x: +n(l.x, 0, 1, 0.5).toFixed(5), y: +n(l.y, 0, 1, 0.9).toFixed(5), w: +n(l.w, 0.04, 1, 0.3).toFixed(5),
+    rot: Math.round(n(l.rot, -360, 360, 0)),
+    assetId: typeof l.assetId === 'string' && /^[\w-]{6,40}$/.test(l.assetId) ? l.assetId : null,
+  };
+}
+function logoView(p, base) {
+  const l = isCustom(p) && p.logo ? p.logo : { auto: true };
+  return l.assetId ? { ...l, url: `${base}/api/assets/${l.assetId}` } : l;
+}
+function cleanSlots(type, raw, orient) {
   if (!PRINT_TYPES[type]) return { error: 'Choose a print type (4x6 or 2x6x2)' };
   if (!Array.isArray(raw) || !raw.length) return { error: 'Add at least one photo slot' };
   if (raw.length > MAX_SLOTS) return { error: `Maximum ${MAX_SLOTS} photos per product` };
-  const { w: W, h: H } = PRINT_TYPES[type];
+  const { w: W, h: H } = designDims(type, orient);
   const out = [];
   for (const [i, r] of raw.entries()) {
     const v = ['x', 'y', 'w', 'h'].map((k) => Number(r && r[k]));
@@ -379,7 +400,7 @@ function kioskConfig(req) {
   const b = baseUrl(req);
   const products = store.all('products').filter((p) => p.status === 'active').sort((a, z) => a.sort - z.sort).map((p) => ({
     id: p.id, layout: isCustom(p) ? 'custom' : p.layout, name: p.name, description: p.description, photos: photosOf(p), size: sizeOf(p),
-    printType: printTypeOf(p), slots: slotsOf(p),
+    printType: printTypeOf(p), orientation: orientationOf(p), slots: slotsOf(p), logo: logoView(p, b),
     price: p.price, icon: p.icon, popular: !!p.popular, gradient: p.gradient,
     allowQty: p.allowQty !== false, minQty: p.minQty || 1, maxQty: p.maxQty || 20,
   }));
@@ -656,7 +677,7 @@ async function handleKiosk(req, res, m, seg, q) {
       id, clientRef, kioskId: k.id, kioskName: k.name, location: k.location,
       productId: prod ? prod.id : str(body.productId, 40), productName: prod ? prod.name : str(body.productName, 60),
       layout: prod ? prod.layout : null, size: prod ? sizeOf(prod) : '', photos: prod ? photosOf(prod) : 0,
-      printType: prod ? printTypeOf(prod) : null, slots: prod ? slotsOf(prod) : null,
+      printType: prod ? printTypeOf(prod) : null, orientation: prod ? orientationOf(prod) : null, slots: prod ? slotsOf(prod) : null,
       qty, unitPrice, total: money(unitPrice * qty),
       payMethod: body.payMethod === 'card' ? 'card' : 'duitnow', paymentStatus: payStatus,
       paymentVerified: false, // Fasa 2: hanya webhook gateway boleh set true
@@ -694,19 +715,21 @@ function requireRole(res, user, role) {
 
 function cleanProduct(b, existing) {
   let layout = existing ? existing.layout : (LAYOUTS[b.layout] ? b.layout : null);
-  let printType, slots;
+  let printType, slots, orientation = 'portrait';
   if (Array.isArray(b.slots)) {
-    // Editor susunan baharu: jenis cetakan + petak foto
-    const c = cleanSlots(b.printType, b.slots);
+    // Editor susunan baharu: jenis cetakan + orientasi + petak foto
+    orientation = b.orientation === 'landscape' ? 'landscape' : 'portrait';
+    const c = cleanSlots(b.printType, b.slots, orientation);
     if (c.error) return c;
     printType = b.printType; slots = c.slots;
     // Guna layout asal jika susunan sama tepat dengan salah satu layout asal (kiosk guna enjin
     // cetak asal yang telah diuji + templat Special); selain itu 'custom'.
-    const match = (k) => LAYOUT_SPEC[k] && LAYOUT_SPEC[k].printType === printType && sameSlots(LAYOUT_SPEC[k].slots, slots);
+    const logoTouched = b.logo && typeof b.logo === 'object' && !b.logo.auto;
+    const match = (k) => orientation === 'portrait' && !logoTouched && LAYOUT_SPEC[k] && LAYOUT_SPEC[k].printType === printType && sameSlots(LAYOUT_SPEC[k].slots, slots);
     const prefer = existing && LAYOUT_SPEC[existing.layout] ? [existing.layout] : [];
     layout = [...prefer, ...Object.keys(LAYOUT_SPEC)].find(match) || 'custom';
   } else if (existing && existing.layout === 'custom') {
-    printType = existing.printType; slots = existing.slots;
+    printType = existing.printType; slots = existing.slots; orientation = orientationOf(existing);
   }
   if (!layout) return { error: 'Choose a print type and arrange the photos' };
   const name = str(b.name, 60);
@@ -717,6 +740,8 @@ function cleanProduct(b, existing) {
   if (minQty > maxQty) return { error: 'Minimum quantity cannot exceed maximum' };
   return {
     layout, printType: layout === 'custom' ? printType : undefined, slots: layout === 'custom' ? slots : undefined,
+    orientation: layout === 'custom' ? orientation : undefined,
+    logo: layout === 'custom' ? (cleanLogo(b.logo) || (existing && existing.logo) || { auto: true }) : undefined,
     name, description: str(b.description, 200), price, minQty, maxQty,
     allowQty: b.allowQty !== false, popular: !!b.popular, status: b.status === 'inactive' ? 'inactive' : 'active',
     icon: str(b.icon, 8) || (existing && existing.icon) || '📷',
@@ -833,12 +858,12 @@ async function handleAdmin(req, res, m, seg, q, p) {
       const c = cleanProduct(await readJson(req), ex);
       if (c.error) return json(res, 400, c);
       const doc = { ...ex, ...c, updatedAt: now() };
-      if (doc.layout !== 'custom') { delete doc.printType; delete doc.slots; }
+      if (doc.layout !== 'custom') { delete doc.printType; delete doc.slots; delete doc.orientation; delete doc.logo; }
       Object.assign(doc, { photos: photosOf(doc), size: sizeOf(doc), output: outputOf(doc) });
       await store.put('products', id, JSON.parse(JSON.stringify(doc))); await bumpConfig();
       const notes = [];
       if (ex.price !== doc.price) notes.push(`price RM${ex.price} → RM${doc.price}`);
-      if (!sameSlots(slotsOf(ex), slotsOf(doc)) || printTypeOf(ex) !== printTypeOf(doc)) notes.push(`layout ${printTypeOf(doc)}, ${photosOf(doc)} photos`);
+      if (!sameSlots(slotsOf(ex), slotsOf(doc)) || printTypeOf(ex) !== printTypeOf(doc) || orientationOf(ex) !== orientationOf(doc)) notes.push(`layout ${printTypeOf(doc)} ${orientationOf(doc)}, ${photosOf(doc)} photos`);
       await audit(user, 'product.update', doc.name, notes.join(' · '));
       return json(res, 200, productView(doc));
     }

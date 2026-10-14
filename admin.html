@@ -437,7 +437,7 @@ details.pe-more .in{display:flex;flex-direction:column;gap:14px;padding-top:14px
    ===================================================================== */
 const API = location.origin.startsWith('http') ? location.origin : 'https://crazy-moment-upload-server.onrender.com';
 const TOKEN_KEY = 'cm_admin_token';
-let ME = null, STORAGE = 'file', LAYOUTS = {};
+let ME = null, STORAGE = 'file', LAYOUTS = {}, SERVER_VERSION = '';
 let refreshTimer = null;
 
 // ---------- Icons ----------
@@ -1179,6 +1179,10 @@ async function peSave() {
   const btn = $('#peSaveBtn'); if (btn) btn.disabled = true;
   try {
     const saved = d.id ? await api('PUT', '/api/admin/products/' + d.id, body) : await api('POST', '/api/admin/products', body);
+    // Pengesanan: server lama (sebelum v1.2.2) tidak simpan orientasi/logo → kiosk akan papar menegak
+    if ((d.orientation === 'landscape' && saved.orientation !== 'landscape') || (d.logo && !d.logo.auto && !saved.logo)) {
+      toast(`Server on Render is out of date (v${SERVER_VERSION || '?'}) — landscape/logo was not saved. Upload the latest server.js to GitHub, wait for Render to redeploy, then save again.`, true);
+    }
     const leave = pe.leave, i = prodCache.findIndex((x) => x.id === saved.id);
     if (i >= 0) prodCache[i] = { ...prodCache[i], ...saved }; else prodCache.push({ ...saved, sold: 0 });
     toast(d.id ? 'Saved — kiosks update within 30 seconds when idle' : 'Product created — kiosks update within 30 seconds when idle');
@@ -1558,7 +1562,7 @@ async function pageSettings() {
         ${auditLog.entries.map((a) => `<tr style="cursor:default"><td style="white-space:nowrap">${fmtDT(a.at)}</td><td>${esc(a.userName)}</td><td><code>${esc(a.action)}</code></td><td>${esc(a.target)}</td><td class="muted">${esc(a.detail)}</td></tr>`).join('') || '<tr><td colspan="5" class="empty">No changes yet</td></tr>'}</tbody></table></div></div>` : '<div id="sec-audit"></div>'}
       <div class="card" id="sec-system"><div class="card-h"><h3>System</h3></div><div class="card-b"><dl class="kv" style="max-width:520px">
         <dt>Storage</dt><dd>${s.storage === 'postgres' ? '<span class="badge green">PostgreSQL</span>' : '<span class="badge red">Temporary file</span>'}</dd>
-        <dt>Kiosk configuration version</dt><dd>v${s.configVersion}</dd><dt>Server</dt><dd>${esc(API)}</dd><dt>Dashboard version</dt><dd>1.1.0 · Phase 1</dd></dl></div></div>
+        <dt>Kiosk configuration version</dt><dd>v${s.configVersion}</dd><dt>Server</dt><dd>${esc(API)}</dd><dt>Dashboard version</dt><dd>1.2.2 · Phase 1</dd><dt>Server version</dt><dd>${esc(SERVER_VERSION || '—')}</dd></dl></div></div>
       <div class="foot-meta"><span>Version 1.1.0</span><span>Last Updated: ${fmtDT(new Date(s.updatedAt).toISOString())}</span></div>
     </div>
   </div>`;
@@ -1623,7 +1627,7 @@ async function boot() {
   if (!localStorage.getItem(TOKEN_KEY)) { $('#login').classList.remove('hidden'); $('#app').classList.add('hidden'); return; }
   try {
     const me = await api('GET', '/api/admin/me');
-    ME = me.user; STORAGE = me.storage; LAYOUTS = me.layouts;
+    ME = me.user; STORAGE = me.storage; LAYOUTS = me.layouts; SERVER_VERSION = me.version || '';
   } catch (e) { if (!ME) { $('#login').classList.remove('hidden'); } return; }
   $('#login').classList.add('hidden'); $('#app').classList.remove('hidden');
   $('#uName').textContent = ME.name; $('#uRole').textContent = ME.role === 'superadmin' ? 'Super Admin' : 'Operator';
