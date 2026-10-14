@@ -353,6 +353,12 @@ details.pe-more .in{display:flex;flex-direction:column;gap:14px;padding-top:14px
 .pe-slot .h{position:absolute;right:-5px;bottom:-5px;width:11px;height:11px;background:#fff;border:2px solid var(--gold);border-radius:2px;cursor:nwse-resize}
 .pe-slot:not(.sel) .h{display:none}
 .pe-ro .pe-slot{cursor:default}
+.pe-lg{position:absolute;z-index:3;cursor:move;padding:2px;outline:1px dashed rgba(29,78,216,.35);outline-offset:1px}
+.pe-lg.sel{outline:2px solid var(--blue)}
+.pe-lg .h{position:absolute;right:-6px;bottom:-6px;width:11px;height:11px;background:#fff;border:2px solid var(--blue);border-radius:2px;cursor:nwse-resize}
+.pe-lg:not(.sel) .h{display:none}
+.pe-ro .pe-lg{cursor:default}
+.pe-link{color:var(--blue);font-weight:600;font-size:12px;padding:0;display:inline}
 .pe-cap{font-size:11.5px;color:var(--grey);text-align:center;margin-top:9px;font-variant-numeric:tabular-nums}
 .pe-kiosk{background:#17130E;border-radius:16px;padding:18px;width:min(100%,400px);border:8px solid #2A2520}
 .pe-kiosk .kh{font-family:'Archivo Black',Inter,sans-serif;color:#F5B800;font-size:13px;letter-spacing:.5px;margin-bottom:12px}
@@ -847,6 +853,26 @@ function newProduct() { sel.products = '__new'; pe = null; render(); }
 // ---------- Editor ----------
 function designDims(pt, orient) { const t = PRINT_TYPES[pt] || PRINT_TYPES['4x6']; return orient === 'landscape' ? { w: t.h, h: t.w } : { w: t.w, h: t.h }; }
 const peDims = () => designDims(pe.draft.printType, pe.draft.orientation);
+// ---- Logo (admin sahaja): papar/sorok, gerak, saiz, putar, gaya, PNG sendiri. SAMA dengan logoDefault() dalam kiosk.
+function logoDefault(pt, orient, slots) {
+  const { w: W, h: H } = designDims(pt, orient);
+  const bottom = Math.max(...slots.map((s) => s.y + s.h)) * H, free = H - bottom;
+  const style = pt === '2x6x2' ? 'compact' : 'full', aspect = style === 'full' ? 100 / 32 : 100 / 24;
+  const wmm = Math.min(style === 'full' ? 34 : 26, W * 0.8, Math.max(0, free - 3) * aspect);
+  return { auto: true, show: free >= 5 && wmm >= 8, style, x: 0.5, y: (bottom + free / 2) / H, w: Math.max(wmm, 8) / W, rot: 0, assetId: null };
+}
+const peLogo = () => (!pe.draft.logo || pe.draft.logo.auto ? logoDefault(pe.draft.printType, pe.draft.orientation, pe.draft.slots) : pe.draft.logo);
+function peLogoEdit() { if (!pe.draft.logo || pe.draft.logo.auto) pe.draft.logo = { ...peLogo(), auto: false }; return pe.draft.logo; }
+const logoUrl = (id) => `${API}/api/assets/${id}`;
+function logoSvgHTML(style, widthPx, color) {
+  const full = style !== 'compact', vh = full ? 32 : 24;
+  const sun = '<g transform="translate(45,0) scale(0.41667)"><circle cx="12" cy="12" r="4.6" fill="#F2B705"/><g stroke="#F2B705" stroke-width="1.7" stroke-linecap="round"><line x1="12" y1="1.2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22.8"/><line x1="1.2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22.8" y2="12"/><line x1="4.3" y1="4.3" x2="6.3" y2="6.3"/><line x1="17.7" y1="17.7" x2="19.7" y2="19.7"/><line x1="4.3" y1="19.7" x2="6.3" y2="17.7"/><line x1="17.7" y1="6.3" x2="19.7" y2="4.3"/></g></g>';
+  const t = full
+    ? `<text x="50" y="21" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-weight="800" font-size="9" textLength="92" lengthAdjust="spacingAndGlyphs" fill="${color}">CRAZY MOMENT</text><text x="50" y="29" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-weight="700" font-size="4" textLength="84" lengthAdjust="spacingAndGlyphs" fill="${color}" opacity="0.7">PRINT YOUR MEMORY INSTANTLY</text>`
+    : `<text x="50" y="21" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-weight="800" font-size="10" textLength="96" lengthAdjust="spacingAndGlyphs" fill="${color}">CRAZY MOMENT</text>`;
+  return `<svg width="${widthPx}" height="${(widthPx * vh / 100).toFixed(2)}" viewBox="0 0 100 ${vh}" style="display:block;overflow:visible" aria-hidden="true">${sun}${t}</svg>`;
+}
+const peLogoMark = (l, wpx) => (l.assetId ? `<img src="${logoUrl(l.assetId)}" alt="" draggable="false" style="display:block;width:${wpx}px;height:auto">` : logoSvgHTML(l.style, wpx, '#6B7280'));
 const peDirty = () => JSON.stringify(pe.draft) !== pe.orig;
 const r1 = (v) => Math.round(v * 10) / 10;
 function peAutoDefaults(pt, n, orient) {
@@ -875,6 +901,7 @@ function peOpen(src) {
       minQty: b.minQty || 1, maxQty: b.maxQty || 20, popular: !!b.popular, status: b.status === 'inactive' ? 'inactive' : 'active',
       printType: b.printType === '2x6x2' ? '2x6x2' : '4x6', orientation: b.orientation === 'landscape' ? 'landscape' : 'portrait',
       slots: (b.slots || []).map((s) => ({ x: s.x, y: s.y, w: s.w, h: s.h })),
+      logo: b.logo && !b.logo.auto ? { auto: false, show: b.logo.show !== false, style: b.logo.style === 'compact' ? 'compact' : 'full', x: b.logo.x, y: b.logo.y, w: b.logo.w, rot: b.logo.rot || 0, assetId: b.logo.assetId || null } : { auto: true },
     };
     pe = { key, draft, orig: '', sel: 0, tab: 'layout', snap: true, leave: false, gradient: (src && src.gradient) || PE_GRAD, auto: peAutoDefaults(draft.printType, draft.slots.length || 4, draft.orientation) };
     if (!draft.slots.length) draft.slots = peArrange(draft.printType, pe.auto, draft.orientation);
@@ -922,6 +949,7 @@ function peRender() {
       <div class="field"><label for="pePrice">Price <span class="req">*</span></label><div class="pe-money"><span>RM</span><input class="input" id="pePrice" type="number" min="0.5" step="0.5" value="${d.price}" ${dis} oninput="pe.draft.price=Number(this.value)||0;peLight()"></div></div>
       <div class="pe-div"></div>
       <label class="pe-row"><span><span class="t">Show on kiosk</span><span class="s">Turn off to hide without deleting.</span></span><span class="toggle"><input type="checkbox" id="peActive" ${d.status === 'active' ? 'checked' : ''} ${dis} onchange="pe.draft.status=this.checked?'active':'inactive';peLight()"><span></span></span></label>
+      <div class="pe-row"><label for="peLogoOn" style="cursor:pointer"><span class="t">Logo on print</span><span class="s">Only admins can move it. ${isAdmin() ? `<button type="button" class="pe-link" onclick="pe.sel='logo';peStage();peInsp()">Edit logo</button>` : ''}</span></label><label class="toggle"><input type="checkbox" id="peLogoOn" ${peLogo().show ? 'checked' : ''} ${dis} onchange="peLogoEdit().show=this.checked;pe.sel=this.checked?'logo':0;peChanged()"><span></span></label></div>
       <details class="pe-more"><summary>More options</summary><div class="in">
         <div class="field"><label for="peDesc">Description</label><textarea class="input" id="peDesc" rows="2" maxlength="200" ${dis} oninput="pe.draft.description=this.value;peLight()">${esc(d.description)}</textarea></div>
         <label class="pe-row"><span class="t">"Popular" badge</span><span class="toggle"><input type="checkbox" ${d.popular ? 'checked' : ''} ${dis} onchange="pe.draft.popular=this.checked;peLight()"><span></span></span></label>
@@ -972,18 +1000,20 @@ function peStage() {
   const avail = Math.max(220, st.clientWidth - 40);
   pe.px = Math.min(470 / H, (strip && !land ? avail * 0.55 : avail) / W, 4.2);
   const px = pe.px, iss = peIssues();
-  const bottom = Math.max(...d.slots.map((s) => s.y + s.h)) * H, logoH = Math.max(0, H - bottom);
+  const lg = peLogo();
   st.innerHTML = `<div><div class="pe-canvas" id="peCanvas" style="width:${W * px}px;height:${H * px}px">
       <div class="pe-safe" style="inset:${PE_SAFE * px}px"></div>
-      ${logoH >= 6 ? `<div class="pe-logo" style="height:${logoH * px}px;font-size:${Math.min(13, W * px / 11)}px">CRAZY MOMENT</div>` : ''}
+      ${lg.show ? `<div class="pe-lg ${pe.sel === 'logo' ? 'sel' : ''}" id="peLogoEl" tabindex="0" role="button" aria-label="Logo" style="left:${lg.x * W * px}px;top:${lg.y * H * px}px;transform:translate(-50%,-50%) rotate(${lg.rot || 0}deg)">${peLogoMark(lg, lg.w * W * px)}<span class="h"></span></div>` : ''}
       ${d.slots.map((s, i) => `<div class="pe-slot ${i === pe.sel ? 'sel' : ''} ${iss.out.includes(i + 1) ? 'bad' : ''}" data-i="${i}" tabindex="0" role="button" aria-label="Photo ${i + 1}" style="left:${s.x * W * px}px;top:${s.y * H * px}px;width:${s.w * W * px}px;height:${s.h * H * px}px">${i + 1}<span class="h"></span></div>`).join('')}
-    </div><div class="pe-cap">${strip ? `One strip · ${r1(W)} × ${r1(H)} mm` : `4R · ${r1(W)} × ${r1(H)} mm`}${land ? ' · landscape' : ''}${logoH >= 6 ? ` · logo space ${r1(logoH)} mm` : ''}</div></div>
+    </div><div class="pe-cap">${strip ? `One strip · ${r1(W)} × ${r1(H)} mm` : `4R · ${r1(W)} × ${r1(H)} mm`}${land ? ' · landscape' : ''}${lg.show ? '' : ' · no logo'}</div></div>
     ${strip || land ? `<div>${land ? `<div style="display:flex;gap:14px;align-items:center">${slotThumb(d, 70, '#FFFFFF')}<span class="pe-note">→</span><div style="width:70px;height:105px;display:grid;place-items:center"><div style="transform:rotate(90deg);line-height:0">${slotThumb(d, 70, '#FFFFFF')}</div></div></div>` : slotThumb(d, Math.round(Math.min(150, 101.6 * px * 0.55)), '#FFFFFF')}<div class="pe-cap">${land ? 'As the customer sees it → as it goes<br>through the printer (4R, turned 90°)' : 'Printed sheet<br>printer cuts at the red line'}${land && strip ? '<br>printer cuts at the red line' : ''}</div></div>` : ''}`;
   if (!isAdmin()) return;
   st.querySelectorAll('.pe-slot').forEach((el) => {
     el.addEventListener('pointerdown', (e) => peDrag(e, +el.dataset.i, e.target.classList.contains('h')));
     el.addEventListener('keydown', (e) => peKey(e, +el.dataset.i));
   });
+  const le = $('#peLogoEl');
+  if (le) { le.addEventListener('pointerdown', (e) => peLogoDrag(e, e.target.classList.contains('h'))); le.addEventListener('keydown', (e) => peKey(e, 'logo')); }
 }
 function peInsp() {
   const el = $('#peInsp'); if (!el) return;
@@ -991,7 +1021,16 @@ function peInsp() {
   const ratio = q ? (q.w * W) / (q.h * H) : 1;
   const named = [[1, '1:1'], [4 / 3, '4:3'], [3 / 4, '3:4'], [3 / 2, '3:2'], [2 / 3, '2:3'], [16 / 9, '16:9']].find(([v]) => Math.abs(v - ratio) < 0.03);
   const inp = (k, lbl, v) => `<div class="field"><label for="peS${k}">${lbl}</label><input class="input" id="peS${k}" type="number" step="0.5" value="${q ? r1(v) : ''}" ${dis} onchange="peSlotInput()"></div>`;
-  el.innerHTML = `<div><div class="pe-sec">${q ? `Photo ${pe.sel + 1}` : 'Photo'}</div>
+  const lg = peLogo(), lsel = pe.sel === 'logo';
+  const lin = (k, lbl, v, step = 0.5) => `<div class="field"><label for="peL${k}">${lbl}</label><input class="input" id="peL${k}" type="number" step="${step}" value="${r1(v)}" ${ro ? 'disabled' : ''} onchange="peLogoInput()"></div>`;
+  const logoPanel = !lsel ? '' : !lg.show ? `<div><div class="pe-sec">Logo</div><div class="pe-note">The logo is hidden on this product. Turn on “Logo on print” to place it.</div></div>` : `<div><div class="pe-sec">Logo</div>
+      ${lg.assetId ? '' : `<div class="pe-seg" style="margin-bottom:10px"><button type="button" aria-pressed="${lg.style !== 'compact'}" ${ro ? 'disabled' : ''} onclick="peLogoEdit().style='full';peChanged()">Full</button><button type="button" aria-pressed="${lg.style === 'compact'}" ${ro ? 'disabled' : ''} onclick="peLogoEdit().style='compact';peChanged()">Small</button></div>`}
+      <div class="grid2">${lin('X', 'Centre X (mm)', lg.x * W)}${lin('Y', 'Centre Y (mm)', lg.y * H)}${lin('W', 'Width (mm)', lg.w * W)}${lin('R', 'Rotation (°)', lg.rot || 0, 1)}</div>
+      ${ro ? '' : `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px"><button type="button" class="btn sm" onclick="peLogoRot(-90)">↺ 90°</button><button type="button" class="btn sm" onclick="peLogoRot(90)">↻ 90°</button><button type="button" class="btn sm" onclick="peLogoEdit().x=0.5;peChanged()">Centre</button></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px"><label class="btn sm" style="cursor:pointer">${lg.assetId ? 'Replace image' : 'Upload own logo'}<input type="file" accept="image/png,image/webp,image/jpeg" hidden onchange="peLogoUpload(this.files[0])"></label>${lg.assetId ? '<button type="button" class="btn sm" onclick="peLogoEdit().assetId=null;peChanged()">Use Crazy Moment logo</button>' : ''}</div>
+      <button type="button" class="pe-link" style="margin-top:10px" onclick="pe.draft.logo={auto:true};peChanged()">Reset to automatic position</button>`}
+      <div class="pe-note" style="margin-top:8px">Drag the logo to move it and the corner to resize. PNG with a transparent background works best. Customers' event text appears just above the logo.</div></div>`;
+  el.innerHTML = `${logoPanel}<div ${lsel ? 'hidden' : ''}><div class="pe-sec">${q ? `Photo ${pe.sel + 1}` : 'Photo'}</div>
       <div class="grid2">${inp('X', 'X (mm)', q && q.x * W)}${inp('Y', 'Y (mm)', q && q.y * H)}${inp('W', 'Width (mm)', q && q.w * W)}${inp('H', 'Height (mm)', q && q.h * H)}</div>
       <div class="pe-note" style="margin-top:8px">${q ? `Shape ${named ? named[1] : ratio.toFixed(2)}. Customer photos are cropped to this shape; they can zoom and move them on the kiosk.` : 'Select a photo on the layout.'}</div></div>
     ${ro ? '' : `<div><div class="pe-sec">Spacing for “Arrange evenly”</div><div class="grid2">
@@ -1021,7 +1060,7 @@ function peSetOrient(o) { if (pe.draft.orientation === o) return; pe.draft.orien
 function peRearrange() {
   const s = peArrange(pe.draft.printType, pe.auto, pe.draft.orientation);
   if (!s) { toast('Not enough room — reduce photos, columns, gap or logo space', true); return false; }
-  pe.draft.slots = s; pe.sel = Math.min(pe.sel, s.length - 1); pe.leave = false; peRender(); return true;
+  pe.draft.slots = s; if (typeof pe.sel === 'number') pe.sel = Math.min(pe.sel, s.length - 1); pe.leave = false; peRender(); return true;
 }
 function peCount(dlt) {
   const old = { ...pe.auto };
@@ -1044,7 +1083,7 @@ function peDup() {
   pe.draft.slots.push({ ...q, x: +Math.min(q.x + 5 / W, 1 - q.w).toFixed(5), y: +Math.min(q.y + 5 / H, 1 - q.h).toFixed(5) });
   pe.sel = pe.draft.slots.length - 1; pe.leave = false; peRender();
 }
-function peDel() { if (pe.draft.slots.length <= 1) return; pe.draft.slots.splice(pe.sel, 1); pe.sel = Math.max(0, pe.sel - 1); pe.leave = false; peRender(); }
+function peDel() { if (pe.draft.slots.length <= 1 || typeof pe.sel !== 'number') return; pe.draft.slots.splice(pe.sel, 1); pe.sel = Math.max(0, pe.sel - 1); pe.leave = false; peRender(); }
 function peSlotInput() {
   const { w: W, h: H } = peDims(), q = pe.draft.slots[pe.sel]; if (!q) return;
   const v = (id) => Number($('#peS' + id).value);
@@ -1057,7 +1096,7 @@ const peSnap = (mm) => (pe.snap ? Math.round(mm * 2) / 2 : Math.round(mm * 10) /
 function peDrag(e, i, resize) {
   e.preventDefault();
   const { w: W, h: H } = peDims(), q0 = { ...pe.draft.slots[i] }, sx = e.clientX, sy = e.clientY, px = pe.px;
-  if (pe.sel !== i) { pe.sel = i; $('#peCanvas').querySelectorAll('.pe-slot').forEach((n) => n.classList.toggle('sel', +n.dataset.i === i)); peInsp(); }
+  if (pe.sel !== i) { pe.sel = i; $('#peCanvas').querySelectorAll('.pe-slot').forEach((n) => n.classList.toggle('sel', +n.dataset.i === i)); const le = $('#peLogoEl'); if (le) le.classList.remove('sel'); peInsp(); }
   const node = e.currentTarget; try { node.setPointerCapture(e.pointerId); } catch (_) {}
   let moved = false;
   const move = (ev) => {
@@ -1081,10 +1120,53 @@ function peDrag(e, i, resize) {
 function peKey(e, i) {
   const dir = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key]; if (!dir) return;
   e.preventDefault();
+  if (i === 'logo') {
+    const { w: W, h: H } = peDims(), l = peLogoEdit(), st = e.shiftKey ? 5 : 0.5;
+    l.x = +(Math.max(0, Math.min(W, l.x * W + dir[0] * st)) / W).toFixed(5); l.y = +(Math.max(0, Math.min(H, l.y * H + dir[1] * st)) / H).toFixed(5);
+    pe.sel = 'logo'; peChanged(); const n = $('#peLogoEl'); if (n) n.focus(); return;
+  }
   const { w: W, h: H } = peDims(), q = pe.draft.slots[i], st = e.shiftKey ? 5 : 0.5;
   q.x = +(Math.max(0, Math.min(q.x * W + dir[0] * st, W - q.w * W)) / W).toFixed(5);
   q.y = +(Math.max(0, Math.min(q.y * H + dir[1] * st, H - q.h * H)) / H).toFixed(5);
   pe.sel = i; peChanged(); const n = $(`#peCanvas .pe-slot[data-i="${i}"]`); if (n) n.focus();
+}
+function peLogoDrag(e, resize) {
+  e.preventDefault();
+  const { w: W, h: H } = peDims(), l = peLogoEdit(), l0 = { ...l }, sx = e.clientX, sy = e.clientY, px = pe.px;
+  if (pe.sel !== 'logo') { pe.sel = 'logo'; $('#peCanvas').querySelectorAll('.pe-slot').forEach((n) => n.classList.remove('sel')); e.currentTarget.classList.add('sel'); peInsp(); }
+  const node = e.currentTarget; try { node.setPointerCapture(e.pointerId); } catch (_) {}
+  let moved = false;
+  const move = (ev) => {
+    const dx = (ev.clientX - sx) / px, dy = (ev.clientY - sy) / px; if (Math.abs(dx) + Math.abs(dy) > 0.3) moved = true;
+    if (resize) {
+      const wmm = Math.max(8, Math.min(W, peSnap(l0.w * W + dx * 2)));
+      l.w = +(wmm / W).toFixed(5);
+      node.innerHTML = peLogoMark(l, l.w * W * px) + '<span class="h"></span>';
+    } else {
+      l.x = +(Math.max(0, Math.min(W, peSnap(l0.x * W + dx))) / W).toFixed(5);
+      l.y = +(Math.max(0, Math.min(H, peSnap(l0.y * H + dy))) / H).toFixed(5);
+      node.style.left = l.x * W * px + 'px'; node.style.top = l.y * H * px + 'px';
+    }
+  };
+  const up = () => {
+    node.removeEventListener('pointermove', move); node.removeEventListener('pointerup', up); node.removeEventListener('pointercancel', up);
+    if (moved) { peChanged(); const n = $('#peLogoEl'); if (n) n.focus({ preventScroll: true }); }
+  };
+  node.addEventListener('pointermove', move); node.addEventListener('pointerup', up); node.addEventListener('pointercancel', up);
+}
+function peLogoInput() {
+  const { w: W, h: H } = peDims(), l = peLogoEdit(), v = (k) => Number($('#peL' + k).value);
+  l.x = +(Math.max(0, Math.min(W, v('X'))) / W).toFixed(5); l.y = +(Math.max(0, Math.min(H, v('Y'))) / H).toFixed(5);
+  l.w = +(Math.max(8, Math.min(W, v('W'))) / W).toFixed(5); l.rot = Math.round(Math.max(-360, Math.min(360, v('R') || 0)));
+  peChanged();
+}
+function peLogoRot(dlt) { const l = peLogoEdit(); let r = ((l.rot || 0) + dlt) % 360; if (r > 180) r -= 360; if (r <= -180) r += 360; l.rot = r; peChanged(); }
+async function peLogoUpload(file) {
+  if (!file) return;
+  if (file.size > 6 * 1024 * 1024) { toast('Image must be under 6 MB', true); return; }
+  toast('Uploading logo…');
+  try { const r = await api('POST', '/api/admin/assets', file, file.type || 'image/png'); peLogoEdit().assetId = r.id; pe.sel = 'logo'; peChanged(); toast('Logo uploaded — press Save to send it to kiosks'); }
+  catch (ex) { toast(ex.message, true); }
 }
 async function peSave() {
   const d = pe.draft;
@@ -1092,7 +1174,8 @@ async function peSave() {
   if (!(d.price > 0)) { toast('Price must be more than RM0', true); $('#pePrice').focus(); return; }
   if (d.minQty > d.maxQty) { toast('Minimum quantity cannot be more than maximum', true); return; }
   if (peIssues().block.length) { toast('Photos overlap — move them apart before saving', true); return; }
-  const body = { name: d.name.trim(), description: d.description, price: d.price, allowQty: d.allowQty, minQty: d.minQty, maxQty: d.maxQty, popular: d.popular, status: d.status, printType: d.printType, orientation: d.orientation, slots: d.slots };
+  const body = { name: d.name.trim(), description: d.description, price: d.price, allowQty: d.allowQty, minQty: d.minQty, maxQty: d.maxQty, popular: d.popular, status: d.status, printType: d.printType, orientation: d.orientation, slots: d.slots,
+    logo: d.logo && !d.logo.auto ? { auto: false, show: d.logo.show, style: d.logo.style, x: d.logo.x, y: d.logo.y, w: d.logo.w, rot: d.logo.rot || 0, assetId: d.logo.assetId || null } : { auto: true } };
   const btn = $('#peSaveBtn'); if (btn) btn.disabled = true;
   try {
     const saved = d.id ? await api('PUT', '/api/admin/products/' + d.id, body) : await api('POST', '/api/admin/products', body);
