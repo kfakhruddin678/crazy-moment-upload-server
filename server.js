@@ -33,7 +33,7 @@ const MAX_SESSIONS = Number(process.env.MAX_SESSIONS || 60);
 const GRACE_MS = 5 * 60_000;
 const ONLINE_MS = 90_000;          // kiosk dianggap offline jika tiada heartbeat > 90 saat
 const TZ_OFFSET_MS = 8 * 3600_000; // Asia/Kuala_Lumpur (UTC+8, tiada DST)
-const APP_VERSION = '1.2.0';
+const APP_VERSION = '1.3.0';
 
 const store = new Store();
 
@@ -80,7 +80,7 @@ const sizeOf = (p) => (orientationOf(p) === 'landscape' ? (printTypeOf(p) === '2
 const outputOf = (p) => PRINT_TYPES[printTypeOf(p)].output;
 const sameSlots = (a, b) => a.length === b.length && a.every((s, i) => ['x', 'y', 'w', 'h'].every((k) => Math.abs(s[k] - b[i][k]) < 0.0015));
 function productView(p) {
-  return { ...p, printType: printTypeOf(p), orientation: orientationOf(p), slots: slotsOf(p), photos: photosOf(p), size: sizeOf(p), output: outputOf(p) };
+  return { ...p, printType: printTypeOf(p), orientation: orientationOf(p), slots: slotsOf(p), logos: logosOf(p), cutLines: cutsOf(p), photos: photosOf(p), size: sizeOf(p), output: outputOf(p) };
 }
 // Logo setiap produk custom: { auto, show, style:'full'|'compact', x, y (pusat, pecahan kawasan),
 // w (lebar, pecahan lebar kawasan), rot (darjah), assetId (PNG sendiri) }. auto=true → kiosk
@@ -96,10 +96,28 @@ function cleanLogo(l) {
     assetId: typeof l.assetId === 'string' && /^[\w-]{6,40}$/.test(l.assetId) ? l.assetId : null,
   };
 }
-function logoView(p, base) {
-  const l = isCustom(p) && p.logo ? p.logo : { auto: true };
-  return l.assetId ? { ...l, url: `${base}/api/assets/${l.assetId}` } : l;
+// v1.3: berbilang logo. logos = null → logo lalai automatik; [] → tiada logo; [..] → senarai admin.
+const MAX_LOGOS = 6, MAX_CUTS = 12;
+function logosOf(p) {
+  if (!isCustom(p)) return null;
+  if (Array.isArray(p.logos)) return p.logos;
+  if (p.logo && !p.logo.auto) return p.logo.show === false ? [] : [p.logo]; // data v1.2
+  return null;
 }
+function cleanLogos(arr) {
+  if (arr === null) return null;
+  if (!Array.isArray(arr)) return undefined;
+  return arr.slice(0, MAX_LOGOS).map((l) => cleanLogo({ ...l, auto: false })).filter(Boolean).map((l) => ({ ...l, show: true }));
+}
+function cleanCuts(arr) {
+  if (!Array.isArray(arr)) return undefined;
+  return arr.slice(0, MAX_CUTS).map((c) => ({ dir: c && c.dir === 'h' ? 'h' : 'v', pos: +Math.min(1, Math.max(0, Number(c && c.pos) || 0)).toFixed(5) }));
+}
+function logosView(p, base) {
+  const ls = logosOf(p);
+  return ls && ls.map((l) => (l.assetId ? { ...l, url: `${base}/api/assets/${l.assetId}` } : l));
+}
+const cutsOf = (p) => (isCustom(p) && Array.isArray(p.cutLines) ? p.cutLines : []);
 function cleanSlots(type, raw, orient) {
   if (!PRINT_TYPES[type]) return { error: 'Choose a print type (4x6 or 2x6x2)' };
   if (!Array.isArray(raw) || !raw.length) return { error: 'Add at least one photo slot' };
@@ -400,7 +418,7 @@ function kioskConfig(req) {
   const b = baseUrl(req);
   const products = store.all('products').filter((p) => p.status === 'active').sort((a, z) => a.sort - z.sort).map((p) => ({
     id: p.id, layout: isCustom(p) ? 'custom' : p.layout, name: p.name, description: p.description, photos: photosOf(p), size: sizeOf(p),
-    printType: printTypeOf(p), orientation: orientationOf(p), slots: slotsOf(p), logo: logoView(p, b),
+    printType: printTypeOf(p), orientation: orientationOf(p), slots: slotsOf(p), logos: logosView(p, b), cutLines: cutsOf(p),
     price: p.price, icon: p.icon, popular: !!p.popular, gradient: p.gradient,
     allowQty: p.allowQty !== false, minQty: p.minQty || 1, maxQty: p.maxQty || 20,
   }));
@@ -724,7 +742,7 @@ function cleanProduct(b, existing) {
     printType = b.printType; slots = c.slots;
     // Guna layout asal jika susunan sama tepat dengan salah satu layout asal (kiosk guna enjin
     // cetak asal yang telah diuji + templat Special); selain itu 'custom'.
-    const logoTouched = b.logo && typeof b.logo === 'object' && !b.logo.auto;
+    const logoTouched = Array.isArray(b.logos) || (Array.isArray(b.cutLines) && b.cutLines.length > 0) || (b.logo && typeof b.logo === 'object' && !b.logo.auto);
     const match = (k) => orientation === 'portrait' && !logoTouched && LAYOUT_SPEC[k] && LAYOUT_SPEC[k].printType === printType && sameSlots(LAYOUT_SPEC[k].slots, slots);
     const prefer = existing && LAYOUT_SPEC[existing.layout] ? [existing.layout] : [];
     layout = [...prefer, ...Object.keys(LAYOUT_SPEC)].find(match) || 'custom';
@@ -741,7 +759,9 @@ function cleanProduct(b, existing) {
   return {
     layout, printType: layout === 'custom' ? printType : undefined, slots: layout === 'custom' ? slots : undefined,
     orientation: layout === 'custom' ? orientation : undefined,
-    logo: layout === 'custom' ? (cleanLogo(b.logo) || (existing && existing.logo) || { auto: true }) : undefined,
+    logos: layout === 'custom' ? (b.logos !== undefined ? cleanLogos(b.logos) : (existing ? logosOf(existing) : null)) : undefined,
+    cutLines: layout === 'custom' ? (cleanCuts(b.cutLines) || (existing ? cutsOf(existing) : [])) : undefined,
+    logo: undefined,
     name, description: str(b.description, 200), price, minQty, maxQty,
     allowQty: b.allowQty !== false, popular: !!b.popular, status: b.status === 'inactive' ? 'inactive' : 'active',
     icon: str(b.icon, 8) || (existing && existing.icon) || '📷',
@@ -858,7 +878,8 @@ async function handleAdmin(req, res, m, seg, q, p) {
       const c = cleanProduct(await readJson(req), ex);
       if (c.error) return json(res, 400, c);
       const doc = { ...ex, ...c, updatedAt: now() };
-      if (doc.layout !== 'custom') { delete doc.printType; delete doc.slots; delete doc.orientation; delete doc.logo; }
+      delete doc.logo; // diganti oleh logos (v1.3)
+      if (doc.layout !== 'custom') { delete doc.printType; delete doc.slots; delete doc.orientation; delete doc.logos; delete doc.cutLines; }
       Object.assign(doc, { photos: photosOf(doc), size: sizeOf(doc), output: outputOf(doc) });
       await store.put('products', id, JSON.parse(JSON.stringify(doc))); await bumpConfig();
       const notes = [];
