@@ -292,6 +292,86 @@ code{font-family:ui-monospace,Consolas,monospace;font-size:12px;background:var(-
   .grid2{grid-template-columns:1fr}
   .top-right{gap:6px}
 }
+
+/* ---------- Product editor (v1.2) ---------- */
+.lp-svg{display:block;flex:none}
+.pe-crumb{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--grey);margin-bottom:4px}
+.pe-crumb button{color:var(--grey);font-weight:600;padding:0}
+.pe-crumb button:hover{color:var(--ink)}
+.pe-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.pe-head h2{font-size:20px;font-weight:800;letter-spacing:-.2px}
+.pe-grid{display:grid;grid-template-columns:270px minmax(0,1fr) 230px;gap:20px;align-items:start}
+@media (max-width:1280px){.pe-grid{grid-template-columns:260px minmax(0,1fr)}.pe-insp{grid-column:1/-1;display:grid!important;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px}}
+@media (max-width:860px){.pe-grid{grid-template-columns:minmax(0,1fr)}}
+.pe-form{display:flex;flex-direction:column;gap:18px}
+.pe-form .field{margin:0}
+.pe-sec{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.pe-div{height:1px;background:var(--line)}
+.pe-types{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pe-type{border:1px solid var(--line);background:#fff;border-radius:10px;padding:11px;text-align:left;display:flex;flex-direction:column;gap:6px}
+.pe-type b{font-size:14px}
+.pe-type small{color:var(--grey);font-size:11.5px;line-height:1.3}
+.pe-type[aria-pressed="true"]{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold);background:var(--gold-bg)}
+.pe-type:disabled{cursor:default}
+.pe-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.pe-row .t{font-weight:600}
+.pe-row .s{display:block;font-size:11.5px;color:var(--grey);font-weight:400}
+.pe-money{position:relative}
+.pe-money span{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--grey);font-weight:600}
+.pe-money input{padding-left:40px;font-weight:700}
+details.pe-more summary{cursor:pointer;list-style:none;font-size:12.5px;font-weight:600;color:var(--ink-2);display:flex;align-items:center;gap:6px}
+details.pe-more summary::-webkit-details-marker{display:none}
+details.pe-more summary:before{content:"›";font-size:15px;transition:transform .15s;display:inline-block}
+details.pe-more[open] summary:before{transform:rotate(90deg)}
+details.pe-more .in{display:flex;flex-direction:column;gap:14px;padding-top:14px}
+.pe-del{color:var(--red);font-weight:600;font-size:12.5px;padding:0;align-self:flex-start}
+.pe-work{overflow:hidden}
+.pe-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:9px 12px;border-bottom:1px solid var(--line)}
+.pe-tabs{display:flex;gap:2px}
+.pe-tabs button{height:32px;padding:0 11px;border-radius:7px;font-weight:600;color:var(--grey)}
+.pe-tabs button[aria-selected="true"]{background:var(--bg);color:var(--ink)}
+.pe-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pe-tools .l{font-size:12px;color:var(--grey)}
+.pe-vsep{width:1px;height:20px;background:var(--line)}
+.pe-step{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:8px;height:32px;background:#fff}
+.pe-step button{width:28px;height:30px;color:var(--grey);font-size:16px}
+.pe-step button:hover:not(:disabled){color:var(--ink)}
+.pe-step output{min-width:22px;text-align:center;font-weight:700;font-variant-numeric:tabular-nums}
+.pe-ib{width:32px;height:32px;border-radius:7px;display:inline-grid;place-items:center;color:var(--grey)}
+.pe-ib:hover:not(:disabled){background:var(--bg);color:var(--ink)}
+.pe-ib:disabled{opacity:.35;cursor:default}
+.pe-stage{background:var(--bg);display:flex;align-items:center;justify-content:center;gap:28px;flex-wrap:wrap;padding:30px 18px;min-height:520px}
+.pe-canvas{position:relative;background:#fff;box-shadow:0 0 0 1px rgba(20,27,38,.08),0 8px 24px rgba(20,27,38,.08);touch-action:none;user-select:none}
+.pe-safe{position:absolute;border:1px dashed rgba(20,27,38,.22);pointer-events:none}
+.pe-logo{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;font-family:'Archivo Black',Inter,sans-serif;color:#C9CDD5;letter-spacing:1px;pointer-events:none;overflow:hidden}
+.pe-slot{position:absolute;background:rgba(245,184,0,.14);border:1px solid rgba(201,148,0,.6);display:grid;place-items:center;cursor:move;font-weight:700;font-size:12px;color:var(--gold-deep)}
+.pe-slot.sel{background:rgba(245,184,0,.26);border:2px solid var(--gold);z-index:2}
+.pe-slot.bad{border-color:var(--red);color:var(--red);background:rgba(198,40,40,.08)}
+.pe-slot .h{position:absolute;right:-5px;bottom:-5px;width:11px;height:11px;background:#fff;border:2px solid var(--gold);border-radius:2px;cursor:nwse-resize}
+.pe-slot:not(.sel) .h{display:none}
+.pe-ro .pe-slot{cursor:default}
+.pe-cap{font-size:11.5px;color:var(--grey);text-align:center;margin-top:9px;font-variant-numeric:tabular-nums}
+.pe-kiosk{background:#17130E;border-radius:16px;padding:18px;width:min(100%,400px);border:8px solid #2A2520}
+.pe-kiosk .kh{font-family:'Archivo Black',Inter,sans-serif;color:#F5B800;font-size:13px;letter-spacing:.5px;margin-bottom:12px}
+.pe-kcards{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pe-kcard{background:#fff;border-radius:12px;padding:9px;display:flex;flex-direction:column;gap:3px;border:2px solid transparent}
+.pe-kcard.hl{border-color:#F5B800}
+.pe-kcard .pv{height:96px;border-radius:9px;display:grid;place-items:center;margin-bottom:4px}
+.pe-kcard b{font-size:12.5px}
+.pe-kcard small{font-size:10.5px;color:var(--grey)}
+.pe-kcard .pr{font-weight:800;font-size:14px}
+.pe-insp{display:flex;flex-direction:column;gap:20px}
+.pe-insp .grid2{gap:8px}
+.pe-insp .field label{font-size:11px;font-weight:600;color:var(--grey);margin-bottom:4px}
+.pe-insp .input{height:34px;font-variant-numeric:tabular-nums}
+.pe-note{font-size:12px;color:var(--grey);line-height:1.45}
+.pe-alert{font-size:12px;color:var(--red);display:flex;gap:6px;line-height:1.45}
+.pe-ok{font-size:12px;color:var(--green);display:flex;gap:6px;align-items:center;font-weight:600}
+.pe-save{position:sticky;bottom:12px;margin-top:20px;z-index:20}
+.pe-save .in{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--ink);color:#fff;border-radius:12px;padding:9px 9px 9px 18px;box-shadow:0 10px 30px rgba(20,27,38,.25)}
+.pe-save .msg{font-weight:600}
+.pe-save .btn.ghost{background:transparent;border-color:transparent;color:#fff;opacity:.75}
+.pe-save .btn.ghost:hover{opacity:1}
 </style>
 </head>
 <body>
@@ -698,18 +778,37 @@ function drawDonut(el, parts, total) {
 }
 
 // =====================================================================
-//  PRODUCTS
+//  PRODUCTS  (v1.2 — editor susunan foto: jenis cetakan + petak foto)
 // =====================================================================
-let prodCache = null, prodFilter = { q: '', status: '' }, prodDraft = null;
+let prodCache = null, prodFilter = { q: '', status: '' };
+let PRINT_TYPES = { '4x6': { w: 101.6, h: 152.4, size: '4 × 6 inch', output: '1 print' }, '2x6x2': { w: 50.8, h: 152.4, size: '2 × 6 inch', output: '2 strips' } };
+const PE_SAFE = 3, PE_MAX = 12, PE_MIN = 5, PE_GRAD = 'linear-gradient(160deg,#F2C879,#C98D00)';
+let pe = null; // keadaan editor: { key, draft, orig, sel, tab, snap, leave, auto, px }
+
+// Lakaran kecil susunan petak (helai 4x6 penuh; 2x6x2 = dua salinan + garis potong)
+function slotThumb(p, width = 40, bg = '#F3EEE2') {
+  const W = 101.6, H = 152.4, k = W / width, pt = p.printType === '2x6x2' ? '2x6x2' : '4x6';
+  const sw = pt === '2x6x2' ? 50.8 : W;
+  let r = '';
+  for (const ox of pt === '2x6x2' ? [0, 50.8] : [0]) for (const s of p.slots || []) r += `<rect x="${(ox + s.x * sw).toFixed(2)}" y="${(s.y * H).toFixed(2)}" width="${(s.w * sw).toFixed(2)}" height="${(s.h * H).toFixed(2)}" fill="#BCC1CA"/>`;
+  const cut = pt === '2x6x2' ? `<line x1="50.8" y1="0" x2="50.8" y2="${H}" stroke="#C62828" stroke-width="${k}" stroke-dasharray="${3 * k} ${3 * k}"/>` : '';
+  return `<svg class="lp-svg" width="${width}" height="${Math.round(width * 1.5)}" viewBox="0 0 ${W} ${H}" aria-hidden="true"><rect x="${k / 2}" y="${k / 2}" width="${W - k}" height="${H - k}" fill="${bg}" stroke="#DDD8CC" stroke-width="${k}"/>${r}${cut}</svg>`;
+}
+const orderThumb = (o, w) => (o.slots && o.slots.length ? slotThumb(o, w) : (o.layout && o.layout !== 'custom' ? layoutPreview(o.layout, '#F3EEE2', null, w) : ''));
+
 async function pageProducts() {
   const d = await api('GET', '/api/admin/products');
-  prodCache = d.products; LAYOUTS = d.layouts;
+  prodCache = d.products; LAYOUTS = d.layouts; if (d.printTypes) PRINT_TYPES = d.printTypes;
+  if (sel.products) {
+    const src = sel.products === '__new' ? null : prodCache.find((p) => p.id === sel.products);
+    if (sel.products === '__new' || src) return peOpen(src);
+    sel.products = null; pe = null;
+  }
   const list = prodCache.filter((p) => (!prodFilter.status || p.status === prodFilter.status) && (!prodFilter.q || p.name.toLowerCase().includes(prodFilter.q.toLowerCase())));
   const active = prodCache.filter((p) => p.status === 'active').length;
-  const cur = sel.products === '__new' ? prodDraft : prodCache.find((p) => p.id === sel.products);
   $('#content').innerHTML = `${storageBanner()}
   ${isAdmin() ? `<div style="display:flex;justify-content:flex-end;margin:-4px 0 14px"><button class="btn primary" onclick="newProduct()">${icon('plus', 16, 2.4)} Add New Product</button></div>` : ''}
-  <div class="with-panel ${cur ? '' : 'no-panel'}"><div class="stack">
+  <div class="stack">
     <div class="kpis">
       <div class="card kpi"><div class="ic gold">${icon('products', 24)}</div><div><div class="lbl">Total Products</div><div class="val">${prodCache.length}</div><div class="sub">All products</div></div></div>
       <div class="card kpi"><div class="ic green" style="background:#86CFA0">${icon('check', 24, 2.6)}</div><div><div class="lbl">Active Products</div><div class="val">${active}</div><div class="sub">${prodCache.length ? Math.round((active / prodCache.length) * 100) : 0}% of total</div></div></div>
@@ -721,71 +820,270 @@ async function pageProducts() {
         <select class="select" style="width:150px" onchange="prodFilter.status=this.value;render()"><option value="">All Status</option><option value="active" ${prodFilter.status === 'active' ? 'selected' : ''}>Active</option><option value="inactive" ${prodFilter.status === 'inactive' ? 'selected' : ''}>Inactive</option></select>
         ${isAdmin() ? `<span class="hint" style="margin-left:auto">${icon('grip', 14)} Drag rows to change the order on the kiosk</span>` : ''}
       </div>
-      <div class="tbl-wrap"><table class="tbl" id="prodTbl"><thead><tr>${isAdmin() ? '<th></th>' : ''}<th>Product</th><th>Photos</th><th>Output</th><th>Print Size</th><th>Price (RM)</th><th>Sold</th><th>Status</th></tr></thead><tbody>
-        ${list.map((p) => `<tr data-id="${p.id}" class="${sel.products === p.id ? 'sel' : ''}" ${isAdmin() ? 'draggable="true"' : ''} onclick="sel.products='${p.id}';render()">
+      <div class="tbl-wrap"><table class="tbl" id="prodTbl"><thead><tr>${isAdmin() ? '<th></th>' : ''}<th>Product</th><th>Photos</th><th>Print Type</th><th>Price (RM)</th><th>Sold</th><th>Status</th></tr></thead><tbody>
+        ${list.map((p) => `<tr data-id="${p.id}" ${isAdmin() ? 'draggable="true"' : ''} onclick="openProduct('${p.id}')">
           ${isAdmin() ? `<td class="drag">${icon('grip', 16)}</td>` : ''}
-          <td><div style="display:flex;gap:12px;align-items:center">${layoutPreview(p.layout, '#F3EEE2', null, 40)}<div><div class="strong">${esc(p.name)} ${p.popular ? '<span class="badge amber" style="margin-left:4px">Popular</span>' : ''}</div><div class="sub-line">${esc(p.description)}</div></div></div></td>
-          <td>${p.photos}<div class="sub-line">photo${p.photos > 1 ? 's' : ''}</div></td><td>${esc(p.output)}</td><td>${esc(p.size)}</td>
+          <td><div style="display:flex;gap:12px;align-items:center">${slotThumb(p, 34)}<div><div class="strong">${esc(p.name)} ${p.popular ? '<span class="badge amber" style="margin-left:4px">Popular</span>' : ''}</div><div class="sub-line">${esc(p.description)}</div></div></div></td>
+          <td>${p.photos}<div class="sub-line">photo${p.photos > 1 ? 's' : ''}</div></td>
+          <td>${p.printType === '2x6x2' ? '2 × 6 ×2' : '4 × 6'}<div class="sub-line">${esc(p.output)}</div></td>
           <td class="strong">${Number(p.price).toFixed(2)}</td><td>${p.sold}</td>
-          <td>${p.status === 'active' ? '<span class="badge green">Active</span>' : '<span class="badge grey">Inactive</span>'}</td></tr>`).join('') || `<tr><td colspan="8" class="empty">No products match</td></tr>`}
+          <td>${p.status === 'active' ? '<span class="badge green">Active</span>' : '<span class="badge grey">Inactive</span>'}</td></tr>`).join('') || `<tr><td colspan="7" class="empty">No products match</td></tr>`}
       </tbody></table></div>
-      <div class="pager"><span class="info">Showing ${list.length} of ${prodCache.length} products</span></div>
+      <div class="pager"><span class="info">Showing ${list.length} of ${prodCache.length} products · click a product to edit its photo layout</span></div>
     </div>
-  </div>
-  ${cur ? panelShell('products', productPanel(cur)) : ''}</div>`;
+  </div>`;
   if (isAdmin()) enableRowDrag($('#prodTbl tbody'), async (ids) => { await api('POST', '/api/admin/products/reorder', { ids }); toast('Order saved — kiosks will update'); });
 }
-function productPanel(p) {
-  const L = LAYOUTS[p.layout] || {};
-  const ro = !isAdmin();
-  return `<div class="card-h"><h3>${p.id ? (ro ? 'Product' : 'Edit Product') : 'New Product'}</h3><button class="close-x" onclick="closePanel('products')">${icon('x', 18)}</button></div>
-  <form id="prodForm" onsubmit="saveProduct(event)" style="display:contents">
-  <div class="panel-sec" style="border-top:none"><h4>Product Preview</h4>
-    <div style="display:flex;gap:16px;align-items:flex-start"><div style="background:var(--bg);padding:12px;border-radius:10px;text-align:center">${layoutPreview(p.layout, '#F3EEE2', null, 100)}<div class="hint">${esc(L.size || '')}</div></div>
-    <div style="flex:1"><div class="field"><label>Product Name <span class="req">*</span></label><input class="input" name="name" value="${esc(p.name)}" ${ro ? 'disabled' : ''} required maxlength="60"></div>
-    <div class="field" style="margin:0"><label>Description</label><textarea class="input" name="description" rows="2" ${ro ? 'disabled' : ''} maxlength="200">${esc(p.description)}</textarea></div></div></div>
-  </div>
-  <div class="panel-sec"><h4>Print Setup</h4>
-    <div class="grid2">
-      <div class="field"><label>Layout ${p.id ? '<span class="lk">(Locked)</span>' : ''}</label>${p.id ? `<div class="input-suffix"><input class="input" disabled value="${esc(L.name)}"><span>${icon('lock', 14)}</span></div>` : `<select class="select" name="layout" onchange="prodDraft.layout=this.value;render()">${Object.entries(LAYOUTS).map(([k, v]) => `<option value="${k}" ${k === p.layout ? 'selected' : ''}>${v.name}</option>`).join('')}</select>`}</div>
-      <div class="field"><label>Print Size <span class="lk">(Locked)</span></label><div class="input-suffix"><input class="input" disabled value="${esc(L.size)}"><span>${icon('lock', 14)}</span></div></div>
-      <div class="field"><label>Photos Required <span class="lk">(Locked)</span></label><div class="input-suffix"><input class="input" disabled value="${L.photos}"><span>photos</span></div></div>
-      <div class="field"><label>Output <span class="lk">(Locked)</span></label><div class="input-suffix"><input class="input" disabled value="${esc(L.output)}"></div></div>
+function openProduct(id) { sel.products = id; pe = null; render(); }
+function newProduct() { sel.products = '__new'; pe = null; render(); }
+
+// ---------- Editor ----------
+const peDims = () => PRINT_TYPES[pe.draft.printType] || PRINT_TYPES['4x6'];
+const peDirty = () => JSON.stringify(pe.draft) !== pe.orig;
+const r1 = (v) => Math.round(v * 10) / 10;
+function peAutoDefaults(pt, n) {
+  return pt === '2x6x2' ? { count: n, cols: 1, margin: 4, gap: 3, footer: 18 } : { count: n, cols: n <= 2 ? 1 : n <= 4 ? 2 : 3, margin: 6, gap: 4, footer: 20 };
+}
+function peArrange(pt, a) {
+  const { w: W, h: H } = PRINT_TYPES[pt];
+  const n = Math.max(1, Math.min(PE_MAX, a.count | 0)), cols = Math.max(1, Math.min(4, a.cols | 0)), rows = Math.ceil(n / cols);
+  const m = +a.margin || 0, g = +a.gap || 0, f = +a.footer || 0;
+  const cw = (W - 2 * m - (cols - 1) * g) / cols, ch = (H - 2 * m - f - (rows - 1) * g) / rows;
+  if (cw < PE_MIN || ch < PE_MIN) return null;
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    const r = Math.floor(i / cols), inRow = r === rows - 1 ? n - r * cols : cols, c = i - r * cols, off = ((cols - inRow) * (cw + g)) / 2;
+    out.push({ x: +((m + off + c * (cw + g)) / W).toFixed(5), y: +((m + r * (ch + g)) / H).toFixed(5), w: +(cw / W).toFixed(5), h: +(ch / H).toFixed(5) });
+  }
+  return out;
+}
+function peOpen(src) {
+  const key = sel.products;
+  if (!pe || pe.key !== key) {
+    const b = src || { id: null, name: '', description: '', price: 15, allowQty: true, minQty: 1, maxQty: 20, popular: false, status: 'active', printType: '4x6', slots: [] };
+    const draft = {
+      id: b.id, name: b.name || '', description: b.description || '', price: Number(b.price) || 0, allowQty: b.allowQty !== false,
+      minQty: b.minQty || 1, maxQty: b.maxQty || 20, popular: !!b.popular, status: b.status === 'inactive' ? 'inactive' : 'active',
+      printType: b.printType === '2x6x2' ? '2x6x2' : '4x6', slots: (b.slots || []).map((s) => ({ x: s.x, y: s.y, w: s.w, h: s.h })),
+    };
+    pe = { key, draft, orig: '', sel: 0, tab: 'layout', snap: true, leave: false, gradient: (src && src.gradient) || PE_GRAD, auto: peAutoDefaults(draft.printType, draft.slots.length || 4) };
+    if (!draft.slots.length) draft.slots = peArrange(draft.printType, pe.auto);
+    pe.orig = src ? JSON.stringify(draft) : '';
+  }
+  peRender();
+}
+function peBack() {
+  if (pe && isAdmin() && peDirty()) { pe.leave = true; peRenderSave(); return; }
+  pe = null; sel.products = null; render();
+}
+function peDiscard() {
+  if (!pe.orig || pe.leave) { pe = null; sel.products = null; render(); return; }
+  pe.draft = JSON.parse(pe.orig); pe.sel = 0; pe.leave = false; peRender();
+}
+function peIssues() {
+  const { w: W, h: H } = peDims(), s = pe.draft.slots, warn = [], block = [];
+  const out = s.map((q, i) => (q.x * W < PE_SAFE - 0.05 || q.y * H < PE_SAFE - 0.05 || (q.x + q.w) * W > W - PE_SAFE + 0.05 || (q.y + q.h) * H > H - PE_SAFE + 0.05 ? i + 1 : 0)).filter(Boolean);
+  if (out.length) warn.push(`Photo ${out.join(', ')} ${out.length > 1 ? 'are' : 'is'} within 3 mm of the paper edge and may be trimmed by the printer.`);
+  const ov = [];
+  for (let i = 0; i < s.length; i++) for (let j = i + 1; j < s.length; j++) { const a = s[i], c = s[j]; if (a.x < c.x + c.w - 1e-4 && c.x < a.x + a.w - 1e-4 && a.y < c.y + c.h - 1e-4 && c.y < a.y + a.h - 1e-4) ov.push(`${i + 1} & ${j + 1}`); }
+  if (ov.length) block.push(`Photos overlap: ${ov.join(', ')}. Move them apart before saving.`);
+  return { warn, block, out };
+}
+
+function peRender() {
+  const d = pe.draft, ro = !isAdmin(), dis = ro ? 'disabled' : '';
+  const typeBtn = (v, title, sub, svg) => `<button type="button" class="pe-type" aria-pressed="${d.printType === v}" ${dis} onclick="peSetType('${v}')">${svg}<b>${title}</b><small>${sub}</small></button>`;
+  $('#content').innerHTML = `${storageBanner()}
+  <div class="pe-crumb"><button type="button" onclick="peBack()">Products</button><span>/</span><span id="peCrumb">${esc(d.name || 'New product')}</span></div>
+  <div class="pe-head"><h2 id="peTitle">${esc(d.name || 'New product')}</h2>${d.id ? `<span class="hint" style="margin:0">Changes reach every kiosk within 30 seconds, when no customer is using it.</span>` : ''}</div>
+  <div class="pe-grid ${ro ? 'pe-ro' : ''}">
+    <div class="pe-form">
+      <div class="field"><label for="peName">Product name <span class="req">*</span></label><input class="input" id="peName" maxlength="60" placeholder="e.g. Photo Strip Classic" value="${esc(d.name)}" ${dis} oninput="pe.draft.name=this.value;peLight()"></div>
+      <div><div class="flabel">Print type</div><div class="pe-types">
+        ${typeBtn('4x6', '4 × 6', 'One full print, 102 × 152 mm', '<svg width="20" height="28" viewBox="0 0 20 28"><rect x="1" y="1" width="18" height="26" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>')}
+        ${typeBtn('2x6x2', '2 × 6 ×2', 'Two strips, printer cuts the 4R', '<svg width="20" height="28" viewBox="0 0 20 28"><rect x="1" y="1" width="18" height="26" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="10" y1="1" x2="10" y2="27" stroke="#C62828" stroke-width="1.2" stroke-dasharray="2 2"/></svg>')}
+      </div></div>
+      <div class="field"><label for="pePrice">Price <span class="req">*</span></label><div class="pe-money"><span>RM</span><input class="input" id="pePrice" type="number" min="0.5" step="0.5" value="${d.price}" ${dis} oninput="pe.draft.price=Number(this.value)||0;peLight()"></div></div>
+      <div class="pe-div"></div>
+      <label class="pe-row"><span><span class="t">Show on kiosk</span><span class="s">Turn off to hide without deleting.</span></span><span class="toggle"><input type="checkbox" id="peActive" ${d.status === 'active' ? 'checked' : ''} ${dis} onchange="pe.draft.status=this.checked?'active':'inactive';peLight()"><span></span></span></label>
+      <details class="pe-more"><summary>More options</summary><div class="in">
+        <div class="field"><label for="peDesc">Description</label><textarea class="input" id="peDesc" rows="2" maxlength="200" ${dis} oninput="pe.draft.description=this.value;peLight()">${esc(d.description)}</textarea></div>
+        <label class="pe-row"><span class="t">"Popular" badge</span><span class="toggle"><input type="checkbox" ${d.popular ? 'checked' : ''} ${dis} onchange="pe.draft.popular=this.checked;peLight()"><span></span></span></label>
+        <label class="pe-row"><span class="t">Customer can choose quantity</span><span class="toggle"><input type="checkbox" ${d.allowQty ? 'checked' : ''} ${dis} onchange="pe.draft.allowQty=this.checked;peLight()"><span></span></span></label>
+        <div class="grid2"><div class="field"><label for="peMin">Min qty</label><input class="input" id="peMin" type="number" min="1" max="99" value="${d.minQty}" ${dis} oninput="pe.draft.minQty=Number(this.value)||1;peLight()"></div>
+        <div class="field"><label for="peMax">Max qty</label><input class="input" id="peMax" type="number" min="1" max="99" value="${d.maxQty}" ${dis} oninput="pe.draft.maxQty=Number(this.value)||1;peLight()"></div></div>
+      </div></details>
+      ${d.id && !ro ? `<button type="button" class="pe-del" onclick="deleteProduct('${d.id}')">Delete product</button>` : ''}
     </div>
-    <div class="hint">${icon('info', 13)} Photo count and size follow the kiosk print layout, so they can't be changed here.</div>
+    <div class="card pe-work">
+      <div class="pe-bar">
+        <div class="pe-tabs" role="tablist"><button type="button" role="tab" aria-selected="${pe.tab === 'layout'}" onclick="pe.tab='layout';peRender()">Photo layout</button><button type="button" role="tab" aria-selected="${pe.tab === 'kiosk'}" onclick="pe.tab='kiosk';peRender()">Kiosk preview</button></div>
+        ${pe.tab === 'layout' && !ro ? `<div class="pe-tools">
+          <span class="l">Photos</span><span class="pe-step"><button type="button" aria-label="Fewer photos" onclick="peCount(-1)" ${d.slots.length <= 1 ? 'disabled' : ''}>−</button><output>${d.slots.length}</output><button type="button" aria-label="More photos" onclick="peCount(1)" ${d.slots.length >= PE_MAX ? 'disabled' : ''}>+</button></span>
+          <span class="l">Columns</span><span class="pe-step"><button type="button" aria-label="Fewer columns" onclick="peCols(-1)" ${pe.auto.cols <= 1 ? 'disabled' : ''}>−</button><output>${pe.auto.cols}</output><button type="button" aria-label="More columns" onclick="peCols(1)" ${pe.auto.cols >= 4 ? 'disabled' : ''}>+</button></span>
+          <span class="pe-vsep"></span>
+          <button type="button" class="pe-ib" title="Add photo" aria-label="Add photo" onclick="peAdd()" ${d.slots.length >= PE_MAX ? 'disabled' : ''}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M12 8v8M8 12h8"/></svg></button>
+          <button type="button" class="pe-ib" title="Duplicate photo" aria-label="Duplicate photo" onclick="peDup()" ${d.slots.length >= PE_MAX ? 'disabled' : ''}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button>
+          <button type="button" class="pe-ib" title="Remove photo" aria-label="Remove photo" onclick="peDel()" ${d.slots.length <= 1 ? 'disabled' : ''}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 7h14M10 7V5h4v2M7 7l1 13h8l1-13"/></svg></button>
+          <button type="button" class="pe-ib" title="Arrange evenly" aria-label="Arrange evenly" onclick="peAuto()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg></button>
+        </div>` : ''}
+      </div>
+      <div class="pe-stage" id="peStage"></div>
+    </div>
+    <aside class="pe-insp" id="peInsp"></aside>
   </div>
-  <div class="panel-sec"><h4>Pricing</h4>
-    <div class="field" style="max-width:170px"><label>Price (RM) <span class="req">*</span></label><input class="input" name="price" type="number" min="0.5" step="0.5" value="${p.price}" ${ro ? 'disabled' : ''} required></div>
-  </div>
-  <div class="panel-sec"><h4>Quantity</h4>
-    <div class="srow"><label>Allow Quantity Selection</label><label class="toggle"><input type="checkbox" name="allowQty" ${p.allowQty !== false ? 'checked' : ''} ${ro ? 'disabled' : ''}><span></span></label></div>
-    <div class="grid2"><div class="field"><label>Minimum Quantity</label><input class="input" type="number" name="minQty" min="1" max="99" value="${p.minQty || 1}" ${ro ? 'disabled' : ''}></div>
-    <div class="field"><label>Maximum Quantity</label><input class="input" type="number" name="maxQty" min="1" max="99" value="${p.maxQty || 20}" ${ro ? 'disabled' : ''}></div></div>
-  </div>
-  <div class="panel-sec"><h4>Display</h4>
-    <div class="srow"><label>Show "Popular" badge</label><label class="toggle"><input type="checkbox" name="popular" ${p.popular ? 'checked' : ''} ${ro ? 'disabled' : ''}><span></span></label></div>
-    <div class="field" style="margin:0"><label>Status</label><div class="radio-row"><label><input type="radio" name="status" value="active" ${p.status !== 'inactive' ? 'checked' : ''} ${ro ? 'disabled' : ''}> Active</label><label><input type="radio" name="status" value="inactive" ${p.status === 'inactive' ? 'checked' : ''} ${ro ? 'disabled' : ''}> Inactive</label></div></div>
-    ${p.id && !ro ? `<button type="button" class="btn sm danger" style="margin-top:16px" onclick="deleteProduct('${p.id}')">${icon('trash', 14)} Delete product</button>` : ''}
-  </div>
-  ${ro ? '' : `<div class="panel-foot"><button type="button" class="btn" onclick="closePanel('products')">Cancel</button><button class="btn primary" type="submit">Save Changes</button></div>`}
-  </form>`;
+  <div class="pe-save" id="peSave"></div>`;
+  peStage(); peInsp(); peRenderSave();
 }
-function newProduct() {
-  prodDraft = { layout: 'strip', name: '', description: '', price: 15, allowQty: true, minQty: 1, maxQty: 20, status: 'active', popular: false };
-  sel.products = '__new'; render();
+function peLight() {
+  const n = pe.draft.name || 'New product';
+  $('#peTitle').textContent = n; $('#peCrumb').textContent = n;
+  pe.leave = false; peRenderSave();
+  if (pe.tab === 'kiosk') peStage();
 }
-async function saveProduct(e) {
+function peStage() {
+  const st = $('#peStage'); if (!st) return;
+  const d = pe.draft;
+  if (pe.tab === 'kiosk') {
+    const list = prodCache.filter((p) => p.status === 'active' && p.id !== d.id);
+    const cur = { ...d, gradient: pe.gradient, photos: d.slots.length };
+    const all = d.status === 'active' ? (d.id ? prodCache.filter((p) => p.status === 'active').map((p) => (p.id === d.id ? cur : p)) : [...list, cur]) : list;
+    st.innerHTML = `<div><div class="pe-kiosk"><div class="kh">CHOOSE YOUR PRINT</div><div class="pe-kcards">${all.map((p) => `<div class="pe-kcard ${p === cur ? 'hl' : ''}"><div class="pv" style="background:${esc(p.gradient || PE_GRAD)}">${slotThumb(p, 56, '#FFFFFF')}</div><b>${esc(p.name || 'New product')}</b><small>${p.photos} photo${p.photos > 1 ? 's' : ''} · ${p.printType === '2x6x2' ? '2 × 6 inch' : '4 × 6 inch'}</small><span class="pr">RM ${Number(p.price || 0).toFixed(2)}</span></div>`).join('') || '<div class="pe-note" style="color:#9CA3AF">No active products.</div>'}</div></div>
+      <div class="pe-cap">${d.status === 'active' ? 'How the product list will look on the kiosk' : 'This product is hidden — turn on “Show on kiosk” to list it'}</div></div>`;
+    return;
+  }
+  const { w: W, h: H } = peDims(), strip = d.printType === '2x6x2';
+  const avail = Math.max(220, st.clientWidth - 40);
+  pe.px = Math.min(470 / H, (strip ? avail * 0.5 : avail) / W, 4.2);
+  const px = pe.px, iss = peIssues();
+  const bottom = Math.max(...d.slots.map((s) => s.y + s.h)) * H, logoH = Math.max(0, H - bottom);
+  st.innerHTML = `<div><div class="pe-canvas" id="peCanvas" style="width:${W * px}px;height:${H * px}px">
+      <div class="pe-safe" style="inset:${PE_SAFE * px}px"></div>
+      ${logoH >= 6 ? `<div class="pe-logo" style="height:${logoH * px}px;font-size:${Math.min(13, W * px / 11)}px">CRAZY MOMENT</div>` : ''}
+      ${d.slots.map((s, i) => `<div class="pe-slot ${i === pe.sel ? 'sel' : ''} ${iss.out.includes(i + 1) ? 'bad' : ''}" data-i="${i}" tabindex="0" role="button" aria-label="Photo ${i + 1}" style="left:${s.x * W * px}px;top:${s.y * H * px}px;width:${s.w * W * px}px;height:${s.h * H * px}px">${i + 1}<span class="h"></span></div>`).join('')}
+    </div><div class="pe-cap">${strip ? 'One strip · 51 × 152 mm' : '4R · 102 × 152 mm'}${logoH >= 6 ? ` · logo space ${r1(logoH)} mm` : ''}</div></div>
+    ${strip ? `<div>${slotThumb(d, Math.round(Math.min(150, 101.6 * px * 0.55)), '#FFFFFF')}<div class="pe-cap">Printed sheet<br>printer cuts at the red line</div></div>` : ''}`;
+  if (!isAdmin()) return;
+  st.querySelectorAll('.pe-slot').forEach((el) => {
+    el.addEventListener('pointerdown', (e) => peDrag(e, +el.dataset.i, e.target.classList.contains('h')));
+    el.addEventListener('keydown', (e) => peKey(e, +el.dataset.i));
+  });
+}
+function peInsp() {
+  const el = $('#peInsp'); if (!el) return;
+  const { w: W, h: H } = peDims(), q = pe.draft.slots[pe.sel], ro = !isAdmin(), dis = ro || !q ? 'disabled' : '', iss = peIssues();
+  const ratio = q ? (q.w * W) / (q.h * H) : 1;
+  const named = [[1, '1:1'], [4 / 3, '4:3'], [3 / 4, '3:4'], [3 / 2, '3:2'], [2 / 3, '2:3'], [16 / 9, '16:9']].find(([v]) => Math.abs(v - ratio) < 0.03);
+  const inp = (k, lbl, v) => `<div class="field"><label for="peS${k}">${lbl}</label><input class="input" id="peS${k}" type="number" step="0.5" value="${q ? r1(v) : ''}" ${dis} onchange="peSlotInput()"></div>`;
+  el.innerHTML = `<div><div class="pe-sec">${q ? `Photo ${pe.sel + 1}` : 'Photo'}</div>
+      <div class="grid2">${inp('X', 'X (mm)', q && q.x * W)}${inp('Y', 'Y (mm)', q && q.y * H)}${inp('W', 'Width (mm)', q && q.w * W)}${inp('H', 'Height (mm)', q && q.h * H)}</div>
+      <div class="pe-note" style="margin-top:8px">${q ? `Shape ${named ? named[1] : ratio.toFixed(2)}. Customer photos are cropped to this shape; they can zoom and move them on the kiosk.` : 'Select a photo on the layout.'}</div></div>
+    ${ro ? '' : `<div><div class="pe-sec">Spacing for “Arrange evenly”</div><div class="grid2">
+      <div class="field"><label for="peM">Edge (mm)</label><input class="input" id="peM" type="number" min="0" max="20" step="0.5" value="${pe.auto.margin}" onchange="pe.auto.margin=Number(this.value)||0;peAuto()"></div>
+      <div class="field"><label for="peG">Gap (mm)</label><input class="input" id="peG" type="number" min="0" max="20" step="0.5" value="${pe.auto.gap}" onchange="pe.auto.gap=Number(this.value)||0;peAuto()"></div>
+      <div class="field" style="grid-column:1/-1"><label for="peF">Logo space at bottom (mm)</label><input class="input" id="peF" type="number" min="0" max="60" step="1" value="${pe.auto.footer}" onchange="pe.auto.footer=Number(this.value)||0;peAuto()"></div></div></div>`}
+    <div>${iss.block.map((m) => `<div class="pe-alert">●<span>${m}</span></div>`).join('')}${iss.warn.map((m) => `<div class="pe-alert" style="color:var(--amber)">●<span>${m}</span></div>`).join('')}${!iss.block.length && !iss.warn.length ? '<div class="pe-ok">● Ready to print</div>' : ''}</div>
+    ${ro ? '' : `<label class="pe-row"><span class="pe-note" style="color:var(--ink)">Snap to 0.5 mm</span><span class="toggle"><input type="checkbox" ${pe.snap ? 'checked' : ''} onchange="pe.snap=this.checked"><span></span></span></label>`}`;
+}
+function peRenderSave() {
+  const el = $('#peSave'); if (!el) return;
+  if (!isAdmin() || (!peDirty() && !pe.leave)) { el.innerHTML = ''; return; }
+  const msg = pe.leave ? 'You have unsaved changes.' : pe.orig ? 'Unsaved changes' : 'New product — not saved yet';
+  el.innerHTML = `<div class="in"><span class="msg">${msg}</span><span style="display:flex;gap:6px"><button type="button" class="btn ghost" onclick="peDiscard()">${pe.leave ? 'Discard & leave' : 'Discard'}</button><button type="button" class="btn primary" id="peSaveBtn" onclick="peSave()">Save &amp; send to kiosks</button></span></div>`;
+}
+function peChanged() { pe.leave = false; peStage(); peInsp(); peRenderSave(); }
+
+// ---------- Editor actions ----------
+function peSetType(t) {
+  if (pe.draft.printType === t) return;
+  pe.draft.printType = t;
+  pe.auto = peAutoDefaults(t, pe.draft.slots.length);
+  pe.draft.slots = peArrange(t, pe.auto) || peArrange(t, peAutoDefaults(t, 1));
+  pe.sel = 0; pe.leave = false; peRender();
+}
+function peRearrange() {
+  const s = peArrange(pe.draft.printType, pe.auto);
+  if (!s) { toast('Not enough room — reduce photos, columns, gap or logo space', true); return false; }
+  pe.draft.slots = s; pe.sel = Math.min(pe.sel, s.length - 1); pe.leave = false; peRender(); return true;
+}
+function peCount(dlt) { const old = pe.auto.count; pe.auto.count = Math.max(1, Math.min(PE_MAX, pe.draft.slots.length + dlt)); if (!peRearrange()) pe.auto.count = old; }
+function peCols(dlt) { const old = pe.auto.cols; pe.auto.cols = Math.max(1, Math.min(4, pe.auto.cols + dlt)); pe.auto.count = pe.draft.slots.length; if (!peRearrange()) { pe.auto.cols = old; peRender(); } }
+function peAuto() { pe.auto.count = pe.draft.slots.length; peRearrange(); }
+function peAdd() {
+  const { w: W, h: H } = peDims(), sw = Math.min(30, W - 2 * PE_SAFE);
+  pe.draft.slots.push({ x: +(PE_SAFE / W).toFixed(5), y: +(PE_SAFE / H).toFixed(5), w: +(sw / W).toFixed(5), h: +(sw * 0.75 / H).toFixed(5) });
+  pe.sel = pe.draft.slots.length - 1; pe.leave = false; peRender();
+}
+function peDup() {
+  const q = pe.draft.slots[pe.sel]; if (!q) return;
+  const { w: W, h: H } = peDims();
+  pe.draft.slots.push({ ...q, x: +Math.min(q.x + 5 / W, 1 - q.w).toFixed(5), y: +Math.min(q.y + 5 / H, 1 - q.h).toFixed(5) });
+  pe.sel = pe.draft.slots.length - 1; pe.leave = false; peRender();
+}
+function peDel() { if (pe.draft.slots.length <= 1) return; pe.draft.slots.splice(pe.sel, 1); pe.sel = Math.max(0, pe.sel - 1); pe.leave = false; peRender(); }
+function peSlotInput() {
+  const { w: W, h: H } = peDims(), q = pe.draft.slots[pe.sel]; if (!q) return;
+  const v = (id) => Number($('#peS' + id).value);
+  const w = Math.max(PE_MIN, Math.min(v('W'), W)), h = Math.max(PE_MIN, Math.min(v('H'), H));
+  const x = Math.max(0, Math.min(v('X'), W - w)), y = Math.max(0, Math.min(v('Y'), H - h));
+  Object.assign(q, { x: +(x / W).toFixed(5), y: +(y / H).toFixed(5), w: +(w / W).toFixed(5), h: +(h / H).toFixed(5) });
+  peChanged();
+}
+const peSnap = (mm) => (pe.snap ? Math.round(mm * 2) / 2 : Math.round(mm * 10) / 10);
+function peDrag(e, i, resize) {
   e.preventDefault();
-  const f = new FormData(e.target);
-  const body = { name: f.get('name'), description: f.get('description'), price: Number(f.get('price')), allowQty: f.get('allowQty') === 'on', minQty: Number(f.get('minQty')), maxQty: Number(f.get('maxQty')), popular: f.get('popular') === 'on', status: f.get('status') };
-  try {
-    if (sel.products === '__new') { const p = await api('POST', '/api/admin/products', { ...body, layout: prodDraft.layout }); sel.products = p.id; toast('Product created — kiosks will update'); }
-    else { await api('PUT', '/api/admin/products/' + sel.products, body); toast('Saved — kiosks will pick up the change within a minute'); }
-    render();
-  } catch (ex) { toast(ex.message, true); }
+  const { w: W, h: H } = peDims(), q0 = { ...pe.draft.slots[i] }, sx = e.clientX, sy = e.clientY, px = pe.px;
+  if (pe.sel !== i) { pe.sel = i; $('#peCanvas').querySelectorAll('.pe-slot').forEach((n) => n.classList.toggle('sel', +n.dataset.i === i)); peInsp(); }
+  const node = e.currentTarget; try { node.setPointerCapture(e.pointerId); } catch (_) {}
+  let moved = false;
+  const move = (ev) => {
+    const dx = (ev.clientX - sx) / px, dy = (ev.clientY - sy) / px; if (Math.abs(dx) + Math.abs(dy) > 0.3) moved = true;
+    const q = pe.draft.slots[i];
+    if (resize) {
+      const w = Math.max(PE_MIN, Math.min(peSnap(q0.w * W + dx), W - q0.x * W)), h = Math.max(PE_MIN, Math.min(peSnap(q0.h * H + dy), H - q0.y * H));
+      q.w = +(w / W).toFixed(5); q.h = +(h / H).toFixed(5);
+    } else {
+      const x = Math.max(0, Math.min(peSnap(q0.x * W + dx), W - q0.w * W)), y = Math.max(0, Math.min(peSnap(q0.y * H + dy), H - q0.h * H));
+      q.x = +(x / W).toFixed(5); q.y = +(y / H).toFixed(5);
+    }
+    Object.assign(node.style, { left: q.x * W * px + 'px', top: q.y * H * px + 'px', width: q.w * W * px + 'px', height: q.h * H * px + 'px' });
+  };
+  const up = () => {
+    node.removeEventListener('pointermove', move); node.removeEventListener('pointerup', up); node.removeEventListener('pointercancel', up);
+    if (moved) { peChanged(); const n = $(`#peCanvas .pe-slot[data-i="${i}"]`); if (n) n.focus({ preventScroll: true }); }
+  };
+  node.addEventListener('pointermove', move); node.addEventListener('pointerup', up); node.addEventListener('pointercancel', up);
 }
+function peKey(e, i) {
+  const dir = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key]; if (!dir) return;
+  e.preventDefault();
+  const { w: W, h: H } = peDims(), q = pe.draft.slots[i], st = e.shiftKey ? 5 : 0.5;
+  q.x = +(Math.max(0, Math.min(q.x * W + dir[0] * st, W - q.w * W)) / W).toFixed(5);
+  q.y = +(Math.max(0, Math.min(q.y * H + dir[1] * st, H - q.h * H)) / H).toFixed(5);
+  pe.sel = i; peChanged(); const n = $(`#peCanvas .pe-slot[data-i="${i}"]`); if (n) n.focus();
+}
+async function peSave() {
+  const d = pe.draft;
+  if (!d.name.trim()) { toast('Enter a product name', true); $('#peName').focus(); return; }
+  if (!(d.price > 0)) { toast('Price must be more than RM0', true); $('#pePrice').focus(); return; }
+  if (d.minQty > d.maxQty) { toast('Minimum quantity cannot be more than maximum', true); return; }
+  if (peIssues().block.length) { toast('Photos overlap — move them apart before saving', true); return; }
+  const body = { name: d.name.trim(), description: d.description, price: d.price, allowQty: d.allowQty, minQty: d.minQty, maxQty: d.maxQty, popular: d.popular, status: d.status, printType: d.printType, slots: d.slots };
+  const btn = $('#peSaveBtn'); if (btn) btn.disabled = true;
+  try {
+    const saved = d.id ? await api('PUT', '/api/admin/products/' + d.id, body) : await api('POST', '/api/admin/products', body);
+    const leave = pe.leave, i = prodCache.findIndex((x) => x.id === saved.id);
+    if (i >= 0) prodCache[i] = { ...prodCache[i], ...saved }; else prodCache.push({ ...saved, sold: 0 });
+    toast(d.id ? 'Saved — kiosks update within 30 seconds when idle' : 'Product created — kiosks update within 30 seconds when idle');
+    pe = null;
+    if (leave) { sel.products = null; render(); return; }
+    sel.products = saved.id; peOpen(prodCache.find((x) => x.id === saved.id));
+  } catch (ex) { toast(ex.message, true); if (btn) btn.disabled = false; }
+}
+window.addEventListener('resize', () => { clearTimeout(window._peR); window._peR = setTimeout(() => { if (pe && route === 'products' && $('#peStage')) peStage(); }, 150); });
+window.addEventListener('beforeunload', (e) => { if (pe && route === 'products' && isAdmin() && peDirty()) { e.preventDefault(); e.returnValue = ''; } });
 function deleteProduct(id) {
-  confirmBox('Delete product?', 'The product will disappear from all kiosks. Past orders stay in your records.', 'Delete', async () => { await api('DELETE', '/api/admin/products/' + id); sel.products = null; toast('Product deleted'); render(); }, true);
+  confirmBox('Delete product?', 'The product will disappear from all kiosks. Past orders stay in your records.', 'Delete', async () => { await api('DELETE', '/api/admin/products/' + id); sel.products = null; pe = null; toast('Product deleted — removed from kiosks'); render(); }, true);
 }
 function enableRowDrag(tbody, onDone) {
   let dragEl = null;
@@ -1056,7 +1354,7 @@ async function pageOrders() {
       ${d.orders.map((o) => `<tr class="${sel.orders === o.id ? 'sel' : ''}" onclick="sel.orders='${o.id}';render()">
         <td><div class="strong">${o.id}</div><div class="sub-line">${fmtDT(o.createdAt)}</div></td>
         <td>${esc(o.kioskName)}<div class="sub-line">${esc(o.location)}</div></td>
-        <td><div style="display:flex;gap:10px;align-items:center">${o.layout ? layoutPreview(o.layout, '#F3EEE2', null, 28) : ''}<div>${esc(o.productName)}<div class="sub-line">${esc(o.size)}</div></div></div></td>
+        <td><div style="display:flex;gap:10px;align-items:center">${orderThumb(o, 28)}<div>${esc(o.productName)}<div class="sub-line">${esc(o.size)}</div></div></div></td>
         <td>${o.qty}</td><td class="strong">${rm0(o.total)}</td>
         <td>${payMethod(o.payMethod)}<div class="sub-line">${payBadge(o.paymentStatus)} ${o.paymentVerified ? '' : '<span class="badge grey">Demo</span>'}</div></td>
         <td>${orderBadge(o.status)}</td></tr>`).join('') || `<tr><td colspan="7" class="empty">No orders ${f.date ? 'on ' + fmtDate(f.date + 'T04:00:00Z') : 'yet'}</td></tr>`}
@@ -1073,7 +1371,7 @@ function orderPanel(o) {
   <div class="panel-sec" style="border-top:none;padding-top:2px">${orderBadge(o.status)}
     <div class="big-id" style="margin:8px 0 6px">${o.id}</div>
     <div style="display:flex;gap:16px;color:var(--ink-2);flex-wrap:wrap"><span style="display:flex;gap:6px;align-items:center">${icon('kiosk', 16)} ${esc(o.kioskName)}</span><span style="display:flex;gap:6px;align-items:center">${icon('calendar', 16)} ${fmtDT(o.createdAt)}</span></div></div>
-  <div class="panel-sec"><h4>Product</h4><div style="display:flex;gap:16px">${o.layout ? layoutPreview(o.layout, '#F3EEE2', null, 70) : ''}
+  <div class="panel-sec"><h4>Product</h4><div style="display:flex;gap:16px">${orderThumb(o, 70)}
     <dl class="kv" style="flex:1"><dt>Product</dt><dd>${esc(o.productName)}</dd><dt>Size</dt><dd>${esc(o.size)}</dd><dt>Template</dt><dd>${esc(o.templateName || '—')}</dd><dt>Quantity</dt><dd>${o.qty}</dd><dt>Unit Price</dt><dd>${rm0(o.unitPrice)}</dd><dt>Total</dt><dd>${rm0(o.total)}</dd></dl></div></div>
   <div class="panel-sec"><h4>Payment</h4><dl class="kv"><dt>Method</dt><dd>${o.payMethod === 'card' ? 'Debit / Credit Card' : 'DuitNow QR'}</dd><dt>Reference</dt><dd>${esc(o.paymentRef || '—')}</dd><dt>Amount</dt><dd>${rm0(o.total)}</dd><dt>Status</dt><dd>${payBadge(o.paymentStatus)}</dd><dt>Paid at</dt><dd>${fmtDT(o.paidAt)}</dd></dl>
     ${o.paymentVerified ? '' : `<div class="note blue" style="margin-top:12px">${icon('info', 16)}<div>Demo payment — the kiosk simulated this payment. Real DuitNow/card confirmation comes in Phase 2.</div></div>`}</div>

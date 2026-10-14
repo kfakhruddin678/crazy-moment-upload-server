@@ -1,5 +1,14 @@
 # Crazy Moment — Cloud Server (Fasa 1)
 
+## Baharu dalam v1.2 — Editor susunan foto produk
+
+- **Products** di dashboard kini buka editor penuh: nama, **jenis cetakan** (4×6 atau 2×6 ×2), **susunan petak foto** (seret untuk alih, tarik sudut untuk ubah saiz, tambah/buang petak, susun automatik), harga dan *Show on kiosk*.
+- Kiosk ambil produk, bilangan foto & susunan baharu secara automatik dalam ≤ 30 saat (hanya bila tiada pelanggan).
+- 2×6 ×2: reka satu strip sahaja — kiosk cetak dua salinan & printer potong di tengah (queue `CM-DNP-2inch`).
+- 4 produk asal (Photo Strip, Duo, Single, 12 Grid) kekal guna enjin cetak asal selagi susunannya tidak diubah.
+- Perlu **kedua-dua**: `server.js` + `admin.html` (GitHub → Render) **dan** fail kiosk `crazy_moment_kiosk_software.html` v1.2. Kiosk lama tidak akan papar produk susunan baharu.
+
+
 Satu server untuk **tiga pihak**:
 
 | Pihak | Alamat | Fungsi |

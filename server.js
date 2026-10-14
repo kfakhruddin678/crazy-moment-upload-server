@@ -33,7 +33,7 @@ const MAX_SESSIONS = Number(process.env.MAX_SESSIONS || 60);
 const GRACE_MS = 5 * 60_000;
 const ONLINE_MS = 90_000;          // kiosk dianggap offline jika tiada heartbeat > 90 saat
 const TZ_OFFSET_MS = 8 * 3600_000; // Asia/Kuala_Lumpur (UTC+8, tiada DST)
-const APP_VERSION = '1.1.0';
+const APP_VERSION = '1.2.0';
 
 const store = new Store();
 
@@ -46,6 +46,55 @@ const LAYOUTS = {
   grid12: { name: '12 Photo Grid', photos: 12, size: '4 × 6 inch', output: '1 print',  legacyKey: 'photo-grid-12' },
 };
 const LEGACY_KEYS = Object.fromEntries(Object.entries(LAYOUTS).map(([k, v]) => [v.legacyKey, k]));
+
+// ---------- Jenis cetakan & susunan petak foto (v1.2) ----------
+// Produk boleh guna salah satu layout asal di atas, ATAU layout 'custom' yang direka di
+// dashboard: jenis cetakan (4x6 / 2x6x2) + senarai petak {x,y,w,h} dalam pecahan 0–1
+// kawasan cetak (untuk 2x6x2: kawasan SATU strip 50.8 x 152.4 mm — printer cetak 2 salinan
+// dan potong di tengah melalui queue CM-DNP-2inch).
+const PRINT_TYPES = {
+  '4x6':   { w: 101.6, h: 152.4, size: '4 × 6 inch', output: '1 print' },
+  '2x6x2': { w: 50.8,  h: 152.4, size: '2 × 6 inch', output: '2 strips' },
+};
+const MAX_SLOTS = 12;
+const MIN_SLOT_MM = 5;
+function mmSlots(type, list) {
+  const { w, h } = PRINT_TYPES[type];
+  return list.map(([x, y, sw, sh]) => ({ x: +(x / w).toFixed(5), y: +(y / h).toFixed(5), w: +(sw / w).toFixed(5), h: +(sh / h).toFixed(5) }));
+}
+// Kedudukan TEPAT layout asal (sama dengan STRIP_MM / GRID12_MM / DUO_MM / SINGLE_MM dalam kiosk)
+const LAYOUT_SPEC = {
+  strip:  { printType: '2x6x2', slots: mmSlots('2x6x2', [0, 1, 2, 3].map((i) => [4, 3 + i * 33, 42.8, 30])) },
+  duo:    { printType: '4x6', slots: mmSlots('4x6', [[9.3, 18, 83, 58.6], [9.3, 18 + 58.6 + 5.2, 83, 58.6]]) },
+  single: { printType: '4x6', slots: mmSlots('4x6', [[9.3, 19, 83, 118]]) },
+  grid12: { printType: '4x6', slots: mmSlots('4x6', Array.from({ length: 12 }, (_, i) => [9.3 + (i % 3) * (24.8 + 4.3), 14 + Math.floor(i / 3) * (24.8 + 4.7333), 24.8, 24.8])) },
+};
+const isCustom = (p) => p && p.layout === 'custom' && PRINT_TYPES[p.printType] && Array.isArray(p.slots) && p.slots.length > 0;
+const printTypeOf = (p) => (isCustom(p) ? p.printType : (LAYOUT_SPEC[p && p.layout] || LAYOUT_SPEC.single).printType);
+const slotsOf = (p) => (isCustom(p) ? p.slots : (LAYOUT_SPEC[p && p.layout] || LAYOUT_SPEC.single).slots);
+const photosOf = (p) => slotsOf(p).length;
+const sizeOf = (p) => PRINT_TYPES[printTypeOf(p)].size;
+const outputOf = (p) => PRINT_TYPES[printTypeOf(p)].output;
+const sameSlots = (a, b) => a.length === b.length && a.every((s, i) => ['x', 'y', 'w', 'h'].every((k) => Math.abs(s[k] - b[i][k]) < 0.0015));
+function productView(p) {
+  return { ...p, printType: printTypeOf(p), slots: slotsOf(p), photos: photosOf(p), size: sizeOf(p), output: outputOf(p) };
+}
+function cleanSlots(type, raw) {
+  if (!PRINT_TYPES[type]) return { error: 'Choose a print type (4x6 or 2x6x2)' };
+  if (!Array.isArray(raw) || !raw.length) return { error: 'Add at least one photo slot' };
+  if (raw.length > MAX_SLOTS) return { error: `Maximum ${MAX_SLOTS} photos per product` };
+  const { w: W, h: H } = PRINT_TYPES[type];
+  const out = [];
+  for (const [i, r] of raw.entries()) {
+    const v = ['x', 'y', 'w', 'h'].map((k) => Number(r && r[k]));
+    if (!v.every(Number.isFinite)) return { error: `Photo ${i + 1}: invalid position` };
+    let [x, y, w, h] = v.map((n) => Math.min(1, Math.max(0, n)));
+    if (w * W < MIN_SLOT_MM || h * H < MIN_SLOT_MM) return { error: `Photo ${i + 1} is too small (minimum ${MIN_SLOT_MM} mm)` };
+    if (x + w > 1.0005 || y + h > 1.0005) return { error: `Photo ${i + 1} goes outside the paper` };
+    out.push({ x: +x.toFixed(5), y: +y.toFixed(5), w: +w.toFixed(5), h: +h.toFixed(5) });
+  }
+  return { slots: out };
+}
 const ALLOWED_MIME = /^image\/(jpeg|png|webp|heic|heif)$/i;
 const ASSET_MIME = /^image\/(jpeg|png|webp)$/i;
 
@@ -116,8 +165,7 @@ async function seed() {
   const t = now();
   if (!store.count('products')) {
     for (const [i, p] of SEED_PRODUCTS.entries()) {
-      const L = LAYOUTS[p.layout];
-      await store.put('products', p.id, { ...p, photos: L.photos, size: L.size, output: L.output, allowQty: true, minQty: 1, maxQty: 20, status: 'active', sort: i + 1, createdAt: t, updatedAt: t });
+      await store.put('products', p.id, { ...p, photos: photosOf(p), size: sizeOf(p), output: outputOf(p), allowQty: true, minQty: 1, maxQty: 20, status: 'active', sort: i + 1, createdAt: t, updatedAt: t });
     }
   }
   if (!store.count('templates')) {
@@ -330,7 +378,8 @@ function kioskConfig(req) {
   const s = settings();
   const b = baseUrl(req);
   const products = store.all('products').filter((p) => p.status === 'active').sort((a, z) => a.sort - z.sort).map((p) => ({
-    id: p.id, layout: p.layout, name: p.name, description: p.description, photos: LAYOUTS[p.layout].photos, size: LAYOUTS[p.layout].size,
+    id: p.id, layout: isCustom(p) ? 'custom' : p.layout, name: p.name, description: p.description, photos: photosOf(p), size: sizeOf(p),
+    printType: printTypeOf(p), slots: slotsOf(p),
     price: p.price, icon: p.icon, popular: !!p.popular, gradient: p.gradient,
     allowQty: p.allowQty !== false, minQty: p.minQty || 1, maxQty: p.maxQty || 20,
   }));
@@ -450,7 +499,7 @@ async function handle(req, res) {
   // ---------- Public ----------
   if (m === 'GET' && p === '/api/products') {
     const out = {};
-    for (const pr of store.all('products')) out[pr.id] = { name: pr.name, required: LAYOUTS[pr.layout].photos, size: LAYOUTS[pr.layout].size, layout: pr.layout };
+    for (const pr of store.all('products')) out[pr.id] = { name: pr.name, required: photosOf(pr), size: sizeOf(pr), layout: pr.layout, printType: printTypeOf(pr) };
     return json(res, 200, out);
   }
   if (m === 'GET' && seg[1] === 'assets' && seg[2]) {
@@ -480,7 +529,7 @@ async function handleSessions(req, res, m, seg, p) {
     const t = now();
     const s = {
       id: newId(), kioskId: auth.kiosk.id, location: auth.kiosk.location,
-      productKey: prod.id, product: { name: prod.name }, required: LAYOUTS[prod.layout].photos, photos: [],
+      productKey: prod.id, product: { name: prod.name }, required: photosOf(prod), photos: [],
       status: 'waiting', phoneConnected: false, createdAt: t, expiresAt: t + settings().kiosk.sessionMinutes * 60_000,
     };
     sessions.set(s.id, s);
@@ -606,7 +655,8 @@ async function handleKiosk(req, res, m, seg, q) {
     const o = {
       id, clientRef, kioskId: k.id, kioskName: k.name, location: k.location,
       productId: prod ? prod.id : str(body.productId, 40), productName: prod ? prod.name : str(body.productName, 60),
-      layout: prod ? prod.layout : null, size: prod ? LAYOUTS[prod.layout].size : '', photos: prod ? LAYOUTS[prod.layout].photos : 0,
+      layout: prod ? prod.layout : null, size: prod ? sizeOf(prod) : '', photos: prod ? photosOf(prod) : 0,
+      printType: prod ? printTypeOf(prod) : null, slots: prod ? slotsOf(prod) : null,
       qty, unitPrice, total: money(unitPrice * qty),
       payMethod: body.payMethod === 'card' ? 'card' : 'duitnow', paymentStatus: payStatus,
       paymentVerified: false, // Fasa 2: hanya webhook gateway boleh set true
@@ -643,8 +693,22 @@ function requireRole(res, user, role) {
 }
 
 function cleanProduct(b, existing) {
-  const layout = existing ? existing.layout : (LAYOUTS[b.layout] ? b.layout : null);
-  if (!layout) return { error: 'Choose a valid layout' };
+  let layout = existing ? existing.layout : (LAYOUTS[b.layout] ? b.layout : null);
+  let printType, slots;
+  if (Array.isArray(b.slots)) {
+    // Editor susunan baharu: jenis cetakan + petak foto
+    const c = cleanSlots(b.printType, b.slots);
+    if (c.error) return c;
+    printType = b.printType; slots = c.slots;
+    // Guna layout asal jika susunan sama tepat dengan salah satu layout asal (kiosk guna enjin
+    // cetak asal yang telah diuji + templat Special); selain itu 'custom'.
+    const match = (k) => LAYOUT_SPEC[k] && LAYOUT_SPEC[k].printType === printType && sameSlots(LAYOUT_SPEC[k].slots, slots);
+    const prefer = existing && LAYOUT_SPEC[existing.layout] ? [existing.layout] : [];
+    layout = [...prefer, ...Object.keys(LAYOUT_SPEC)].find(match) || 'custom';
+  } else if (existing && existing.layout === 'custom') {
+    printType = existing.printType; slots = existing.slots;
+  }
+  if (!layout) return { error: 'Choose a print type and arrange the photos' };
   const name = str(b.name, 60);
   if (!name) return { error: 'Product name is required' };
   const price = money(num(b.price, 0, 9999, NaN));
@@ -652,7 +716,8 @@ function cleanProduct(b, existing) {
   const minQty = num(b.minQty, 1, 99, 1), maxQty = num(b.maxQty, 1, 99, 20);
   if (minQty > maxQty) return { error: 'Minimum quantity cannot exceed maximum' };
   return {
-    layout, name, description: str(b.description, 200), price, minQty, maxQty,
+    layout, printType: layout === 'custom' ? printType : undefined, slots: layout === 'custom' ? slots : undefined,
+    name, description: str(b.description, 200), price, minQty, maxQty,
     allowQty: b.allowQty !== false, popular: !!b.popular, status: b.status === 'inactive' ? 'inactive' : 'active',
     icon: str(b.icon, 8) || (existing && existing.icon) || '📷',
     gradient: str(b.gradient, 200) || (existing && existing.gradient) || 'linear-gradient(160deg,#F2C879,#C98D00)',
@@ -743,7 +808,7 @@ async function handleAdmin(req, res, m, seg, q, p) {
       const list = store.all('products').sort((a, z) => a.sort - z.sort);
       const sold = {};
       for (const o of store.all('orders')) if (isPaid(o)) sold[o.productId] = (sold[o.productId] || 0) + o.qty;
-      return json(res, 200, { products: list.map((x) => ({ ...x, photos: LAYOUTS[x.layout].photos, size: LAYOUTS[x.layout].size, output: LAYOUTS[x.layout].output, sold: sold[x.id] || 0 })), layouts: LAYOUTS });
+      return json(res, 200, { products: list.map((x) => ({ ...productView(x), sold: sold[x.id] || 0 })), layouts: LAYOUTS, printTypes: PRINT_TYPES });
     }
     if (!requireRole(res, user, 'superadmin')) return;
     if (m === 'POST' && !id) {
@@ -751,9 +816,10 @@ async function handleAdmin(req, res, m, seg, q, p) {
       if (c.error) return json(res, 400, c);
       const pid = 'p_' + newId(5);
       const sort = Math.max(0, ...store.all('products').map((x) => x.sort || 0)) + 1;
-      const doc = { id: pid, ...c, photos: LAYOUTS[c.layout].photos, size: LAYOUTS[c.layout].size, output: LAYOUTS[c.layout].output, sort, createdAt: now(), updatedAt: now() };
-      await store.put('products', pid, doc); await bumpConfig(); await audit(user, 'product.create', c.name);
-      return json(res, 201, doc);
+      const doc = { id: pid, ...c, sort, createdAt: now(), updatedAt: now() };
+      Object.assign(doc, { photos: photosOf(doc), size: sizeOf(doc), output: outputOf(doc) });
+      await store.put('products', pid, JSON.parse(JSON.stringify(doc))); await bumpConfig(); await audit(user, 'product.create', c.name, `${doc.photos} photos · ${printTypeOf(doc)}`);
+      return json(res, 201, productView(doc));
     }
     if (m === 'POST' && id === 'reorder') {
       const b = await readJson(req);
@@ -767,9 +833,14 @@ async function handleAdmin(req, res, m, seg, q, p) {
       const c = cleanProduct(await readJson(req), ex);
       if (c.error) return json(res, 400, c);
       const doc = { ...ex, ...c, updatedAt: now() };
-      await store.put('products', id, doc); await bumpConfig();
-      await audit(user, 'product.update', doc.name, ex.price !== doc.price ? `price RM${ex.price} → RM${doc.price}` : '');
-      return json(res, 200, doc);
+      if (doc.layout !== 'custom') { delete doc.printType; delete doc.slots; }
+      Object.assign(doc, { photos: photosOf(doc), size: sizeOf(doc), output: outputOf(doc) });
+      await store.put('products', id, JSON.parse(JSON.stringify(doc))); await bumpConfig();
+      const notes = [];
+      if (ex.price !== doc.price) notes.push(`price RM${ex.price} → RM${doc.price}`);
+      if (!sameSlots(slotsOf(ex), slotsOf(doc)) || printTypeOf(ex) !== printTypeOf(doc)) notes.push(`layout ${printTypeOf(doc)}, ${photosOf(doc)} photos`);
+      await audit(user, 'product.update', doc.name, notes.join(' · '));
+      return json(res, 200, productView(doc));
     }
     if (m === 'DELETE') {
       if (store.all('products').filter((x) => x.status === 'active' && x.id !== id).length === 0) return json(res, 400, { error: 'At least one product must stay active' });

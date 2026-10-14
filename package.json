@@ -1,6 +1,6 @@
 {
   "name": "crazy-moment-upload-server",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Crazy Moment Photo Print Station — cloud server: phone upload, kiosk config/heartbeat/orders, admin dashboard",
   "main": "server.js",
   "scripts": {
