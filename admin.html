@@ -316,6 +316,9 @@ code{font-family:ui-monospace,Consolas,monospace;font-size:12px;background:var(-
 .pe-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .pe-row .t{font-weight:600}
 .pe-row .s{display:block;font-size:11.5px;color:var(--grey);font-weight:400}
+.pe-seg{display:grid;grid-template-columns:1fr 1fr;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:3px;gap:3px}
+.pe-seg button{height:32px;border-radius:7px;font-weight:600;color:var(--grey);display:inline-flex;align-items:center;justify-content:center;gap:7px}
+.pe-seg button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(20,27,38,.12)}
 .pe-money{position:relative}
 .pe-money span{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--grey);font-weight:600}
 .pe-money input{padding-left:40px;font-weight:700}
@@ -786,13 +789,17 @@ const PE_SAFE = 3, PE_MAX = 12, PE_MIN = 5, PE_GRAD = 'linear-gradient(160deg,#F
 let pe = null; // keadaan editor: { key, draft, orig, sel, tab, snap, leave, auto, px }
 
 // Lakaran kecil susunan petak (helai 4x6 penuh; 2x6x2 = dua salinan + garis potong)
+// Landskap dilukis melintang (seperti yang pelanggan nampak); media sebenar tetap 4R, diputar 90° semasa cetak.
 function slotThumb(p, width = 40, bg = '#F3EEE2') {
-  const W = 101.6, H = 152.4, k = W / width, pt = p.printType === '2x6x2' ? '2x6x2' : '4x6';
-  const sw = pt === '2x6x2' ? 50.8 : W;
+  const land = p.orientation === 'landscape', dup = p.printType === '2x6x2';
+  const W = land ? 152.4 : 101.6, H = land ? 101.6 : 152.4, k = 101.6 / width;
+  const aw = dup && !land ? W / 2 : W, ah = dup && land ? H / 2 : H;
+  const offs = dup ? (land ? [[0, 0], [0, ah]] : [[0, 0], [aw, 0]]) : [[0, 0]];
   let r = '';
-  for (const ox of pt === '2x6x2' ? [0, 50.8] : [0]) for (const s of p.slots || []) r += `<rect x="${(ox + s.x * sw).toFixed(2)}" y="${(s.y * H).toFixed(2)}" width="${(s.w * sw).toFixed(2)}" height="${(s.h * H).toFixed(2)}" fill="#BCC1CA"/>`;
-  const cut = pt === '2x6x2' ? `<line x1="50.8" y1="0" x2="50.8" y2="${H}" stroke="#C62828" stroke-width="${k}" stroke-dasharray="${3 * k} ${3 * k}"/>` : '';
-  return `<svg class="lp-svg" width="${width}" height="${Math.round(width * 1.5)}" viewBox="0 0 ${W} ${H}" aria-hidden="true"><rect x="${k / 2}" y="${k / 2}" width="${W - k}" height="${H - k}" fill="${bg}" stroke="#DDD8CC" stroke-width="${k}"/>${r}${cut}</svg>`;
+  for (const [ox, oy] of offs) for (const s of p.slots || []) r += `<rect x="${(ox + s.x * aw).toFixed(2)}" y="${(oy + s.y * ah).toFixed(2)}" width="${(s.w * aw).toFixed(2)}" height="${(s.h * ah).toFixed(2)}" fill="#BCC1CA"/>`;
+  const cut = !dup ? '' : land ? `<line x1="0" y1="${ah}" x2="${W}" y2="${ah}" stroke="#C62828" stroke-width="${k}" stroke-dasharray="${3 * k} ${3 * k}"/>` : `<line x1="${aw}" y1="0" x2="${aw}" y2="${H}" stroke="#C62828" stroke-width="${k}" stroke-dasharray="${3 * k} ${3 * k}"/>`;
+  const sw = land ? Math.round(width * 1.5) : width, sh = land ? width : Math.round(width * 1.5);
+  return `<svg class="lp-svg" width="${sw}" height="${sh}" viewBox="0 0 ${W} ${H}" aria-hidden="true"><rect x="${k / 2}" y="${k / 2}" width="${W - k}" height="${H - k}" fill="${bg}" stroke="#DDD8CC" stroke-width="${k}"/>${r}${cut}</svg>`;
 }
 const orderThumb = (o, w) => (o.slots && o.slots.length ? slotThumb(o, w) : (o.layout && o.layout !== 'custom' ? layoutPreview(o.layout, '#F3EEE2', null, w) : ''));
 
@@ -825,7 +832,7 @@ async function pageProducts() {
           ${isAdmin() ? `<td class="drag">${icon('grip', 16)}</td>` : ''}
           <td><div style="display:flex;gap:12px;align-items:center">${slotThumb(p, 34)}<div><div class="strong">${esc(p.name)} ${p.popular ? '<span class="badge amber" style="margin-left:4px">Popular</span>' : ''}</div><div class="sub-line">${esc(p.description)}</div></div></div></td>
           <td>${p.photos}<div class="sub-line">photo${p.photos > 1 ? 's' : ''}</div></td>
-          <td>${p.printType === '2x6x2' ? '2 × 6 ×2' : '4 × 6'}<div class="sub-line">${esc(p.output)}</div></td>
+          <td>${p.printType === '2x6x2' ? '2 × 6 ×2' : '4 × 6'}<div class="sub-line">${p.orientation === 'landscape' ? 'Landscape · ' : ''}${esc(p.output)}</div></td>
           <td class="strong">${Number(p.price).toFixed(2)}</td><td>${p.sold}</td>
           <td>${p.status === 'active' ? '<span class="badge green">Active</span>' : '<span class="badge grey">Inactive</span>'}</td></tr>`).join('') || `<tr><td colspan="7" class="empty">No products match</td></tr>`}
       </tbody></table></div>
@@ -838,14 +845,16 @@ function openProduct(id) { sel.products = id; pe = null; render(); }
 function newProduct() { sel.products = '__new'; pe = null; render(); }
 
 // ---------- Editor ----------
-const peDims = () => PRINT_TYPES[pe.draft.printType] || PRINT_TYPES['4x6'];
+function designDims(pt, orient) { const t = PRINT_TYPES[pt] || PRINT_TYPES['4x6']; return orient === 'landscape' ? { w: t.h, h: t.w } : { w: t.w, h: t.h }; }
+const peDims = () => designDims(pe.draft.printType, pe.draft.orientation);
 const peDirty = () => JSON.stringify(pe.draft) !== pe.orig;
 const r1 = (v) => Math.round(v * 10) / 10;
-function peAutoDefaults(pt, n) {
+function peAutoDefaults(pt, n, orient) {
+  if (orient === 'landscape') return pt === '2x6x2' ? { count: n, cols: Math.min(4, n), margin: 3, gap: 3, footer: 10 } : { count: n, cols: n <= 1 ? 1 : n <= 4 ? 2 : n <= 6 ? 3 : 4, margin: 6, gap: 4, footer: 16 };
   return pt === '2x6x2' ? { count: n, cols: 1, margin: 4, gap: 3, footer: 18 } : { count: n, cols: n <= 2 ? 1 : n <= 4 ? 2 : 3, margin: 6, gap: 4, footer: 20 };
 }
-function peArrange(pt, a) {
-  const { w: W, h: H } = PRINT_TYPES[pt];
+function peArrange(pt, a, orient) {
+  const { w: W, h: H } = designDims(pt, orient);
   const n = Math.max(1, Math.min(PE_MAX, a.count | 0)), cols = Math.max(1, Math.min(4, a.cols | 0)), rows = Math.ceil(n / cols);
   const m = +a.margin || 0, g = +a.gap || 0, f = +a.footer || 0;
   const cw = (W - 2 * m - (cols - 1) * g) / cols, ch = (H - 2 * m - f - (rows - 1) * g) / rows;
@@ -864,10 +873,11 @@ function peOpen(src) {
     const draft = {
       id: b.id, name: b.name || '', description: b.description || '', price: Number(b.price) || 0, allowQty: b.allowQty !== false,
       minQty: b.minQty || 1, maxQty: b.maxQty || 20, popular: !!b.popular, status: b.status === 'inactive' ? 'inactive' : 'active',
-      printType: b.printType === '2x6x2' ? '2x6x2' : '4x6', slots: (b.slots || []).map((s) => ({ x: s.x, y: s.y, w: s.w, h: s.h })),
+      printType: b.printType === '2x6x2' ? '2x6x2' : '4x6', orientation: b.orientation === 'landscape' ? 'landscape' : 'portrait',
+      slots: (b.slots || []).map((s) => ({ x: s.x, y: s.y, w: s.w, h: s.h })),
     };
-    pe = { key, draft, orig: '', sel: 0, tab: 'layout', snap: true, leave: false, gradient: (src && src.gradient) || PE_GRAD, auto: peAutoDefaults(draft.printType, draft.slots.length || 4) };
-    if (!draft.slots.length) draft.slots = peArrange(draft.printType, pe.auto);
+    pe = { key, draft, orig: '', sel: 0, tab: 'layout', snap: true, leave: false, gradient: (src && src.gradient) || PE_GRAD, auto: peAutoDefaults(draft.printType, draft.slots.length || 4, draft.orientation) };
+    if (!draft.slots.length) draft.slots = peArrange(draft.printType, pe.auto, draft.orientation);
     pe.orig = src ? JSON.stringify(draft) : '';
   }
   peRender();
@@ -903,6 +913,12 @@ function peRender() {
         ${typeBtn('4x6', '4 × 6', 'One full print, 102 × 152 mm', '<svg width="20" height="28" viewBox="0 0 20 28"><rect x="1" y="1" width="18" height="26" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>')}
         ${typeBtn('2x6x2', '2 × 6 ×2', 'Two strips, printer cuts the 4R', '<svg width="20" height="28" viewBox="0 0 20 28"><rect x="1" y="1" width="18" height="26" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="10" y1="1" x2="10" y2="27" stroke="#C62828" stroke-width="1.2" stroke-dasharray="2 2"/></svg>')}
       </div></div>
+      <div><div class="flabel">Orientation</div>
+        <div class="pe-seg" role="group" aria-label="Orientation">
+          <button type="button" aria-pressed="${d.orientation !== 'landscape'}" ${dis} onclick="peSetOrient('portrait')"><svg width="12" height="16" viewBox="0 0 12 16"><rect x="1" y="1" width="10" height="14" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>Portrait</button>
+          <button type="button" aria-pressed="${d.orientation === 'landscape'}" ${dis} onclick="peSetOrient('landscape')"><svg width="16" height="12" viewBox="0 0 16 12"><rect x="1" y="1" width="14" height="10" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>Landscape</button>
+        </div>
+        <div class="hint">Paper stays 4R in the printer — a landscape design is turned 90° when printed.</div></div>
       <div class="field"><label for="pePrice">Price <span class="req">*</span></label><div class="pe-money"><span>RM</span><input class="input" id="pePrice" type="number" min="0.5" step="0.5" value="${d.price}" ${dis} oninput="pe.draft.price=Number(this.value)||0;peLight()"></div></div>
       <div class="pe-div"></div>
       <label class="pe-row"><span><span class="t">Show on kiosk</span><span class="s">Turn off to hide without deleting.</span></span><span class="toggle"><input type="checkbox" id="peActive" ${d.status === 'active' ? 'checked' : ''} ${dis} onchange="pe.draft.status=this.checked?'active':'inactive';peLight()"><span></span></span></label>
@@ -948,21 +964,21 @@ function peStage() {
     const list = prodCache.filter((p) => p.status === 'active' && p.id !== d.id);
     const cur = { ...d, gradient: pe.gradient, photos: d.slots.length };
     const all = d.status === 'active' ? (d.id ? prodCache.filter((p) => p.status === 'active').map((p) => (p.id === d.id ? cur : p)) : [...list, cur]) : list;
-    st.innerHTML = `<div><div class="pe-kiosk"><div class="kh">CHOOSE YOUR PRINT</div><div class="pe-kcards">${all.map((p) => `<div class="pe-kcard ${p === cur ? 'hl' : ''}"><div class="pv" style="background:${esc(p.gradient || PE_GRAD)}">${slotThumb(p, 56, '#FFFFFF')}</div><b>${esc(p.name || 'New product')}</b><small>${p.photos} photo${p.photos > 1 ? 's' : ''} · ${p.printType === '2x6x2' ? '2 × 6 inch' : '4 × 6 inch'}</small><span class="pr">RM ${Number(p.price || 0).toFixed(2)}</span></div>`).join('') || '<div class="pe-note" style="color:#9CA3AF">No active products.</div>'}</div></div>
+    st.innerHTML = `<div><div class="pe-kiosk"><div class="kh">CHOOSE YOUR PRINT</div><div class="pe-kcards">${all.map((p) => `<div class="pe-kcard ${p === cur ? 'hl' : ''}"><div class="pv" style="background:${esc(p.gradient || PE_GRAD)}">${slotThumb(p, 56, '#FFFFFF')}</div><b>${esc(p.name || 'New product')}</b><small>${p.photos} photo${p.photos > 1 ? 's' : ''} · ${p.orientation === 'landscape' ? (p.printType === '2x6x2' ? '6 × 2 inch' : '6 × 4 inch') : (p.printType === '2x6x2' ? '2 × 6 inch' : '4 × 6 inch')}</small><span class="pr">RM ${Number(p.price || 0).toFixed(2)}</span></div>`).join('') || '<div class="pe-note" style="color:#9CA3AF">No active products.</div>'}</div></div>
       <div class="pe-cap">${d.status === 'active' ? 'How the product list will look on the kiosk' : 'This product is hidden — turn on “Show on kiosk” to list it'}</div></div>`;
     return;
   }
-  const { w: W, h: H } = peDims(), strip = d.printType === '2x6x2';
+  const { w: W, h: H } = peDims(), strip = d.printType === '2x6x2', land = d.orientation === 'landscape';
   const avail = Math.max(220, st.clientWidth - 40);
-  pe.px = Math.min(470 / H, (strip ? avail * 0.5 : avail) / W, 4.2);
+  pe.px = Math.min(470 / H, (strip && !land ? avail * 0.55 : avail) / W, 4.2);
   const px = pe.px, iss = peIssues();
   const bottom = Math.max(...d.slots.map((s) => s.y + s.h)) * H, logoH = Math.max(0, H - bottom);
   st.innerHTML = `<div><div class="pe-canvas" id="peCanvas" style="width:${W * px}px;height:${H * px}px">
       <div class="pe-safe" style="inset:${PE_SAFE * px}px"></div>
       ${logoH >= 6 ? `<div class="pe-logo" style="height:${logoH * px}px;font-size:${Math.min(13, W * px / 11)}px">CRAZY MOMENT</div>` : ''}
       ${d.slots.map((s, i) => `<div class="pe-slot ${i === pe.sel ? 'sel' : ''} ${iss.out.includes(i + 1) ? 'bad' : ''}" data-i="${i}" tabindex="0" role="button" aria-label="Photo ${i + 1}" style="left:${s.x * W * px}px;top:${s.y * H * px}px;width:${s.w * W * px}px;height:${s.h * H * px}px">${i + 1}<span class="h"></span></div>`).join('')}
-    </div><div class="pe-cap">${strip ? 'One strip · 51 × 152 mm' : '4R · 102 × 152 mm'}${logoH >= 6 ? ` · logo space ${r1(logoH)} mm` : ''}</div></div>
-    ${strip ? `<div>${slotThumb(d, Math.round(Math.min(150, 101.6 * px * 0.55)), '#FFFFFF')}<div class="pe-cap">Printed sheet<br>printer cuts at the red line</div></div>` : ''}`;
+    </div><div class="pe-cap">${strip ? `One strip · ${r1(W)} × ${r1(H)} mm` : `4R · ${r1(W)} × ${r1(H)} mm`}${land ? ' · landscape' : ''}${logoH >= 6 ? ` · logo space ${r1(logoH)} mm` : ''}</div></div>
+    ${strip || land ? `<div>${land ? `<div style="display:flex;gap:14px;align-items:center">${slotThumb(d, 70, '#FFFFFF')}<span class="pe-note">→</span><div style="width:70px;height:105px;display:grid;place-items:center"><div style="transform:rotate(90deg);line-height:0">${slotThumb(d, 70, '#FFFFFF')}</div></div></div>` : slotThumb(d, Math.round(Math.min(150, 101.6 * px * 0.55)), '#FFFFFF')}<div class="pe-cap">${land ? 'As the customer sees it → as it goes<br>through the printer (4R, turned 90°)' : 'Printed sheet<br>printer cuts at the red line'}${land && strip ? '<br>printer cuts at the red line' : ''}</div></div>` : ''}`;
   if (!isAdmin()) return;
   st.querySelectorAll('.pe-slot').forEach((el) => {
     el.addEventListener('pointerdown', (e) => peDrag(e, +el.dataset.i, e.target.classList.contains('h')));
@@ -994,19 +1010,27 @@ function peRenderSave() {
 function peChanged() { pe.leave = false; peStage(); peInsp(); peRenderSave(); }
 
 // ---------- Editor actions ----------
-function peSetType(t) {
-  if (pe.draft.printType === t) return;
-  pe.draft.printType = t;
-  pe.auto = peAutoDefaults(t, pe.draft.slots.length);
-  pe.draft.slots = peArrange(t, pe.auto) || peArrange(t, peAutoDefaults(t, 1));
+function peReset() {
+  const d = pe.draft;
+  pe.auto = peAutoDefaults(d.printType, d.slots.length, d.orientation);
+  d.slots = peArrange(d.printType, pe.auto, d.orientation) || peArrange(d.printType, peAutoDefaults(d.printType, 1, d.orientation), d.orientation);
   pe.sel = 0; pe.leave = false; peRender();
 }
+function peSetType(t) { if (pe.draft.printType === t) return; pe.draft.printType = t; peReset(); }
+function peSetOrient(o) { if (pe.draft.orientation === o) return; pe.draft.orientation = o; peReset(); }
 function peRearrange() {
-  const s = peArrange(pe.draft.printType, pe.auto);
+  const s = peArrange(pe.draft.printType, pe.auto, pe.draft.orientation);
   if (!s) { toast('Not enough room — reduce photos, columns, gap or logo space', true); return false; }
   pe.draft.slots = s; pe.sel = Math.min(pe.sel, s.length - 1); pe.leave = false; peRender(); return true;
 }
-function peCount(dlt) { const old = pe.auto.count; pe.auto.count = Math.max(1, Math.min(PE_MAX, pe.draft.slots.length + dlt)); if (!peRearrange()) pe.auto.count = old; }
+function peCount(dlt) {
+  const old = { ...pe.auto };
+  pe.auto.count = Math.max(1, Math.min(PE_MAX, pe.draft.slots.length + dlt));
+  // jalur landskap satu baris: lajur ikut bilangan foto (maks 4)
+  if (pe.draft.orientation === 'landscape' && pe.draft.printType === '2x6x2') pe.auto.cols = Math.min(4, pe.auto.count);
+  else pe.auto.cols = Math.min(pe.auto.cols, pe.auto.count);
+  if (!peRearrange()) pe.auto = old;
+}
 function peCols(dlt) { const old = pe.auto.cols; pe.auto.cols = Math.max(1, Math.min(4, pe.auto.cols + dlt)); pe.auto.count = pe.draft.slots.length; if (!peRearrange()) { pe.auto.cols = old; peRender(); } }
 function peAuto() { pe.auto.count = pe.draft.slots.length; peRearrange(); }
 function peAdd() {
@@ -1068,7 +1092,7 @@ async function peSave() {
   if (!(d.price > 0)) { toast('Price must be more than RM0', true); $('#pePrice').focus(); return; }
   if (d.minQty > d.maxQty) { toast('Minimum quantity cannot be more than maximum', true); return; }
   if (peIssues().block.length) { toast('Photos overlap — move them apart before saving', true); return; }
-  const body = { name: d.name.trim(), description: d.description, price: d.price, allowQty: d.allowQty, minQty: d.minQty, maxQty: d.maxQty, popular: d.popular, status: d.status, printType: d.printType, slots: d.slots };
+  const body = { name: d.name.trim(), description: d.description, price: d.price, allowQty: d.allowQty, minQty: d.minQty, maxQty: d.maxQty, popular: d.popular, status: d.status, printType: d.printType, orientation: d.orientation, slots: d.slots };
   const btn = $('#peSaveBtn'); if (btn) btn.disabled = true;
   try {
     const saved = d.id ? await api('PUT', '/api/admin/products/' + d.id, body) : await api('POST', '/api/admin/products', body);
