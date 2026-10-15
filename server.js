@@ -33,7 +33,7 @@ const MAX_SESSIONS = Number(process.env.MAX_SESSIONS || 60);
 const GRACE_MS = 5 * 60_000;
 const ONLINE_MS = 90_000;          // kiosk dianggap offline jika tiada heartbeat > 90 saat
 const TZ_OFFSET_MS = 8 * 3600_000; // Asia/Kuala_Lumpur (UTC+8, tiada DST)
-const APP_VERSION = '1.3.0';
+const APP_VERSION = '1.4.0';
 
 const store = new Store();
 
@@ -430,6 +430,11 @@ function kioskConfig(req) {
     if (t.captions) out.captions = t.captions;
     if (t.bgImage) { out.bgImageUrl = `${b}/api/assets/${t.bgImage}`; out.bg = `url('${out.bgImageUrl}') center/cover no-repeat`; }
     if (t.scope === 'special') out.products = t.layouts || [];
+    if (t.v2) {
+      out.v2 = true;
+      if (t.scope === 'simple') { out.fill = t.fill; out.pat = t.pat ? { ...t.pat, url: t.pat.assetId ? `${b}/api/assets/${t.pat.assetId}` : null } : null; }
+      else { out.productIds = t.productIds || []; out.fit = t.fit || 'cover'; out.artUrl = t.bgImage ? `${b}/api/assets/${t.bgImage}` : null; out.bg = '#FFFFFF'; if (out.bgImageUrl) delete out.bgImageUrl; }
+    }
     return out;
   });
   return {
@@ -769,7 +774,38 @@ function cleanProduct(b, existing) {
   };
 }
 const CSS_SAFE = /^[#\w\s(),.%'-]*$/;
-function cleanTemplate(b) {
+// ---- Template v2 (Simple = warna + pattern untuk SEMUA produk; Special = artwork penuh media untuk produk dipilih) ----
+const HEX = /^#[0-9a-f]{6}$/i;
+const PAT_KINDS = ['none', 'dots', 'lines', 'grid', 'checks', 'waves', 'hearts', 'custom'];
+function hexLum(h) { const n = parseInt(h.slice(1), 16); return (0.2126 * (n >> 16) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255)) / 255; }
+const assetId = (v) => (typeof v === 'string' && /^[\w-]{6,40}$/.test(v) ? v : null);
+function cleanTemplateV2(b, ex) {
+  const name = str(b.name, 60);
+  if (!name) return { error: 'Template name is required' };
+  const scope = b.scope === 'special' ? 'special' : 'simple';
+  const status = b.status === 'inactive' ? 'inactive' : 'active';
+  if (scope === 'simple') {
+    const f = b.fill || {};
+    const c1 = HEX.test(f.c1) ? f.c1 : '#FFFFFF', c2 = HEX.test(f.c2) ? f.c2 : c1, mode = f.mode === 'gradient' ? 'gradient' : 'solid';
+    const pt = b.pat || {}, kind = PAT_KINDS.includes(pt.kind) ? pt.kind : 'none';
+    const pat = { kind, size: num(pt.size, 2, 14, 5), opacity: num(pt.opacity, 0.05, 0.8, 0.2), color: HEX.test(pt.color) ? pt.color : 'auto', assetId: kind === 'custom' ? assetId(pt.assetId) : null };
+    if (kind === 'custom' && !pat.assetId) return { error: 'Upload the pattern image first' };
+    return { v2: true, name, scope, status, fill: { mode, c1, c2 }, pat, bg: mode === 'gradient' ? `linear-gradient(160deg,${c1},${c2})` : c1,
+      textColor: hexLum(c1) < 0.45 ? 'rgba(255,255,255,0.8)' : 'var(--grey)', pattern: 'none', patternColor: undefined, layouts: [], productIds: [], bgImage: null, fit: undefined, category: 'General' };
+  }
+  const legacyDecor = ex && ((ex.corners && ex.corners.length) || (ex.captions && ex.captions.length));
+  const bgImage = b.bgImage === null ? null : (assetId(b.bgImage) || (ex ? ex.bgImage : null));
+  if (!bgImage && !legacyDecor) return { error: 'Upload the template artwork first' };
+  const known = new Set(store.all('products').map((x) => x.id));
+  const productIds = Array.isArray(b.productIds) ? [...new Set(b.productIds.filter((id) => known.has(id)))] : [];
+  const layouts = ex && Array.isArray(ex.layouts) ? ex.layouts : [];
+  if (!productIds.length && !layouts.length) return { error: 'Choose at least one product' };
+  return { v2: true, name, scope, status, bgImage, fit: b.fit === 'stretch' ? 'stretch' : 'cover', imgW: num(b.imgW, 0, 20000, 0), imgH: num(b.imgH, 0, 20000, 0),
+    productIds, layouts, bg: '#FFFFFF', textColor: b.textTone === 'light' ? 'rgba(255,255,255,0.85)' : 'var(--grey)', pattern: 'none', patternColor: undefined,
+    fill: undefined, pat: undefined, category: (ex && ex.category) || 'General' };
+}
+function cleanTemplate(b, ex) {
+  if (b && b.v2) return cleanTemplateV2(b, ex);
   const name = str(b.name, 60);
   if (!name) return { error: 'Template name is required' };
   const scope = b.scope === 'special' ? 'special' : 'simple';
@@ -901,7 +937,7 @@ async function handleAdmin(req, res, m, seg, q, p) {
     if (m === 'GET' && !id) return json(res, 200, { templates: store.all('templates').sort((a, z) => a.sort - z.sort), categories: settings().templateCategories || [], layouts: LAYOUTS });
     if (!requireRole(res, user, 'superadmin')) return;
     if (m === 'POST' && !id) {
-      const c = cleanTemplate(await readJson(req));
+      const c = cleanTemplate(await readJson(req), null);
       if (c.error) return json(res, 400, c);
       const tid = 't_' + newId(5);
       const sort = Math.max(0, ...store.all('templates').map((x) => x.sort || 0)) + 1;
@@ -912,7 +948,7 @@ async function handleAdmin(req, res, m, seg, q, p) {
     const ex = store.get('templates', id);
     if (!ex) return json(res, 404, { error: 'Template not found' });
     if (m === 'PUT') {
-      const c = cleanTemplate(await readJson(req));
+      const c = cleanTemplate(await readJson(req), ex);
       if (c.error) return json(res, 400, c);
       if (c.status === 'inactive' && ex.scope === 'simple' && store.all('templates').filter((x) => x.scope === 'simple' && x.status === 'active' && x.id !== id).length === 0) return json(res, 400, { error: 'At least one Simple template must stay active' });
       const doc = { ...ex, ...c, bgImage: c.bgImage === undefined ? ex.bgImage : c.bgImage, updatedAt: now() };

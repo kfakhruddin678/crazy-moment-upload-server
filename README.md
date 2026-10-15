@@ -6,6 +6,7 @@
 - Kiosk ambil produk, bilangan foto & susunan baharu secara automatik dalam ≤ 30 saat (hanya bila tiada pelanggan).
 - 2×6 ×2: reka satu strip sahaja — kiosk cetak dua salinan & printer potong di tengah (queue `CM-DNP-2inch`).
 - **Orientasi landskap**: reka bentuk & semua skrin kiosk kekal landskap; kertas tetap 4R — kiosk putar 90° semasa cetak.
+- **v1.4 Templates:** *Simple* = warna/gradient + pattern (siap atau upload sendiri) untuk semua produk; *Special* = artwork penuh media (upload, auto Fill/Stretch) untuk produk dipilih, disusun ikut produk. Template sentiasa di belakang foto.
 - **v1.3:** garis potong putus-putus (dicetak), garis panduan hijau semasa seret, dan sehingga 6 logo setiap produk.
 - **Logo setiap produk** (admin sahaja): papar/sorok, seret, ubah saiz, putar, gaya Full/Small, atau upload PNG sendiri. Teks Acara pelanggan muncul di atas logo.
 - 4 produk asal (Photo Strip, Duo, Single, 12 Grid) kekal guna enjin cetak asal selagi susunannya tidak diubah.

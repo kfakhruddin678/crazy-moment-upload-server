@@ -400,6 +400,85 @@ details.pe-more .in{display:flex;flex-direction:column;gap:14px;padding-top:14px
 .pe-save .msg{font-weight:600}
 .pe-save .btn.ghost{background:transparent;border-color:transparent;color:#fff;opacity:.75}
 .pe-save .btn.ghost:hover{opacity:1}
+/* ---------- Templates (v1.4) ---------- */
+.tp-tabs{display:flex;gap:24px;border-bottom:1px solid var(--line);margin-bottom:14px}
+.tp-tabs button{padding:0 2px 11px;font-weight:700;color:var(--grey);border-bottom:2px solid transparent;margin-bottom:-1px;display:flex;gap:8px;align-items:center;font-size:14px}
+.tp-tabs button[aria-selected="true"]{color:var(--ink);border-color:var(--ink)}
+.tp-tabs span,.tp-chip span{font-size:11px;font-weight:700;background:var(--line-2);color:var(--grey);border-radius:20px;padding:1px 7px}
+.tp-desc{color:var(--grey);margin:0 0 18px;max-width:640px}
+.tp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px}
+.tp-grid.sm{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}
+.tp-card{display:flex;flex-direction:column;text-align:left;overflow:hidden;padding:0}
+.tp-card:hover{border-color:#CDD1D9}
+.tp-thumb{aspect-ratio:4/3;background:var(--line-2);display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--line)}
+.tp-body{padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.tp-name{font-weight:700;display:flex;align-items:center;gap:7px}
+.tp-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);flex:none}
+.tp-dot.on{background:var(--green-dot)}
+.tp-meta{font-size:12px;color:var(--grey);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tp-add{border:1.5px dashed #CDD1D9;color:var(--grey);font-weight:600;min-height:200px;border-radius:12px}
+.tp-add:hover{border-color:var(--gold);color:var(--ink);background:var(--gold-bg)}
+.tp-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.tp-chip{height:32px;padding:0 12px;border-radius:20px;border:1px solid var(--line);background:#fff;font-weight:600;font-size:12.5px;color:var(--ink-2);display:inline-flex;align-items:center;gap:6px}
+.tp-chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.tp-chip[aria-pressed="true"] span{background:rgba(255,255,255,.18);color:#fff}
+.tp-group{margin-bottom:28px}
+.tp-gh{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.tp-gh b{font-size:14.5px}
+.tp-gh small{display:block;color:var(--grey);font-size:12px}
+.tp-gh .btn{margin-left:auto}
+.tp-empty{border:1.5px dashed #CDD1D9;border-radius:12px;padding:18px;color:var(--grey);font-size:12.5px}
+.tp-pill{font-size:11px;font-weight:700;border-radius:20px;padding:2px 9px;background:var(--line-2);color:var(--ink-2);vertical-align:middle}
+.tp-ed{display:grid;grid-template-columns:300px minmax(0,1fr);gap:24px;align-items:start;margin-top:18px}
+@media(max-width:900px){.tp-ed{grid-template-columns:minmax(0,1fr)}}
+.tp-lbl{display:block;font-size:12px;font-weight:700;margin-bottom:7px}
+.tp-sw{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
+.tp-swi{aspect-ratio:1;border-radius:7px;border:1px solid rgba(20,27,38,.12)}
+.tp-swi[aria-pressed="true"]{outline:2px solid var(--ink);outline-offset:2px}
+.tp-colors{display:flex;gap:8px;align-items:center;margin-top:10px;font-size:12px;color:var(--grey);font-family:ui-monospace,Consolas,monospace}
+.tp-colors input[type=color]{width:38px;height:38px;border:1px solid var(--line);border-radius:8px;padding:2px;background:#fff;cursor:pointer;flex:none}
+.tp-pats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.tp-pat{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--grey)}
+.tp-pat i{width:100%;aspect-ratio:1;border-radius:8px;border:1px solid var(--line);display:block;background-color:#fff}
+.tp-pat i.plus{display:flex;align-items:center;justify-content:center;font-style:normal;font-size:18px;border-style:dashed}
+.tp-pat[aria-pressed="true"] i{outline:2px solid var(--ink);outline-offset:2px}
+.tp-pat[aria-pressed="true"]{color:var(--ink)}
+.tp-patbox{display:flex;flex-direction:column;gap:12px;margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.tp-slider{display:grid;grid-template-columns:70px minmax(0,1fr) 44px;align-items:center;gap:10px;font-size:12px;color:var(--ink-2)}
+.tp-slider input[type=range]{width:100%;accent-color:var(--ink)}
+.tp-slider output{color:var(--grey);text-align:right;font-variant-numeric:tabular-nums}
+.tp-drop{border:1.5px dashed #CDD1D9;border-radius:10px;padding:12px;display:flex;gap:12px;align-items:center;background:#fff;cursor:pointer}
+.tp-drop:hover{border-color:var(--gold);background:var(--gold-bg)}
+.tp-drop img,.tp-drop .ph0{width:52px;height:52px;object-fit:cover;border-radius:6px;background:var(--line-2);flex:none}
+.tp-drop b{display:block}
+.tp-drop small{color:var(--grey);font-size:11.5px}
+.tp-plist{display:flex;flex-direction:column;gap:6px}
+.tp-pi{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:9px;padding:7px 10px;background:#fff;cursor:pointer}
+.tp-pi:has(input:checked){border-color:var(--ink)}
+.tp-pi input{width:16px;height:16px;accent-color:var(--ink);flex:none}
+.tp-pi .nm{font-weight:600;font-size:12.5px}
+.tp-pi .mt{font-size:11.5px;color:var(--grey)}
+.tp-media{position:relative;overflow:hidden;box-shadow:0 0 0 1px rgba(20,27,38,.08),0 10px 30px rgba(20,27,38,.12);flex:none}
+.tp-media .ph{position:absolute;overflow:hidden}
+.tp-media .ph i{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:600;color:rgba(255,255,255,.9);font-size:11px}
+.tp-media .lg{position:absolute;line-height:0}
+.tp-media .cut{position:absolute;border:0 dashed rgba(20,27,38,.55)}
+.tp-media.nophotos .ph,.tp-media.nophotos .lg,.tp-media.nophotos .cut{opacity:0}
+.tp-fit{font-size:12px;padding:7px 12px;border-radius:20px;font-weight:600}
+.tp-fit.ok{background:var(--green-bg);color:var(--green)}
+.tp-fit.warn{background:var(--amber-bg);color:var(--amber)}
+.tp-legend{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;font-size:11.5px;color:var(--grey)}
+.tp-legend span{display:flex;align-items:center;gap:6px}
+.tp-legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.tp-kiosk{background:#17130E;border-radius:16px;padding:18px;border:8px solid #2A2520;width:min(100%,600px);display:grid;grid-template-columns:minmax(0,1fr) 170px;gap:14px;color:#EEE}
+.tp-kiosk .kpv{display:flex;align-items:center;justify-content:center;background:#221d16;border-radius:10px;padding:14px}
+.tp-kiosk .kt{display:flex;gap:4px;margin-bottom:10px}
+.tp-kiosk .kt span{flex:1;text-align:center;font-size:11px;font-weight:700;padding:6px 0;border-radius:6px;background:#2A2520;color:#aaa}
+.tp-kiosk .kt span.on{background:var(--gold);color:#17130E}
+.tp-kiosk .kl{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.tp-kiosk .ks{aspect-ratio:1;border-radius:6px;border:1.5px solid transparent;overflow:hidden;position:relative;background:#333}
+.tp-kiosk .ks.on{border-color:var(--gold)}
+.tp-kiosk .ks b{position:absolute;left:0;right:0;bottom:0;font-size:9px;font-weight:600;background:rgba(0,0,0,.55);padding:2px 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style>
 </head>
 <body>
@@ -1356,108 +1435,244 @@ function enableRowDrag(tbody, onDone) {
 }
 
 // =====================================================================
-//  TEMPLATES
+//  TEMPLATES (v1.4) — Simple: warna + pattern untuk SEMUA produk.
+//  Special: artwork penuh media untuk produk dipilih. Template sentiasa di
+//  BELAKANG; foto di depan; logo & garis potong paling depan.
 // =====================================================================
-let tmplCache = null, tmplCats = [], tmplFilter = { q: '', layout: '', category: '', status: '' }, tmplDraft = null;
+let tmplCache = null, tpTab = 'simple', tpProd = 'all', tp = null; // tp = editor { t, orig, prod, view, photos, leave }
+const TP_COLORS = ['#FFFFFF', '#F3EEE2', '#FCE4EC', '#E3F2E1', '#E1ECF7', '#FFF1CC', '#2A2520', '#17130E'];
+const TP_PATS = [['none', 'None'], ['dots', 'Dots'], ['lines', 'Lines'], ['grid', 'Grid'], ['checks', 'Checks'], ['waves', 'Waves'], ['hearts', 'Hearts']];
+const TP_PXMM_KIOSK = 240 / 101.6;
+const hexOk = (h) => /^#[0-9a-f]{6}$/i.test(h || '');
+function tpLum(hex) { const n = parseInt(String(hex || '#ffffff').slice(1), 16); return (0.2126 * (n >> 16) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255)) / 255; }
+function tpRgba(hex, a) { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; }
+function tpSvgTile(kind, col) {
+  const sv = kind === 'waves'
+    ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 10"><path d="M0 5 Q5 0 10 5 T20 5" fill="none" stroke="${col}" stroke-width="1.2"/></svg>`
+    : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 15 C3 10 4 5 7.5 5 C9 5 10 6.5 10 6.5 C10 6.5 11 5 12.5 5 C16 5 17 10 10 15Z" fill="${col}"/></svg>`;
+  return `url(data:image/svg+xml,${encodeURIComponent(sv).replace(/'/g, '%27').replace(/\(/g, '%28').replace(/\)/g, '%29')})`;
+}
+// Simple: CSS latar (k = px per mm pada paparan, supaya saiz pattern = mm sebenar)
+function tpSimpleCSS(t, k) {
+  const f = t.fill || { mode: 'solid', c1: hexOk(t.bg) ? t.bg : '#FFFFFF', c2: '#FFFFFF' }, pt = t.pat || { kind: 'none' };
+  const base = f.mode === 'gradient' ? `linear-gradient(160deg,${f.c1},${f.c2})` : f.c1;
+  if (!t.v2 && !t.fill) return tmplBg(t); // template lama (belum disunting)
+  if (!pt.kind || pt.kind === 'none') return base;
+  const sz = Math.max(3, (pt.size || 5) * (k || 2.4)), op = pt.opacity == null ? 0.2 : pt.opacity;
+  const col = tpRgba(hexOk(pt.color) ? pt.color : (tpLum(f.c1) < 0.45 ? '#FFFFFF' : '#141B26'), op), lw = Math.max(0.6, sz * 0.08);
+  const P = { dots: `radial-gradient(${col} ${sz * 0.12}px,transparent ${sz * 0.12 + 0.6}px) 0 0/${sz}px ${sz}px`, lines: `repeating-linear-gradient(45deg,${col} 0 ${lw}px,transparent ${lw}px ${sz * 0.7}px)`,
+    grid: `linear-gradient(${col} ${lw}px,transparent ${lw}px) 0 0/${sz}px ${sz}px,linear-gradient(90deg,${col} ${lw}px,transparent ${lw}px) 0 0/${sz}px ${sz}px`,
+    checks: `conic-gradient(${col} 25%,transparent 0 50%,${col} 0 75%,transparent 0) 0 0/${sz}px ${sz}px`, waves: `${tpSvgTile('waves', col)} 0 0/${sz * 2}px ${sz}px repeat`,
+    hearts: `${tpSvgTile('hearts', col)} 0 0/${sz}px ${sz}px repeat`, custom: pt.assetId ? `url('${logoUrl(pt.assetId)}') 0 0/${sz * 2}px auto repeat` : '' };
+  return (P[pt.kind] ? P[pt.kind] + ',' : '') + base;
+}
+const tpIsArt = (t) => t && t.scope === 'special' && t.bgImage;
+const tpArtCSS = (t) => `url('${logoUrl(t.bgImage)}') center/${t.fit === 'stretch' ? '100% 100%' : 'cover'} no-repeat, #FFFFFF`;
+const tpInk = (t) => (t.scope === 'simple' ? (tpLum((t.fill || {}).c1 || (hexOk(t.bg) ? t.bg : '#FFFFFF')) < 0.45 ? 'rgba(255,255,255,.8)' : '#4B5563') : (t.textTone === 'light' || /255,255,255/.test(t.textColor || '') ? 'rgba(255,255,255,.85)' : '#4B5563'));
+// Produk mana guna template Special ini (v2: productIds; lama: layout)
+const tpProducts = (t) => (t.scope === 'simple' ? prodCache : prodCache.filter((p) => (t.productIds || []).includes(p.id) || (!(t.productIds || []).length && (t.layouts || []).includes(p.layout))));
+const tpSheet = (p) => (p.orientation === 'landscape' ? { w: 152.4, h: 101.6 } : { w: 101.6, h: 152.4 });
+function tpCopies(p) {
+  const S = tpSheet(p); if (p.printType !== '2x6x2') return [{ ox: 0, oy: 0, aw: S.w, ah: S.h }];
+  return p.orientation === 'landscape' ? [{ ox: 0, oy: 0, aw: S.w, ah: S.h / 2 }, { ox: 0, oy: S.h / 2, aw: S.w, ah: S.h / 2 }] : [{ ox: 0, oy: 0, aw: S.w / 2, ah: S.h }, { ox: S.w / 2, oy: 0, aw: S.w / 2, ah: S.h }];
+}
+const TP_TINTS = ['#9BB5D6', '#D6A99B', '#A9C9A0', '#C8A2C8', '#E3C27A', '#8FBDBD'];
+// Satu cetakan: template (belakang) → foto → logo & garis potong (depan)
+function tpPrint(p, t, w, o = {}) {
+  const S = tpSheet(p), k = w / S.w, H = S.h * k;
+  const bg = !t ? '#FFFFFF' : tpIsArt(t) ? tpArtCSS(t) : t.scope === 'special' ? '#FFFFFF' : tpSimpleCSS(t, k);
+  let h = `<div class="tp-media${o.nophotos ? ' nophotos' : ''}" style="width:${w}px;height:${H}px;background:${bg}">`;
+  const cps = tpCopies(p), ink = t ? tpInk(t) : '#4B5563';
+  cps.forEach((c) => (p.slots || []).forEach((s, i) => { h += `<div class="ph" style="left:${(c.ox + s.x * c.aw) * k}px;top:${(c.oy + s.y * c.ah) * k}px;width:${s.w * c.aw * k}px;height:${s.h * c.ah * k}px;background:linear-gradient(160deg,${TP_TINTS[i % 6]},#6B7280)">${o.small ? '' : `<i>${i + 1}</i>`}</div>`; }));
+  const lgs = Array.isArray(p.logos) ? p.logos : (() => { const l = logoDefault(p.printType, p.orientation, p.slots || []); return l.show ? [l] : []; })();
+  cps.forEach((c) => lgs.forEach((l) => { const wpx = Math.max(6, l.w * c.aw * k); h += `<div class="lg" style="left:${(c.ox + l.x * c.aw) * k}px;top:${(c.oy + l.y * c.ah) * k}px;transform:translate(-50%,-50%) rotate(${l.rot || 0}deg)">${l.assetId ? `<img src="${logoUrl(l.assetId)}" alt="" style="width:${wpx}px;display:block">` : logoSvgHTML(l.style, wpx, ink)}</div>`; }));
+  cps.forEach((c) => (p.cutLines || []).forEach((cl) => { h += cl.dir === 'v' ? `<div class="cut" style="left:${(c.ox + cl.pos * c.aw) * k}px;top:${c.oy * k}px;height:${c.ah * k}px;border-left-width:1px"></div>` : `<div class="cut" style="top:${(c.oy + cl.pos * c.ah) * k}px;left:${c.ox * k}px;width:${c.aw * k}px;border-top-width:1px"></div>`; }));
+  return h + '</div>';
+}
+function tpFit(p, t) {
+  const S = tpSheet(p), need = { w: Math.round(S.w / 25.4 * 300), h: Math.round(S.h / 25.4 * 300) };
+  if (!t.imgW || !t.imgH) return { need, msg: 'Fitted automatically', ok: true };
+  const ar = t.imgW / t.imgH, nr = need.w / need.h, diff = Math.abs(ar - nr) / nr;
+  const scale = t.fit === 'stretch' ? Math.min(t.imgW / need.w, t.imgH / need.h) : (ar > nr ? t.imgH / need.h : t.imgW / need.w), dpi = Math.round(300 * scale);
+  let msg, ok = true;
+  if (diff < 0.01) msg = 'Exact fit';
+  else if (t.fit !== 'stretch') { const lost = Math.round((ar > nr ? 1 - nr / ar : 1 - ar / nr) * 100); msg = `${lost}% trimmed from the ${ar > nr ? 'sides' : 'top & bottom'}`; ok = lost < 6; }
+  else { msg = `Stretched ${Math.round(diff * 100)}% to fit`; ok = diff < 0.04; }
+  if (dpi < 200) { msg += ` · low resolution (${dpi} dpi)`; ok = false; }
+  return { need, msg, ok };
+}
+const tpSize = (p) => (p.printType === '2x6x2' ? (p.orientation === 'landscape' ? '6×2 ×2 landscape' : '2×6 ×2') : (p.orientation === 'landscape' ? '6×4 landscape' : '4×6'));
+
 async function pageTemplates() {
-  const d = await api('GET', '/api/admin/templates');
-  tmplCache = d.templates; tmplCats = d.categories; LAYOUTS = d.layouts;
-  const f = tmplFilter;
-  const match = (t) => (!f.q || t.name.toLowerCase().includes(f.q.toLowerCase())) && (!f.category || t.category === f.category) && (!f.status || t.status === f.status) && (!f.layout || t.scope === 'simple' || (t.layouts || []).includes(f.layout));
-  const list = tmplCache.filter(match);
-  const active = tmplCache.filter((t) => t.status === 'active').length;
-  const groups = [{ key: 'simple', title: 'SIMPLE — works with every product', items: list.filter((t) => t.scope === 'simple'), ic: 'templates' },
-    ...Object.entries(LAYOUTS).map(([k, L]) => ({ key: k, title: `SPECIAL · ${L.name.toUpperCase()} (${L.size}) – ${L.photos} photo${L.photos > 1 ? 's' : ''}`, items: list.filter((t) => t.scope === 'special' && (t.layouts || []).includes(k)), ic: 'image' }))]
-    .filter((g) => g.items.length);
-  const cur = sel.templates === '__new' ? tmplDraft : (tmplDraft && tmplDraft.id === sel.templates ? tmplDraft : tmplCache.find((t) => t.id === sel.templates));
-  if (cur && cur !== tmplDraft) tmplDraft = JSON.parse(JSON.stringify(cur));
+  const [d, pr] = await Promise.all([api('GET', '/api/admin/templates'), api('GET', '/api/admin/products')]);
+  tmplCache = d.templates; prodCache = pr.products; LAYOUTS = d.layouts;
+  if (sel.templates) {
+    const src = sel.templates.startsWith('__new') ? null : tmplCache.find((t) => t.id === sel.templates);
+    if (sel.templates.startsWith('__new') || src) return tpOpen(src);
+    sel.templates = null; tp = null;
+  }
+  const list = tmplCache.filter((t) => t.scope === tpTab), n = (s) => tmplCache.filter((t) => t.scope === s).length;
+  const card = (t, p) => `<button class="card tp-card" onclick="tpEdit('${t.id}')"><div class="tp-thumb">${p ? tpPrint(p, t, p.orientation === 'landscape' ? 118 : 80, { small: true }) : ''}</div>
+    <div class="tp-body"><div class="tp-name"><span class="tp-dot ${t.status === 'active' ? 'on' : ''}" title="${t.status === 'active' ? 'Active' : 'Hidden'}"></span>${esc(t.name)}</div>
+    <div class="tp-meta">${t.scope === 'simple' ? (t.pat && t.pat.kind && t.pat.kind !== 'none' ? (TP_PATS.find((x) => x[0] === t.pat.kind) || ['', 'Own'])[1] + ' pattern' : (t.v2 ? 'Plain colour' : 'Older design')) : (!t.bgImage ? 'Older design (kiosk decorations)' : tpProducts(t).length > 1 ? `Also on ${tpProducts(t).length - 1} other product${tpProducts(t).length > 2 ? 's' : ''}` : 'This product only')}</div></div></button>`;
+  const p0 = prodCache.find((p) => p.status === 'active') || prodCache[0];
+  let body;
+  if (tpTab === 'simple') body = `<div class="tp-grid">${list.map((t) => card(t, p0)).join('')}${isAdmin() ? `<button class="tp-add" onclick="tpNew('simple')">+ New simple template</button>` : ''}</div>`;
+  else {
+    const cnt = (p) => list.filter((t) => tpProducts(t).some((x) => x.id === p.id)).length;
+    const shown = tpProd === 'all' ? prodCache : prodCache.filter((p) => p.id === tpProd);
+    body = `<div class="tp-filters" role="group" aria-label="Product"><button class="tp-chip" aria-pressed="${tpProd === 'all'}" onclick="tpProd='all';render()">All products <span>${list.length}</span></button>${prodCache.map((p) => `<button class="tp-chip" aria-pressed="${tpProd === p.id}" onclick="tpProd='${p.id}';render()">${esc(p.name)} <span>${cnt(p)}</span></button>`).join('')}</div>
+      ${shown.map((p) => { const ts = list.filter((t) => tpProducts(t).some((x) => x.id === p.id)), hid = ts.filter((t) => t.status !== 'active').length;
+        return `<section class="tp-group"><div class="tp-gh"><span style="line-height:0">${slotThumb(p, p.orientation === 'landscape' ? 28 : 28)}</span><span><b>${esc(p.name)}</b><small>${tpSize(p)} · ${ts.length} template${ts.length === 1 ? '' : 's'}${hid ? ` · ${hid} hidden` : ''}${p.status !== 'active' ? ' · product hidden' : ''}</small></span>${isAdmin() ? `<button class="btn sm" onclick="tpNew('special','${p.id}')">+ Add for ${esc(p.name)}</button>` : ''}</div>
+          ${ts.length ? `<div class="tp-grid sm">${ts.map((t) => card(t, p)).join('')}</div>` : `<div class="tp-empty">No special templates for ${esc(p.name)} yet. Customers only see Simple templates for this product.</div>`}</section>`; }).join('')}`;
+  }
   $('#content').innerHTML = `${storageBanner()}
-  ${isAdmin() ? `<div style="display:flex;justify-content:flex-end;margin:-4px 0 14px"><button class="btn primary" onclick="newTemplate()">${icon('plus', 16, 2.4)} Add New Template</button></div>` : ''}
-  <div class="with-panel ${cur ? '' : 'no-panel'}"><div class="stack">
-    <div class="kpis">
-      <div class="card kpi"><div class="ic gold">${icon('templates', 24)}</div><div><div class="lbl">Total Templates</div><div class="val">${tmplCache.length}</div><div class="sub">All templates</div></div></div>
-      <div class="card kpi"><div class="ic green" style="background:#86CFA0">${icon('check', 24, 2.6)}</div><div><div class="lbl">Active Templates</div><div class="val">${active}</div><div class="sub">${tmplCache.length ? Math.round((active / tmplCache.length) * 1000) / 10 : 0}% of total</div></div></div>
-      <div class="card kpi"><div class="ic grey">${icon('pause', 24, 2.8)}</div><div><div class="lbl">Inactive Templates</div><div class="val">${tmplCache.length - active}</div><div class="sub">Hidden from kiosks</div></div></div>
-      <div class="card kpi"><div class="ic purple">${icon('products', 24)}</div><div><div class="lbl">Layouts</div><div class="val">${Object.keys(LAYOUTS).length}</div><div class="sub">${Object.values(LAYOUTS).map((l) => l.name.replace(' Photo', '').replace('Photo ', '')).join(', ')}</div></div></div>
-    </div>
-    <div class="card">
-      <div class="toolbar" style="padding-top:16px">
-        <div class="search">${icon('search', 16)}<input class="input" placeholder="Search templates by name..." value="${esc(f.q)}" oninput="tmplFilter.q=this.value;clearTimeout(window._tq);window._tq=setTimeout(()=>{render();setTimeout(()=>{const i=document.querySelector('.search input');i.focus();i.setSelectionRange(i.value.length,i.value.length)},0)},250)"></div>
-        <select class="select" style="width:150px" onchange="tmplFilter.layout=this.value;render()"><option value="">All Layouts</option>${Object.entries(LAYOUTS).map(([k, v]) => `<option value="${k}" ${f.layout === k ? 'selected' : ''}>${v.name}</option>`).join('')}</select>
-        <select class="select" style="width:150px" onchange="tmplFilter.category=this.value;render()"><option value="">All Categories</option>${tmplCats.map((c) => `<option ${f.category === c ? 'selected' : ''}>${esc(c)}</option>`).join('')}</select>
-        <select class="select" style="width:130px" onchange="tmplFilter.status=this.value;render()"><option value="">All Status</option><option value="active" ${f.status === 'active' ? 'selected' : ''}>Active</option><option value="inactive" ${f.status === 'inactive' ? 'selected' : ''}>Inactive</option></select>
-      </div>
-      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Template</th><th>Layout</th><th>Category</th><th>Status</th><th>Updated</th></tr></thead><tbody>
-      ${groups.map((g) => `<tr class="group-row"><td colspan="4"><span style="display:inline-flex;gap:8px;align-items:center">${icon(g.ic, 16)} ${g.title}</span></td><td style="text-align:right;font-weight:600">${g.items.length} Template${g.items.length > 1 ? 's' : ''}</td></tr>
-        ${g.items.map((t) => `<tr class="${sel.templates === t.id ? 'sel' : ''}" onclick="tmplDraft=null;sel.templates='${t.id}';render()">
-          <td><div style="display:flex;gap:12px;align-items:center"><div class="swatch" style="background:${tmplBg(t)}"></div><div><div class="strong">${esc(t.name)}</div>${t.bgImage ? `<div class="sub-line">${icon('image', 12)} Background image</div>` : ''}</div></div></td>
-          <td>${t.scope === 'simple' ? 'All layouts' : (t.layouts || []).map((l) => LAYOUTS[l] ? LAYOUTS[l].name : l).join(', ')}</td>
-          <td>${esc(t.category)}</td><td>${t.status === 'active' ? '<span class="badge green">Active</span>' : '<span class="badge grey">Inactive</span>'}</td><td>${fmtDate(new Date(t.updatedAt || t.createdAt).toISOString())}</td></tr>`).join('')}`).join('') || `<tr><td colspan="5" class="empty">No templates match</td></tr>`}
-      </tbody></table></div>
-      <div class="pager"><span class="info">Showing ${list.length} of ${tmplCache.length} templates</span></div>
-    </div>
-  </div>
-  ${cur ? panelShell('templates', templatePanel(tmplDraft)) : ''}</div>`;
+    <div class="tp-tabs" role="tablist"><button role="tab" aria-selected="${tpTab === 'simple'}" onclick="tpTab='simple';render()">Simple <span>${n('simple')}</span></button><button role="tab" aria-selected="${tpTab === 'special'}" onclick="tpTab='special';render()">Special <span>${n('special')}</span></button></div>
+    <p class="tp-desc">${tpTab === 'simple' ? 'Colour backgrounds that work with every product automatically. Photos always stay on top.' : 'Your own artwork uploaded as one full-page image. It sits behind the photos and is used only with the products you choose.'}</p>
+    ${body}`;
 }
-const BG_PRESETS = ['#FFFFFF', '#F3EEE2', '#17130E', 'linear-gradient(135deg,#FBD8E6,#FCE9F0)', 'linear-gradient(135deg,#DCEBD8,#F1F7EE)', 'linear-gradient(135deg,#FBE3C7,#FCEFE0)', 'linear-gradient(160deg,#D9AA4F,#B9812E)', 'linear-gradient(135deg,#CFE3F7,#EEF5FC)'];
-const TEXT_PRESETS = [['var(--grey)', 'Grey'], ['#17130E', 'Black'], ['rgba(255,255,255,0.7)', 'White'], ['#3A2A0E', 'Brown'], ['#B23D6E', 'Pink']];
-function templatePanel(t) {
-  const ro = !isAdmin();
-  const pvLayout = t.scope === 'special' && t.layouts && t.layouts[0] ? t.layouts[0] : (tmplFilter.layout || 'grid12');
-  const dis = ro ? 'disabled' : '';
-  return `<div class="card-h"><h3>${t.id ? (ro ? 'Template' : 'Edit Template') : 'New Template'}</h3><button class="close-x" onclick="tmplDraft=null;closePanel('templates')">${icon('x', 18)}</button></div>
-  <div class="panel-sec" style="border-top:none;padding-top:4px"><div class="note">${icon('bulb', 18)}<div>Photo positions and sizes are fixed for each layout. A template only changes the background, pattern and text colour.</div></div></div>
-  <div class="panel-sec"><h4>1. Template Info</h4>
-    <div class="field"><label>Template Name <span class="req">*</span></label><input class="input" value="${esc(t.name)}" maxlength="60" ${dis} oninput="tmplDraft.name=this.value"></div>
-    <div class="field"><label>Type</label><div class="radio-row"><label><input type="radio" name="tscope" ${t.scope !== 'special' ? 'checked' : ''} ${dis} onchange="tmplDraft.scope='simple';render()"> Simple (all products)</label><label><input type="radio" name="tscope" ${t.scope === 'special' ? 'checked' : ''} ${dis} onchange="tmplDraft.scope='special';if(!tmplDraft.layouts||!tmplDraft.layouts.length)tmplDraft.layouts=['grid12'];render()"> Special</label></div></div>
-    ${t.scope === 'special' ? `<div class="field"><label>Layouts</label><div class="check-row">${Object.entries(LAYOUTS).map(([k, v]) => `<label class="chip-check"><input type="checkbox" ${(t.layouts || []).includes(k) ? 'checked' : ''} ${dis} onchange="toggleTLayout('${k}',this.checked)"> ${v.name}</label>`).join('')}</div></div>` : ''}
-    <div class="field"><label>Category</label><select class="select" ${dis} onchange="tmplDraft.category=this.value">${[...new Set([...tmplCats, t.category].filter(Boolean))].map((c) => `<option ${c === t.category ? 'selected' : ''}>${esc(c)}</option>`).join('')}</select></div>
-  </div>
-  <div class="panel-sec"><h4>2. Template Design</h4>
-    <div style="display:flex;justify-content:center;background:var(--bg);border-radius:10px;padding:14px;margin-bottom:12px">${layoutPreview(pvLayout, tmplBg(t), t.textColor, 150)}</div>
-    <div class="hint" style="text-align:center;margin:-4px 0 12px">Preview: ${esc((LAYOUTS[pvLayout] || {}).name || '')}</div>
-    ${ro ? '' : `
-    <div class="field"><label>Background image <span class="lk">(optional)</span></label>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <label class="btn sm">${icon('upload', 14)} ${t.bgImage ? 'Change Background Image' : 'Upload Image'}<input type="file" accept="image/png,image/jpeg,image/webp" hidden onchange="uploadTmplBg(this.files[0])"></label>
-        ${t.bgImage ? `<button class="btn sm danger" onclick="tmplDraft.bgImage=null;render()">${icon('trash', 14)} Remove</button>` : ''}
-      </div>
-      <div class="hint">Recommended size: 1200 × 1800 px (4×6 inch at 300 DPI). PNG, JPG or WEBP, max 6 MB. Leave the photo areas plain — photos are placed on top.</div></div>
-    <div class="field"><label>Background colour</label><div class="check-row">${BG_PRESETS.map((b) => `<button title="${esc(b)}" class="swatch" style="width:30px;height:30px;background:${b};${t.bg === b ? 'outline:2px solid var(--gold-deep);outline-offset:2px' : ''}" onclick="tmplDraft.bg='${b}';render()"></button>`).join('')}</div>
-      <input class="input" style="margin-top:8px" value="${esc(t.bg)}" placeholder="#FFFFFF or linear-gradient(...)" onchange="tmplDraft.bg=this.value;render()"></div>
-    <div class="grid2">
-      <div class="field"><label>Brand text colour</label><select class="select" onchange="tmplDraft.textColor=this.value;render()">${TEXT_PRESETS.map(([v, l]) => `<option value="${v}" ${t.textColor === v ? 'selected' : ''}>${l}</option>`).join('')}${TEXT_PRESETS.some(([v]) => v === t.textColor) ? '' : `<option selected value="${esc(t.textColor)}">Custom</option>`}</select></div>
-      <div class="field"><label>Pattern</label><select class="select" onchange="tmplDraft.pattern=this.value;render()"><option value="none" ${t.pattern !== 'dots' ? 'selected' : ''}>None</option><option value="dots" ${t.pattern === 'dots' ? 'selected' : ''}>Dots</option></select></div>
-    </div>`}
-    ${(t.corners && t.corners.length) || (t.captions && t.captions.length) ? `<div class="hint">${icon('info', 13)} This template also has corner decorations/captions set in the kiosk design. They are kept when you save.</div>` : ''}
-  </div>
-  <div class="panel-sec"><h4>3. Status</h4><div class="radio-row"><label><input type="radio" name="tst" ${t.status !== 'inactive' ? 'checked' : ''} ${dis} onchange="tmplDraft.status='active'"> Active</label><label><input type="radio" name="tst" ${t.status === 'inactive' ? 'checked' : ''} ${dis} onchange="tmplDraft.status='inactive'"> Inactive</label></div>
-    ${t.id && !ro ? `<button class="btn sm danger" style="margin-top:16px" onclick="deleteTemplate('${t.id}')">${icon('trash', 14)} Delete template</button>` : ''}</div>
-  ${ro ? '' : `<div class="panel-foot"><button class="btn" onclick="tmplDraft=null;closePanel('templates')">Cancel</button><button class="btn primary" onclick="saveTemplate()">Save Template</button></div>`}`;
+function tpEdit(id) { sel.templates = id; tp = null; render(); }
+function tpNew(scope, pid) { sel.templates = '__new:' + scope + ':' + (pid || ''); tp = null; render(); }
+function tpOpen(src) {
+  if (!tp || tp.key !== sel.templates) {
+    let t;
+    if (src) {
+      t = JSON.parse(JSON.stringify(src));
+      if (t.scope === 'simple' && !t.fill) t.fill = { mode: 'solid', c1: hexOk(t.bg) ? t.bg : '#FFFFFF', c2: '#FFFFFF' };
+      if (t.scope === 'simple' && !t.pat) t.pat = { kind: t.pattern === 'dots' ? 'dots' : 'none', size: 5, opacity: 0.2, color: 'auto', assetId: null };
+      if (t.scope === 'special') { t.fit = t.fit || 'cover'; t.productIds = (t.productIds && t.productIds.length) ? t.productIds : tpProducts(src).map((p) => p.id); t.textTone = /255,255,255/.test(t.textColor || '') ? 'light' : 'dark'; }
+    } else {
+      const [, scope, pid] = sel.templates.split(':');
+      t = scope === 'special'
+        ? { id: null, scope: 'special', name: '', bgImage: null, imgW: 0, imgH: 0, fit: 'cover', productIds: [pid || (tpProd !== 'all' ? tpProd : (prodCache[0] || {}).id)].filter(Boolean), textTone: 'dark', status: 'active' }
+        : { id: null, scope: 'simple', name: '', fill: { mode: 'solid', c1: '#FFFFFF', c2: '#F3EEE2' }, pat: { kind: 'none', size: 5, opacity: 0.2, color: 'auto', assetId: null }, status: 'active' };
+    }
+    const pv = t.scope === 'special' ? (t.productIds[0] || (prodCache[0] || {}).id) : ((prodCache.find((p) => p.status === 'active') || prodCache[0] || {}).id);
+    tp = { key: sel.templates, t, orig: src ? JSON.stringify(t) : '', prod: pv, view: 'print', photos: true, leave: false };
+  }
+  tpRender();
 }
-function toggleTLayout(k, on) { const s = new Set(tmplDraft.layouts || []); on ? s.add(k) : s.delete(k); tmplDraft.layouts = [...s]; render(); }
-function newTemplate() { tmplDraft = { name: '', scope: 'simple', layouts: [], category: tmplCats[0] || 'General', bg: '#FFFFFF', textColor: 'var(--grey)', pattern: 'none', status: 'active', bgImage: null }; sel.templates = '__new'; render(); }
-async function uploadTmplBg(file) {
-  if (!file) return;
-  if (file.size > 6 * 1024 * 1024) return toast('Image must be under 6 MB', true);
+const tpDirty = () => JSON.stringify(tp.t) !== tp.orig;
+function tpRender() {
+  const t = tp.t, ro = !isAdmin(), dis = ro ? 'disabled' : '', sp = t.scope === 'special';
+  $('#content').innerHTML = `${storageBanner()}
+  <div class="pe-crumb"><button type="button" onclick="tpBack()">Templates</button><span>/</span><span>${sp ? 'Special' : 'Simple'}</span></div>
+  <div class="pe-head"><h2><span id="tpTitle">${esc(t.name || 'New template')}</span> <span class="tp-pill">${sp ? 'Special' : 'Simple'}</span></h2></div>
+  <div class="tp-ed">
+    <div class="pe-form">
+      <div class="field"><label for="tpName">Name <span class="req">*</span></label><input class="input" id="tpName" maxlength="40" placeholder="${sp ? 'e.g. Wedding Gold' : 'e.g. Soft Cream'}" value="${esc(t.name)}" ${dis} oninput="tp.t.name=this.value;$('#tpTitle').textContent=this.value||'New template';tpSaveBar()"></div>
+      ${sp ? tpSpecialForm(t, dis) : tpSimpleForm(t, dis)}
+      <div class="pe-div"></div>
+      <label class="pe-row"><span><span class="t">Show on kiosk</span><span class="s">Turn off to hide without deleting.</span></span><span class="toggle"><input type="checkbox" ${t.status === 'active' ? 'checked' : ''} ${dis} onchange="tp.t.status=this.checked?'active':'inactive';tpSaveBar();tpPreview()"><span></span></span></label>
+      ${t.id && !ro ? `<button type="button" class="pe-del" onclick="deleteTemplate('${t.id}')">Delete template</button>` : ''}
+    </div>
+    <div class="card pe-work">
+      <div class="pe-bar"><select class="select" id="tpProdSel" style="width:auto;min-width:220px;height:34px" aria-label="Preview product"></select>
+        <div class="pe-seg" style="min-width:150px"><button type="button" aria-pressed="${tp.view === 'print'}" onclick="tp.view='print';tpRender()">Print</button><button type="button" aria-pressed="${tp.view === 'kiosk'}" onclick="tp.view='kiosk';tpRender()">Kiosk</button></div></div>
+      <div class="pe-stage" id="tpStage" style="flex-direction:column;gap:14px"></div>
+    </div>
+  </div>
+  <div class="pe-save" id="tpSave"></div>`;
+  tpPreview(); tpSaveBar();
+}
+function tpSimpleForm(t, dis) {
+  const f = t.fill, pt = t.pat, prev = (kind) => tpSimpleCSS({ ...t, v2: true, pat: { ...pt, kind, size: 3.2, opacity: Math.max(0.3, pt.opacity || 0.2) } }, 2.4);
+  return `<div><span class="lbl tp-lbl">Colour</span><div class="tp-sw">${TP_COLORS.map((c) => `<button type="button" class="tp-swi" style="background:${c}" aria-label="${c}" aria-pressed="${f.c1.toLowerCase() === c.toLowerCase()}" ${dis} onclick="tp.t.fill.c1='${c}';tpRender()"></button>`).join('')}</div></div>
+    <div><span class="lbl tp-lbl">Fill</span><div class="pe-seg"><button type="button" aria-pressed="${f.mode === 'solid'}" ${dis} onclick="tp.t.fill.mode='solid';tpRender()">Solid</button><button type="button" aria-pressed="${f.mode === 'gradient'}" ${dis} onclick="tp.t.fill.mode='gradient';tpRender()">Gradient</button></div>
+      <div class="tp-colors"><input type="color" value="${f.c1}" ${dis} aria-label="Main colour" oninput="tp.t.fill.c1=this.value;this.nextElementSibling.textContent=this.value.toUpperCase();tpPreview();tpSaveBar()" onchange="tpRender()"><span>${f.c1.toUpperCase()}</span>${f.mode === 'gradient' ? `<span style="color:var(--muted)">→</span><input type="color" value="${f.c2}" ${dis} aria-label="Second colour" oninput="tp.t.fill.c2=this.value;this.nextElementSibling.textContent=this.value.toUpperCase();tpPreview();tpSaveBar()"><span>${f.c2.toUpperCase()}</span>` : ''}</div></div>
+    <div><span class="lbl tp-lbl">Pattern</span>
+      <div class="tp-pats">${TP_PATS.map(([id, nm]) => `<button type="button" class="tp-pat" aria-pressed="${pt.kind === id}" ${dis} onclick="tp.t.pat.kind='${id}';tpRender()"><i style="background:${id === 'none' ? f.c1 : prev(id)}"></i>${nm}</button>`).join('')}
+        <label class="tp-pat up" aria-pressed="${pt.kind === 'custom'}" style="cursor:pointer"><input type="file" accept="image/png,image/jpeg,image/webp" hidden ${dis} onchange="tpPatUpload(this.files[0])">${pt.kind === 'custom' && pt.assetId ? `<i style="background:url('${logoUrl(pt.assetId)}') 0 0/14px auto repeat,${f.c1}"></i>Own` : '<i class="plus">+</i>Upload'}</label></div>
+      ${pt.kind !== 'none' ? `<div class="tp-patbox">
+        <div class="tp-slider"><span>Size</span><input type="range" min="2" max="14" step="0.5" value="${pt.size}" ${dis} oninput="tp.t.pat.size=+this.value;this.nextElementSibling.textContent=this.value+' mm';tpPreview();tpSaveBar()"><output>${pt.size} mm</output></div>
+        ${pt.kind === 'custom' ? '<div class="hint" style="margin:0">Your image repeats across the whole print. Use a small seamless tile (e.g. 200×200 px PNG). Make it lighter or transparent in the image itself — strength and colour apply to built-in patterns only.</div>' : `
+        <div class="tp-slider"><span>Strength</span><input type="range" min="0.05" max="0.8" step="0.05" value="${pt.opacity}" ${dis} oninput="tp.t.pat.opacity=+this.value;this.nextElementSibling.textContent=Math.round(this.value*100)+'%';tpPreview();tpSaveBar()"><output>${Math.round(pt.opacity * 100)}%</output></div>
+        <div class="tp-slider" style="grid-template-columns:70px minmax(0,1fr)"><span>Colour</span><span class="tp-colors" style="margin:0"><span class="pe-seg" style="flex:1"><button type="button" aria-pressed="${pt.color === 'auto'}" ${dis} onclick="tp.t.pat.color='auto';tpRender()">Auto</button><button type="button" aria-pressed="${pt.color !== 'auto'}" ${dis} onclick="tp.t.pat.color=tp.t.pat.color==='auto'?'#C9971E':tp.t.pat.color;tpRender()">Custom</button></span>${pt.color !== 'auto' ? `<input type="color" value="${pt.color}" ${dis} aria-label="Pattern colour" oninput="tp.t.pat.color=this.value;tpPreview();tpSaveBar()">` : ''}</span></div>`}
+      </div>` : ''}
+      <div class="hint">Works with every product. Size is measured on the real print, so it looks the same on every product.</div></div>`;
+}
+function tpSpecialForm(t, dis) {
+  return `<div><span class="lbl tp-lbl">Artwork</span>
+      <label class="tp-drop"><input type="file" accept="image/png,image/jpeg,image/webp" hidden ${dis} onchange="tpArtUpload(this.files[0])">${t.bgImage ? `<img src="${logoUrl(t.bgImage)}" alt="">` : '<span class="ph0"></span>'}
+        <span><b>${t.bgImage ? 'Replace image' : 'Upload image'}</b><small>${t.bgImage ? (t.imgW ? `${t.imgW}×${t.imgH} px` : 'Uploaded') : 'PNG or JPG, any size, max 6 MB'}</small></span></label>
+      <div class="hint">Best: 1200×1800 px (4×6), 1800×1200 px (landscape). For 2×6 ×2 upload the full 4×6 sheet.</div></div>
+    <div><span class="lbl tp-lbl">Fit</span><div class="pe-seg"><button type="button" aria-pressed="${t.fit !== 'stretch'}" ${dis} onclick="tp.t.fit='cover';tpRender()">Fill</button><button type="button" aria-pressed="${t.fit === 'stretch'}" ${dis} onclick="tp.t.fit='stretch';tpRender()">Stretch</button></div>
+      <div class="hint">Fill trims edges to keep the artwork's shape. Stretch never trims but may distort.</div></div>
+    <div><span class="lbl tp-lbl">Logo &amp; event text colour</span><div class="pe-seg"><button type="button" aria-pressed="${t.textTone !== 'light'}" ${dis} onclick="tp.t.textTone='dark';tpRender()">Dark</button><button type="button" aria-pressed="${t.textTone === 'light'}" ${dis} onclick="tp.t.textTone='light';tpRender()">Light</button></div></div>
+    <div><span class="lbl tp-lbl">Products</span><div class="tp-plist">${prodCache.map((p) => `<label class="tp-pi"><input type="checkbox" ${t.productIds.includes(p.id) ? 'checked' : ''} ${dis} onchange="tpToggleProd('${p.id}',this.checked)"><span><span class="nm">${esc(p.name)}</span><br><span class="mt">${tpSize(p)}${p.status !== 'active' ? ' · hidden' : ''}</span></span></label>`).join('')}</div></div>`;
+}
+function tpToggleProd(id, on) { const s = new Set(tp.t.productIds); on ? s.add(id) : s.delete(id); tp.t.productIds = [...s]; if (on) tp.prod = id; tpPreview(); tpSaveBar(); }
+function tpPreview() {
+  const st = $('#tpStage'); if (!st) return;
+  const t = tp.t, sp = t.scope === 'special';
+  const avail = sp ? prodCache.filter((p) => t.productIds.includes(p.id)) : prodCache;
+  const selEl = $('#tpProdSel');
+  selEl.innerHTML = avail.map((p) => `<option value="${p.id}" ${p.id === tp.prod ? 'selected' : ''}>${esc(p.name)} · ${tpSize(p)}</option>`).join('') || '<option>No product selected</option>';
+  selEl.disabled = !avail.length; selEl.onchange = () => { tp.prod = selEl.value; tpPreview(); };
+  if (!avail.length) { st.innerHTML = '<p class="pe-cap">Choose at least one product to preview this template.</p>'; return; }
+  if (!avail.some((p) => p.id === tp.prod)) tp.prod = avail[0].id;
+  const p = prodCache.find((x) => x.id === tp.prod), cur = { ...t, v2: true };
+  if (tp.view === 'kiosk') {
+    const others = tmplCache.filter((x) => x.scope === t.scope && x.status === 'active' && x.id !== t.id && tpProducts(x).some((q) => q.id === p.id));
+    const list = (t.status === 'active' ? [cur] : []).concat(others);
+    const sw = (x) => (x.scope === 'simple' ? tpSimpleCSS(x, TP_PXMM_KIOSK) : tpIsArt(x) ? tpArtCSS(x) : '#FFFFFF');
+    st.innerHTML = `<div class="tp-kiosk"><div class="kpv">${tpPrint(p, t.status === 'active' ? cur : (list[0] || null), p.orientation === 'landscape' ? 320 : 200)}</div>
+      <div><div class="kt"><span class="${!sp ? 'on' : ''}">Simple</span><span class="${sp ? 'on' : ''}">Special</span></div>
+      <div class="kl">${list.map((x, i) => `<div class="ks ${i === 0 && t.status === 'active' ? 'on' : ''}" style="background:${sw(x)}"><b>${esc(x.name || 'New')}</b></div>`).join('') || '<span style="font-size:11px;color:#aaa">None active</span>'}</div></div></div>
+      <div class="pe-cap">${t.status === 'active' ? `How customers see it on the ${esc(p.name)} edit screen.` : 'This template is hidden, so customers won’t see it.'}</div>`;
+    return;
+  }
+  const w = Math.min(st.clientWidth - 60, p.orientation === 'landscape' ? 560 : 330);
+  let note = '';
+  if (sp) {
+    if (!t.bgImage) { st.innerHTML = `${tpPrint(p, null, w)}<p class="pe-cap">Upload the artwork to see it behind the photos.</p>`; return; }
+    const fi = tpFit(p, t); note = `<span class="tp-fit ${fi.ok ? 'ok' : 'warn'}">${fi.ok ? '✓ ' : ''}${fi.msg} · media ${fi.need.w}×${fi.need.h} px</span>`;
+  }
+  st.innerHTML = `${tpPrint(p, cur, w, { nophotos: !tp.photos })}${note}
+    <div class="tp-legend"><span><i style="background:#C9CDD5"></i>Template · back</span><span><i style="background:linear-gradient(160deg,#9BB5D6,#6B7280)"></i>Photos · front</span><span><i style="background:#4B5563"></i>Logo &amp; cut lines · front</span></div>
+    <label class="pe-row" style="gap:8px;font-size:12px;color:var(--grey);justify-content:center"><span class="toggle" style="transform:scale(.8)"><input type="checkbox" ${tp.photos ? 'checked' : ''} onchange="tp.photos=this.checked;tpPreview()"><span></span></span>Show photos</label>`;
+}
+function tpSaveBar() {
+  const el = $('#tpSave'); if (!el) return;
+  if (!isAdmin() || (!tpDirty() && !tp.leave)) { el.innerHTML = ''; return; }
+  el.innerHTML = `<div class="in"><span class="msg">${tp.leave ? 'You have unsaved changes.' : tp.orig ? 'Unsaved changes' : 'New template — not saved yet'}</span><span style="display:flex;gap:6px"><button type="button" class="btn ghost" onclick="tpDiscard()">${tp.leave ? 'Discard & leave' : 'Discard'}</button><button type="button" class="btn primary" id="tpSaveBtn" onclick="saveTemplate()">Save &amp; send to kiosks</button></span></div>`;
+}
+function tpBack() { if (tp && isAdmin() && tpDirty()) { tp.leave = true; tpSaveBar(); return; } tp = null; sel.templates = null; render(); }
+function tpDiscard() { if (!tp.orig || tp.leave) { tp = null; sel.templates = null; render(); return; } tp.t = JSON.parse(tp.orig); tpRender(); }
+async function tpUpload(file) {
+  if (!file) return null;
+  if (!/^image\/(png|jpeg|webp)$/.test(file.type)) { toast('Use a PNG, JPG or WEBP image', true); return null; }
+  if (file.size > 6 * 1024 * 1024) { toast('Image must be under 6 MB', true); return null; }
   toast('Uploading…');
-  try {
-    const r = await api('POST', '/api/admin/assets', file, file.type || 'image/png');
-    tmplDraft.bgImage = r.id; render(); toast('Image uploaded — press Save Template to apply');
-  } catch (e) { toast(e.message, true); }
+  try { return await api('POST', '/api/admin/assets', file, file.type); } catch (e) { toast(e.message, true); return null; }
 }
+async function tpArtUpload(file) {
+  const dims = await new Promise((res) => { const u = URL.createObjectURL(file), im = new Image(); im.onload = () => { res({ w: im.naturalWidth, h: im.naturalHeight }); URL.revokeObjectURL(u); }; im.onerror = () => res({ w: 0, h: 0 }); im.src = u; });
+  const r = await tpUpload(file); if (!r) return;
+  Object.assign(tp.t, { bgImage: r.id, imgW: dims.w, imgH: dims.h }); tpRender(); toast(`Artwork uploaded · ${dims.w}×${dims.h} px — press Save to send it to kiosks`);
+}
+async function tpPatUpload(file) { const r = await tpUpload(file); if (!r) return; Object.assign(tp.t.pat, { kind: 'custom', assetId: r.id }); tpRender(); toast('Pattern uploaded — press Save to send it to kiosks'); }
 async function saveTemplate() {
-  const t = tmplDraft;
-  const body = { name: t.name, scope: t.scope, layouts: t.layouts, category: t.category, bg: t.bg, textColor: t.textColor, pattern: t.pattern, patternColor: t.patternColor, status: t.status, bgImage: t.bgImage || null };
+  const t = tp.t;
+  if (!t.name.trim()) { toast('Enter a template name', true); $('#tpName').focus(); return; }
+  if (t.scope === 'special' && !t.bgImage && !(t.corners && t.corners.length)) { toast('Upload the artwork first', true); return; }
+  if (t.scope === 'special' && !t.productIds.length) { toast('Choose at least one product', true); return; }
+  const body = t.scope === 'simple'
+    ? { v2: true, scope: 'simple', name: t.name.trim(), status: t.status, fill: t.fill, pat: t.pat }
+    : { v2: true, scope: 'special', name: t.name.trim(), status: t.status, bgImage: t.bgImage || null, fit: t.fit, imgW: t.imgW || 0, imgH: t.imgH || 0, productIds: t.productIds, textTone: t.textTone };
+  const btn = $('#tpSaveBtn'); if (btn) btn.disabled = true;
   try {
-    if (sel.templates === '__new') { const r = await api('POST', '/api/admin/templates', body); sel.templates = r.id; toast('Template created'); }
-    else { await api('PUT', '/api/admin/templates/' + sel.templates, body); toast('Template saved — kiosks will update'); }
-    tmplDraft = null; render();
-  } catch (e) { toast(e.message, true); }
+    const saved = t.id ? await api('PUT', '/api/admin/templates/' + t.id, body) : await api('POST', '/api/admin/templates', body);
+    if (!saved.v2) toast(`Server on Render is out of date (v${SERVER_VERSION || '?'}) — upload the latest server.js, then save again.`, true);
+    else toast('Saved — kiosks update within 30 seconds when idle');
+    const leave = tp.leave; tpTab = saved.scope; tp = null;
+    sel.templates = leave ? null : saved.id; render();
+  } catch (e) { toast(e.message, true); if (btn) btn.disabled = false; }
 }
 function deleteTemplate(id) {
-  confirmBox('Delete template?', 'It will disappear from all kiosks.', 'Delete', async () => { await api('DELETE', '/api/admin/templates/' + id); sel.templates = null; tmplDraft = null; toast('Template deleted'); render(); }, true);
+  confirmBox('Delete template?', 'It will disappear from all kiosks.', 'Delete', async () => { await api('DELETE', '/api/admin/templates/' + id); sel.templates = null; tp = null; toast('Template deleted'); render(); }, true);
 }
+window.addEventListener('resize', () => { clearTimeout(window._tpR); window._tpR = setTimeout(() => { if (tp && route === 'templates' && $('#tpStage')) tpPreview(); }, 150); });
 
 // =====================================================================
 //  KIOSKS
@@ -1706,7 +1921,7 @@ async function pageSettings() {
         ${auditLog.entries.map((a) => `<tr style="cursor:default"><td style="white-space:nowrap">${fmtDT(a.at)}</td><td>${esc(a.userName)}</td><td><code>${esc(a.action)}</code></td><td>${esc(a.target)}</td><td class="muted">${esc(a.detail)}</td></tr>`).join('') || '<tr><td colspan="5" class="empty">No changes yet</td></tr>'}</tbody></table></div></div>` : '<div id="sec-audit"></div>'}
       <div class="card" id="sec-system"><div class="card-h"><h3>System</h3></div><div class="card-b"><dl class="kv" style="max-width:520px">
         <dt>Storage</dt><dd>${s.storage === 'postgres' ? '<span class="badge green">PostgreSQL</span>' : '<span class="badge red">Temporary file</span>'}</dd>
-        <dt>Kiosk configuration version</dt><dd>v${s.configVersion}</dd><dt>Server</dt><dd>${esc(API)}</dd><dt>Dashboard version</dt><dd>1.3.0 · Phase 1</dd><dt>Server version</dt><dd>${esc(SERVER_VERSION || '—')}</dd></dl></div></div>
+        <dt>Kiosk configuration version</dt><dd>v${s.configVersion}</dd><dt>Server</dt><dd>${esc(API)}</dd><dt>Dashboard version</dt><dd>1.4.0 · Phase 1</dd><dt>Server version</dt><dd>${esc(SERVER_VERSION || '—')}</dd></dl></div></div>
       <div class="foot-meta"><span>Version 1.1.0</span><span>Last Updated: ${fmtDT(new Date(s.updatedAt).toISOString())}</span></div>
     </div>
   </div>`;
