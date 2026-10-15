@@ -33,7 +33,7 @@ const MAX_SESSIONS = Number(process.env.MAX_SESSIONS || 60);
 const GRACE_MS = 5 * 60_000;
 const ONLINE_MS = 90_000;          // kiosk dianggap offline jika tiada heartbeat > 90 saat
 const TZ_OFFSET_MS = 8 * 3600_000; // Asia/Kuala_Lumpur (UTC+8, tiada DST)
-const APP_VERSION = '1.4.0';
+const APP_VERSION = '1.5.0';
 
 const store = new Store();
 
@@ -200,6 +200,31 @@ const DEFAULT_SETTINGS = {
   templateCategories: ['General', 'Travel', 'Event'],
 };
 
+// ---- Stickers (v1.5) — disimpan sebagai SATU dokumen settings/'stickers' { categories, items } ----
+// (Tiada koleksi baharu → store.js tidak perlu diubah.)
+const STICKER_COLS = ['#F25C7A', '#7C5CFF', '#2FAE66', '#C9A227', '#3BA3FF', '#F08A3C', '#14B8A6', '#8B5E34', '#E11D74', '#64748B'];
+const DEFAULT_STICKER_CATS = [
+  { id: 'love', name: 'Love', col: '#F25C7A' }, { id: 'party', name: 'Party', col: '#7C5CFF' }, { id: 'travel', name: 'Travel', col: '#2FAE66' },
+  { id: 'festive', name: 'Raya & Festive', col: '#C9A227' }, { id: 'words', name: 'Words', col: '#3BA3FF' },
+];
+const STARTER_STICKERS = [{"key": "heart","name": "Heart","cat": "love","popular": true,"tags": "heart, love, sayang","svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 86 C14 62 8 38 26 24 C38 15 50 24 50 32 C50 24 62 15 74 24 C92 38 86 62 50 86Z\" fill=\"#F25C7A\" stroke=\"#fff\" stroke-width=\"6\"/></svg>"},{"key": "hearts","name": "Two hearts","cat": "love","popular": false,"tags": "hearts, love, couple","svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M36 70 C12 54 8 38 20 29 C28 23 36 29 36 35 C36 29 44 23 52 29 C64 38 60 54 36 70Z\" fill=\"#FF8FA3\" stroke=\"#fff\" stroke-width=\"5\"/><path d=\"M68 56 C50 44 47 32 56 25 C62 21 68 25 68 30 C68 25 74 21 80 25 C89 32 86 44 68 56Z\" fill=\"#F25C7A\" stroke=\"#fff\" stroke-width=\"5\"/></svg>"},{"key": "love","name": "Love tag","cat": "words","popular": true,"tags": "love, sayang","svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><rect x=\"6\" y=\"28\" width=\"88\" height=\"44\" rx=\"22\" fill=\"#F25C7A\" stroke=\"#fff\" stroke-width=\"5\"/><text x=\"50\" y=\"58\" font-family=\"Arial Black,Arial\" font-weight=\"900\" font-size=\"22\" text-anchor=\"middle\" fill=\"#fff\">LOVE</text></svg>"},{"key": "star","name": "Star","cat": "party","popular": true,"tags": "star, bintang","svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 8 L61 37 L92 38 L67 57 L76 88 L50 70 L24 88 L33 57 L8 38 L39 37Z\" fill=\"#FFC93C\" stroke=\"#fff\" stroke-width=\"5\" stroke-linejoin=\"round\"/></svg>"},{"key": "sparkle","name": "Sparkle","cat": "party","popular": true,"tags": "sparkle, shine, kilau","svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 6 C54 36 64 46 94 50 C64 54 54 64 50 94 C46 64 36 54 6 50 C36 46 46 36 50 6Z\" fill=\"#FFE07A\" stroke=\"#fff\" stroke-width=\"4\"/><path d=\"M80 10 C81 18 84 21 92 22 C84 23 81 26 80 34 C79 26 76 23 68 22 C76 21 79 18 80 10Z\" fill=\"#FFF\"/></svg>"},{"key": "crown","name": "Crown","cat": "party","popular": false,"tags": "crown, king, queen, mahkota","svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M12 72 L18 30 L36 50 L50 22 L64 50 L82 30 L88 72Z\" fill=\"#F5B800\" stroke=\"#fff\" stroke-width=\"5\" stroke-linejoin=\"round\"/><rect x=\"12\" y=\"72\" width=\"76\" height=\"12\" rx=\"4\" fill=\"#E0A200\" stroke=\"#fff\" stroke-width=\"4\"/></svg>"},{"key": "party","name": "Party hat","cat": "party","popular": false,"tags": "party, hat, celebrate","svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M18 86 L44 22 L80 58Z\" fill=\"#7C5CFF\" stroke=\"#fff\" stroke-width=\"5\" stroke-linejoin=\"round\"/><circle cx=\"70\" cy=\"20\" r=\"6\" fill=\"#FFC93C\"/><circle cx=\"86\" cy=\"36\" r=\"5\" fill=\"#F25C7A\"/><circle cx=\"58\" cy=\"10\" r=\"4\" fill=\"#3BC4A2\"/><path d=\"M30 60 L46 70 M36 46 L58 60\" stroke=\"#FFC93C\" stroke-width=\"5\" stroke-linecap=\"round\"/></svg>"},{"key": "balloon","name": "Balloon","cat": "party","popular": false,"tags": "balloon, belon","svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><ellipse cx=\"50\" cy=\"40\" rx=\"26\" ry=\"31\" fill=\"#3BA3FF\" stroke=\"#fff\" stroke-width=\"5\"/><path d=\"M46 71 L54 71 L50 78Z\" fill=\"#3BA3FF\"/><path d=\"M50 78 C44 86 56 90 50 98\" stroke=\"#fff\" stroke-width=\"3\" fill=\"none\"/><ellipse cx=\"40\" cy=\"28\" rx=\"6\" ry=\"9\" fill=\"#fff\" opacity=\".5\"/></svg>"},{"key": "omg","name": "OMG bubble","cat": "words","popular": true,"tags": "omg, wow","svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M10 22 h80 a8 8 0 0 1 8 8 v34 a8 8 0 0 1 -8 8 h-50 l-16 14 v-14 h-14 a8 8 0 0 1 -8 -8 v-34 a8 8 0 0 1 8 -8Z\" fill=\"#fff\" stroke=\"#17130E\" stroke-width=\"4\"/><text x=\"50\" y=\"57\" font-family=\"Arial Black,Arial\" font-weight=\"900\" font-size=\"24\" text-anchor=\"middle\" fill=\"#F25C7A\">OMG!</text></svg>"},{"key": "bestday","name": "Best Day","cat": "words","popular": false,"tags": "best day, happy","svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><rect x=\"4\" y=\"30\" width=\"92\" height=\"40\" rx=\"8\" fill=\"#17130E\" stroke=\"#fff\" stroke-width=\"4\" transform=\"rotate(-6 50 50)\"/><text x=\"50\" y=\"57\" font-family=\"Arial Black,Arial\" font-weight=\"900\" font-size=\"15\" text-anchor=\"middle\" fill=\"#FFC93C\" transform=\"rotate(-6 50 50)\">BEST DAY</text></svg>"},{"key": "sunglasses","name": "Sunglasses","cat": "travel","popular": true,"tags": "sunglasses, cool, cermin mata","svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M8 38 h84\" stroke=\"#17130E\" stroke-width=\"6\" stroke-linecap=\"round\"/><path d=\"M12 38 h32 c0 18 -6 26 -16 26 s-16 -8 -16 -26Z\" fill=\"#17130E\" stroke=\"#fff\" stroke-width=\"4\"/><path d=\"M56 38 h32 c0 18 -6 26 -16 26 s-16 -8 -16 -26Z\" fill=\"#17130E\" stroke=\"#fff\" stroke-width=\"4\"/><path d=\"M18 44 l8 8 M62 44 l8 8\" stroke=\"#fff\" stroke-width=\"3\" opacity=\".6\"/></svg>"},{"key": "palm","name": "Palm tree","cat": "travel","popular": false,"tags": "palm, beach, pantai","svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 92 C52 70 50 52 46 40\" stroke=\"#8B5E34\" stroke-width=\"8\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M46 40 C30 26 14 30 8 40 C22 34 34 36 46 40 C36 24 38 12 48 6 C46 20 48 30 46 40 C58 26 74 24 90 32 C76 32 60 36 46 40 C62 40 78 48 84 62 C70 52 58 46 46 40Z\" fill=\"#2FAE66\" stroke=\"#fff\" stroke-width=\"3\" stroke-linejoin=\"round\"/></svg>"},{"key": "plane","name": "Paper plane","cat": "travel","popular": false,"tags": "plane, travel, kapal terbang","svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M8 54 L92 20 L72 82 L50 62 L40 80 L38 58Z\" fill=\"#fff\" stroke=\"#3BA3FF\" stroke-width=\"5\" stroke-linejoin=\"round\"/><path d=\"M38 58 L92 20\" stroke=\"#3BA3FF\" stroke-width=\"4\"/></svg>"},{"key": "sun","name": "Sun","cat": "travel","popular": false,"tags": "sun, matahari, sunny","svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"20\" fill=\"#FFC93C\" stroke=\"#fff\" stroke-width=\"5\"/><g stroke=\"#FFC93C\" stroke-width=\"7\" stroke-linecap=\"round\"><path d=\"M50 8v12M50 80v12M8 50h12M80 50h12M20 20l9 9M71 71l9 9M20 80l9-9M71 29l9-9\"/></g></svg>"},{"key": "melaka","name": "Melaka tag","cat": "travel","popular": true,"tags": "melaka, malacca","svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><rect x=\"6\" y=\"30\" width=\"88\" height=\"40\" rx=\"20\" fill=\"#C0392B\" stroke=\"#fff\" stroke-width=\"5\"/><text x=\"50\" y=\"57\" font-family=\"Arial Black,Arial\" font-weight=\"900\" font-size=\"15\" text-anchor=\"middle\" fill=\"#fff\">MELAKA ♥</text></svg>"},{"key": "ketupat","name": "Ketupat","cat": "festive","popular": false,"tags": "ketupat, raya","svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 14 L84 48 L50 82 L16 48Z\" fill=\"#3BAF5D\" stroke=\"#fff\" stroke-width=\"5\" stroke-linejoin=\"round\"/><path d=\"M33 31 L67 65 M67 31 L33 65 M41 23 L75 57 M59 23 L25 57\" stroke=\"#E9D27A\" stroke-width=\"4\"/><path d=\"M50 14 C46 8 52 4 56 8\" stroke=\"#3BAF5D\" stroke-width=\"4\" fill=\"none\"/></svg>"},{"key": "moon","name": "Crescent moon","cat": "festive","popular": false,"tags": "moon, bulan, raya","svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M62 12 C38 16 26 40 34 62 C42 82 64 90 82 82 C60 82 44 66 44 46 C44 30 52 18 62 12Z\" fill=\"#F5D76E\" stroke=\"#fff\" stroke-width=\"5\"/><path d=\"M76 26 l3 7 l7 1 l-5 5 l1 7 l-6 -3 l-6 3 l1 -7 l-5 -5 l7 -1Z\" fill=\"#F5D76E\"/></svg>"},{"key": "raya","name": "Salam Raya","cat": "festive","popular": false,"tags": "raya, salam, aidilfitri","svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><rect x=\"4\" y=\"30\" width=\"92\" height=\"40\" rx=\"10\" fill=\"#1F7A4D\" stroke=\"#F5D76E\" stroke-width=\"4\"/><text x=\"50\" y=\"56\" font-family=\"Georgia,serif\" font-style=\"italic\" font-weight=\"700\" font-size=\"17\" text-anchor=\"middle\" fill=\"#F5D76E\">Salam Raya</text></svg>"},{"key": "cake","name": "Cake","cat": "party","popular": false,"tags": "cake, birthday, kek","svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><rect x=\"18\" y=\"48\" width=\"64\" height=\"38\" rx=\"8\" fill=\"#FFB3C6\" stroke=\"#fff\" stroke-width=\"5\"/><path d=\"M18 60 C30 66 40 54 50 60 C60 66 70 54 82 60\" stroke=\"#fff\" stroke-width=\"5\" fill=\"none\"/><rect x=\"46\" y=\"26\" width=\"8\" height=\"22\" rx=\"3\" fill=\"#7C5CFF\"/><path d=\"M50 12 C56 20 54 26 50 26 C46 26 44 20 50 12Z\" fill=\"#FFC93C\"/></svg>"},{"key": "bday","name": "Happy B'day","cat": "words","popular": false,"tags": "birthday, bday, hari jadi","svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><rect x=\"4\" y=\"30\" width=\"92\" height=\"40\" rx=\"20\" fill=\"#7C5CFF\" stroke=\"#fff\" stroke-width=\"5\"/><text x=\"50\" y=\"56\" font-family=\"Arial Black,Arial\" font-weight=\"900\" font-size=\"13\" text-anchor=\"middle\" fill=\"#fff\">HAPPY B'DAY</text></svg>"}];
+function stickerDoc() {
+  const d = store.get('settings', 'stickers');
+  return d ? { categories: d.categories || [], items: d.items || [], seeded: !!d.seeded } : { categories: DEFAULT_STICKER_CATS.map((c) => ({ ...c })), items: [], seeded: false };
+}
+async function saveStickerDoc(d) { await store.put('settings', 'stickers', JSON.parse(JSON.stringify({ ...d, seeded: true, updatedAt: now() }))); await bumpConfig(); }
+const stickerView = (x, b) => ({ ...x, url: `${b}/api/assets/${x.assetId}` });
+async function seedStickers() {
+  if (store.get('settings', 'stickers')) return; // sekali sahaja — kalau admin padam semua, tidak dimasukkan semula
+  const t = now(), items = [];
+  for (const [i, st] of STARTER_STICKERS.entries()) {
+    const aid = 'stk' + newId(9);
+    await store.putAsset(aid, 'image/svg+xml', Buffer.from(st.svg, 'utf8'));
+    items.push({ id: 's_' + newId(6), name: st.name, cat: st.cat, tags: st.tags, popular: st.popular, active: true, assetId: aid, sort: i + 1, createdAt: t });
+  }
+  await store.put('settings', 'stickers', { categories: DEFAULT_STICKER_CATS.map((c) => ({ ...c })), items, seeded: true, updatedAt: t });
+}
+
 async function seed() {
   const t = now();
   if (!store.count('products')) {
@@ -215,6 +240,7 @@ async function seed() {
   if (!store.count('kiosks')) {
     for (const k of SEED_KIOSKS) await store.put('kiosks', k.id, { ...k, keyHash: null, status: 'active', lastSeen: null, createdAt: t });
   }
+  await seedStickers();
   if (!store.get('settings', 'main')) {
     await store.put('settings', 'main', { ...DEFAULT_SETTINGS, configVersion: 1, secret: newId(32), updatedAt: t });
   }
@@ -413,6 +439,13 @@ function kioskStatus(k) {
   };
 }
 
+function kioskStickers(b) {
+  const d = stickerDoc();
+  const items = d.items.filter((x) => x.active).sort((a, z) => a.sort - z.sort)
+    .map((x) => ({ id: x.id, name: x.name, cat: x.cat, tags: x.tags || '', popular: !!x.popular, url: `${b}/api/assets/${x.assetId}` }));
+  const used = new Set(items.map((x) => x.cat));
+  return { categories: d.categories.filter((c) => used.has(c.id)), items };
+}
 function kioskConfig(req) {
   const s = settings();
   const b = baseUrl(req);
@@ -440,7 +473,7 @@ function kioskConfig(req) {
   return {
     configVersion: s.configVersion, generatedAt: iso(now()),
     business: { name: s.business.name, currency: s.business.currency },
-    kiosk: s.kiosk, payment: s.payment, printer: s.printer, products, templates,
+    kiosk: s.kiosk, payment: s.payment, printer: s.printer, products, templates, stickers: kioskStickers(b),
   };
 }
 
@@ -549,7 +582,9 @@ async function handle(req, res) {
   if (m === 'GET' && seg[1] === 'assets' && seg[2]) {
     const a = await store.getAsset(seg[2]);
     if (!a) return json(res, 404, { error: 'Asset not found' });
-    return send(res, 200, a.buffer, { 'Content-Type': a.mime, 'Cache-Control': 'public, max-age=31536000, immutable' });
+    const hdr = { 'Content-Type': a.mime, 'Cache-Control': 'public, max-age=31536000, immutable', 'X-Content-Type-Options': 'nosniff' };
+    if (/svg/i.test(a.mime)) hdr['Content-Security-Policy'] = "default-src 'none'; style-src 'unsafe-inline'; sandbox";
+    return send(res, 200, a.buffer, hdr);
   }
 
   if (seg[1] === 'kiosk') return handleKiosk(req, res, m, seg, q);
@@ -962,6 +997,61 @@ async function handleAdmin(req, res, m, seg, q, p) {
       await store.del('templates', id); await bumpConfig(); await audit(user, 'template.delete', ex.name);
       return json(res, 200, { ok: true });
     }
+  }
+
+  // ----- Stickers -----
+  if (action === 'stickers') {
+    const id = seg[3], b0 = baseUrl(req);
+    const d = stickerDoc();
+    if (m === 'GET' && !id) return json(res, 200, { categories: d.categories, stickers: d.items.sort((a, z) => a.sort - z.sort).map((x) => stickerView(x, b0)) });
+    if (!requireRole(res, user, 'superadmin')) return;
+    const catOk = (c) => d.categories.some((x) => x.id === c);
+    if (m === 'POST' && !id) {
+      const b = await readJson(req);
+      const aid = assetId(b.assetId);
+      if (!aid) return json(res, 400, { error: 'Upload the sticker image first' });
+      if (d.items.length >= 600) return json(res, 400, { error: 'Sticker limit reached (600). Delete some first.' });
+      const cat = catOk(b.cat) ? b.cat : (d.categories[0] || {}).id;
+      if (!cat) return json(res, 400, { error: 'Create a category first' });
+      const doc = { id: 's_' + newId(6), name: str(b.name, 40) || 'Sticker', cat, tags: str(b.tags, 120), popular: !!b.popular, active: b.active !== false, assetId: aid,
+        sort: Math.min(1, ...d.items.map((x) => x.sort || 0)) - 1, createdAt: now() };
+      d.items.push(doc); await saveStickerDoc(d); await audit(user, 'sticker.create', doc.name);
+      return json(res, 201, stickerView(doc, b0));
+    }
+    const ex = d.items.find((x) => x.id === id);
+    if (!ex) return json(res, 404, { error: 'Sticker not found' });
+    if (m === 'PUT') {
+      const b = await readJson(req);
+      if (b.name !== undefined) ex.name = str(b.name, 40) || ex.name;
+      if (b.cat !== undefined && catOk(b.cat)) ex.cat = b.cat;
+      if (b.tags !== undefined) ex.tags = str(b.tags, 120);
+      if (b.popular !== undefined) ex.popular = !!b.popular;
+      if (b.active !== undefined) ex.active = !!b.active;
+      ex.updatedAt = now();
+      await saveStickerDoc(d); await audit(user, 'sticker.update', ex.name);
+      return json(res, 200, stickerView(ex, b0));
+    }
+    if (m === 'DELETE') {
+      d.items = d.items.filter((x) => x.id !== id);
+      await saveStickerDoc(d); await store.delAsset(ex.assetId); await audit(user, 'sticker.delete', ex.name);
+      return json(res, 200, { ok: true });
+    }
+  }
+  if (action === 'sticker-categories' && m === 'PUT') {
+    if (!requireRole(res, user, 'superadmin')) return;
+    const b = await readJson(req), d = stickerDoc();
+    if (!Array.isArray(b.categories)) return json(res, 400, { error: 'Invalid categories' });
+    const seen = new Set(), cats = [];
+    for (const c of b.categories.slice(0, 40)) {
+      const name = str(c && c.name, 30); if (!name) continue;
+      let cid = typeof c.id === 'string' && /^[\w-]{1,30}$/.test(c.id) ? c.id : 'c_' + newId(5);
+      if (seen.has(cid)) continue; seen.add(cid);
+      cats.push({ id: cid, name, col: HEX.test(c.col) ? c.col : STICKER_COLS[cats.length % STICKER_COLS.length] });
+    }
+    const orphan = d.items.filter((x) => !seen.has(x.cat));
+    if (orphan.length) return json(res, 400, { error: `Move or delete the ${orphan.length} sticker${orphan.length > 1 ? 's' : ''} in that category first` });
+    d.categories = cats; await saveStickerDoc(d); await audit(user, 'sticker.categories', cats.map((c) => c.name).join(', '));
+    return json(res, 200, { categories: cats });
   }
 
   // ----- Asset upload (gambar latar templat) -----
