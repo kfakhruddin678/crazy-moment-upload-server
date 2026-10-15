@@ -266,6 +266,49 @@ code{font-family:ui-monospace,Consolas,monospace;font-size:12px;background:var(-
 .spinner{width:22px;height:22px;border:3px solid var(--line);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;margin:40px auto}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+/* ---------- Stickers (v1.5) ---------- */
+.sk-wrap{display:grid;grid-template-columns:200px minmax(0,1fr);gap:24px;align-items:start}
+.sk-wrap.has-sel{grid-template-columns:200px minmax(0,1fr) 320px}
+.sk-cats{display:flex;flex-direction:column;gap:1px;position:sticky;top:78px}
+.sk-grp{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted,#9CA3AF);padding:16px 8px 6px;display:flex;align-items:center;justify-content:space-between}
+.sk-cat{display:flex;align-items:center;gap:9px;height:32px;padding:0 8px;border-radius:6px;font-size:13px;font-weight:500;color:var(--ink-2);text-align:left;width:100%}
+.sk-cat:hover{background:#EEF0F3}
+.sk-cat[aria-pressed="true"]{background:#E9ECF1;color:var(--ink);font-weight:600}
+.sk-cat .ic2{width:14px;display:flex;justify-content:center;color:var(--grey);flex:none}
+.sk-cat .cd{width:8px;height:8px;border-radius:50%;flex:none;margin:0 3px}
+.sk-cat .n{margin-left:auto;font-size:11.5px;color:#9CA3AF;font-variant-numeric:tabular-nums}
+.sk-cat.add{color:#9CA3AF}.sk-cat.add:hover{color:var(--ink-2)}
+.sk-newcat{display:flex;gap:6px;margin-top:6px}.sk-newcat .input{height:32px}
+.sk-drop{border:1.5px dashed #CDD1D9;border-radius:12px;padding:20px;display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;background:#fff;cursor:pointer;text-align:center;margin-bottom:18px;color:var(--grey)}
+.sk-drop:hover,.sk-drop.over{border-color:var(--gold);background:var(--gold-bg)}
+.sk-drop b{display:block;font-size:14px;color:var(--ink)}
+.sk-drop small{font-size:12px}
+.sk-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;min-height:30px}
+.sk-bar h3{font-size:15px;margin:0;display:flex;align-items:center;gap:8px}
+.sk-bar h3 small{color:var(--grey);font-weight:500;font-size:13px}
+.sk-chk{background-color:#fff;background-image:linear-gradient(45deg,#EEF0F3 25%,transparent 25%),linear-gradient(-45deg,#EEF0F3 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#EEF0F3 75%),linear-gradient(-45deg,transparent 75%,#EEF0F3 75%);background-size:14px 14px;background-position:0 0,0 7px,7px -7px,-7px 0}
+.sk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:12px}
+.sk-item{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;text-align:left}
+.sk-item:hover{border-color:#CDD1D9}
+.sk-item[aria-pressed="true"]{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue)}
+.sk-item .im{aspect-ratio:1;display:flex;align-items:center;justify-content:center;padding:14px}
+.sk-item .im img{max-width:100%;max-height:100%;display:block}
+.sk-item.off .im img{opacity:.3}
+.sk-item .meta{padding:7px 9px;border-top:1px solid var(--line);font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px}
+.sk-item .meta span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sk-item .pop{position:absolute;top:6px;left:6px;font-size:10px;font-weight:800;background:var(--gold);border-radius:20px;padding:1px 7px}
+.sk-empty{border:1.5px dashed #CDD1D9;border-radius:12px;padding:26px;color:var(--grey);text-align:center}
+.sk-side{position:sticky;top:78px;padding:18px;display:flex;flex-direction:column;gap:14px;max-height:calc(100vh - 96px);overflow:auto}
+.sk-side .big{aspect-ratio:1;border-radius:12px;display:flex;align-items:center;justify-content:center;padding:26px;border:1px solid var(--line)}
+.sk-side .big img{max-width:100%;max-height:100%}
+.sk-side .field{margin:0}
+.sk-row{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer}
+.sk-row small{display:block;color:var(--grey);font-size:11.5px}
+.sk-hint{font-size:11.5px;color:var(--grey);margin-top:5px}
+.sk-back{display:none}
+@media(max-width:1180px){.sk-wrap.has-sel{grid-template-columns:200px minmax(0,1fr)}.sk-side{position:fixed;top:0;right:0;bottom:0;width:min(360px,100vw);max-height:none;z-index:80;border-radius:0;box-shadow:-10px 0 30px rgba(0,0,0,.15)}.sk-back{display:block;position:fixed;inset:0;background:rgba(13,27,46,.35);z-index:79}}
+@media(max-width:760px){.sk-wrap,.sk-wrap.has-sel{grid-template-columns:minmax(0,1fr)}.sk-cats{flex-direction:row;overflow-x:auto;position:static;gap:4px;scrollbar-width:none}.sk-grp{display:none}.sk-cat{flex:none;width:auto;border:1px solid var(--line);background:#fff}}
+
 /* ---------- Responsive ---------- */
 @media (max-width:1320px){
   .row3{grid-template-columns:1fr 1fr} .row3>.card:first-child{grid-column:1/-1}
@@ -543,6 +586,7 @@ const I = {
   home:'<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
   products:'<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
   templates:'<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16M10 10v10"/>',
+  sticker:'<path d="M20 12.5V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2h6.5"/><path d="M20 12.5L12.5 20c0-4.1 3.4-7.5 7.5-7.5z"/><circle cx="9" cy="10" r="1" fill="currentColor"/><circle cx="15" cy="10" r="1" fill="currentColor"/><path d="M9 14.5c.8.7 1.8 1 3 1"/>',
   kiosk:'<rect x="6" y="2.5" width="12" height="13" rx="1.5"/><rect x="8.5" y="5" width="7" height="6" rx=".6"/><path d="M9 15.5v6M15 15.5v6M7 21.5h10"/>',
   printer:'<path d="M7 9V3h10v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/>',
   orders:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3v2h6V3M9 10h6M9 14h6M9 18h3"/>',
@@ -732,6 +776,7 @@ const PAGES = [
   { id: 'dashboard', label: 'Dashboard', icon: 'home', title: 'Dashboard', sub: 'Overview of your kiosk operations' },
   { id: 'products', label: 'Products', icon: 'products', title: 'Products', sub: 'Manage your print products, pricing and settings.' },
   { id: 'templates', label: 'Templates', icon: 'templates', title: 'Templates', sub: 'Manage photo templates for your products.' },
+  { id: 'stickers', label: 'Stickers', icon: 'sticker', title: 'Stickers', sub: 'Stickers customers can add to their prints.' },
   { id: 'kiosks', label: 'Kiosks', icon: 'kiosk', title: 'Kiosks', sub: 'Monitor and manage all kiosks in your network.' },
   { id: 'printer', label: 'Printer', icon: 'printer', title: 'Printers', sub: 'Monitor printers connected to your kiosks.', soon: 'Phase 3' },
   { id: 'orders', label: 'Orders', icon: 'orders', title: 'Orders', sub: 'View and manage all customer orders.' },
@@ -752,7 +797,7 @@ function render() {
   document.title = `${pg.title} — Crazy Moment Admin`;
   renderNav();
   $('#content').innerHTML = '<div class="spinner"></div>';
-  ({ dashboard: pageDashboard, products: pageProducts, templates: pageTemplates, kiosks: pageKiosks, orders: pageOrders, settings: pageSettings, printer: pagePrinter, payments: pagePayments })[route]()
+  ({ dashboard: pageDashboard, products: pageProducts, templates: pageTemplates, stickers: pageStickers, kiosks: pageKiosks, orders: pageOrders, settings: pageSettings, printer: pagePrinter, payments: pagePayments })[route]()
     .catch((e) => { $('#content').innerHTML = `<div class="card empty">${esc(e.message)}</div>`; });
 }
 function storageBanner() {
@@ -1677,6 +1722,129 @@ window.addEventListener('resize', () => { clearTimeout(window._tpR); window._tpR
 // =====================================================================
 //  KIOSKS
 // =====================================================================
+// =====================================================================
+//  STICKERS (v1.5) — admin upload PNG lutsinar → kiosk (dulang sticker gaya Instagram)
+// =====================================================================
+let skData = null, skCat = 'all', skNewCat = false;
+const SK_ICO = {
+  all: '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>',
+  popular: '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M8 1.8l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.6l-3.8 2 .7-4.3-3.1-3 4.3-.6z"/></svg>',
+  hidden: '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 8s2.2-4 6-4 6 4 6 4-2.2 4-6 4-6-4-6-4z"/><path d="M3 13L13 3"/></svg>',
+  add: '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>',
+};
+const SK_COLS = ['#F25C7A', '#7C5CFF', '#2FAE66', '#C9A227', '#3BA3FF', '#F08A3C', '#14B8A6', '#8B5E34', '#E11D74', '#64748B'];
+async function pageStickers() {
+  skData = await api('GET', '/api/admin/stickers');
+  if (skCat !== 'all' && skCat !== 'popular' && skCat !== 'hidden' && !skData.categories.some((c) => c.id === skCat)) skCat = 'all';
+  skRender();
+}
+function skRender() {
+  const { categories: CATS, stickers: ST } = skData, ad = isAdmin(), dis = ad ? '' : 'disabled';
+  const f = (id) => id === 'all' ? ST : id === 'popular' ? ST.filter((s) => s.popular) : id === 'hidden' ? ST.filter((s) => !s.active) : ST.filter((s) => s.cat === id);
+  const list = f(skCat), catObj = CATS.find((c) => c.id === skCat);
+  const title = skCat === 'all' ? 'All stickers' : skCat === 'popular' ? 'Popular' : skCat === 'hidden' ? 'Hidden from kiosk' : (catObj || {}).name;
+  const upCat = catObj || CATS[0];
+  const s = ST.find((x) => x.id === sel.stickers);
+  const btn = (id, name, ic) => `<button class="sk-cat" aria-pressed="${skCat === id}" onclick="skCat='${id}';skRender()">${ic}${esc(name)}<span class="n">${f(id).length}</span></button>`;
+  $('#content').innerHTML = `${storageBanner()}
+  <div class="sk-wrap ${s ? 'has-sel' : ''}">
+    <nav class="sk-cats" aria-label="Sticker categories">
+      ${btn('all', 'All stickers', `<span class="ic2">${SK_ICO.all}</span>`)}${btn('popular', 'Popular', `<span class="ic2">${SK_ICO.popular}</span>`)}
+      ${ST.some((x) => !x.active) ? btn('hidden', 'Hidden', `<span class="ic2">${SK_ICO.hidden}</span>`) : ''}
+      <div class="sk-grp">Categories</div>
+      ${CATS.map((c) => btn(c.id, c.name, `<span class="cd" style="background:${esc(c.col)}"></span>`)).join('')}
+      ${ad ? (skNewCat ? `<div class="sk-newcat"><input class="input" id="skNc" placeholder="e.g. Wedding" maxlength="30"><button class="btn sm primary" onclick="skAddCat()">Add</button></div>`
+        : `<button class="sk-cat add" onclick="skNewCat=true;skRender();$('#skNc').focus()"><span class="ic2">${SK_ICO.add}</span>New category</button>`) : ''}
+    </nav>
+    <div style="min-width:0">
+      ${ad ? (upCat ? `<label class="sk-drop" id="skDrop"><input type="file" id="skFiles" accept="image/png,image/webp" multiple hidden>
+        ${icon('upload', 22, 1.7)}<span><b>Drop sticker images here or click to upload</b><small>Transparent PNG or WEBP, about 500 × 500 px, under 6 MB. Choose many at once — they go into “${esc(upCat.name)}”.</small></span></label>`
+        : `<div class="sk-empty" style="margin-bottom:18px">Create a category first, then upload stickers into it.</div>`) : ''}
+      <div class="sk-bar"><h3>${esc(title)} <small>${list.length}</small></h3>
+        ${ad && catObj ? `<span style="display:flex;gap:6px"><button class="btn sm" onclick="skRenameCat()">Rename</button><button class="btn sm danger" onclick="skDelCat()">Delete category</button></span>` : ''}</div>
+      ${list.length ? `<div class="sk-grid">${list.map((x) => `<button class="sk-item ${x.active ? '' : 'off'}" aria-pressed="${x.id === sel.stickers}" onclick="sel.stickers='${x.id}';skRender()">${x.popular ? '<span class="pop">★ Popular</span>' : ''}<div class="im sk-chk"><img src="${esc(x.url)}" alt="${esc(x.name)}" loading="lazy"></div><div class="meta"><span class="dot ${x.active ? 'green' : 'grey'}"></span><span>${esc(x.name)}</span></div></button>`).join('')}</div>`
+        : `<div class="sk-empty">${skCat === 'hidden' ? 'No hidden stickers.' : skCat === 'popular' ? 'No popular stickers yet. Open a sticker and turn on “Show in Popular”.' : 'No stickers here yet.' + (ad && upCat ? ' Upload some above.' : '')}</div>`}
+    </div>
+    ${s ? `<div class="sk-back" onclick="sel.stickers=null;skRender()"></div><aside class="card sk-side" aria-label="Sticker details">
+      <div style="display:flex;align-items:center;justify-content:space-between"><h3 style="margin:0;font-size:15px">Sticker</h3><button class="close-x" onclick="sel.stickers=null;skRender()" aria-label="Close">${icon('x', 18)}</button></div>
+      <div class="big sk-chk"><img src="${esc(s.url)}" alt=""></div>
+      <div class="field"><label for="skName">Name</label><input class="input" id="skName" value="${esc(s.name)}" maxlength="40" ${dis} onchange="skSet('${s.id}',{name:this.value})"></div>
+      <div class="field"><label for="skCatSel">Category</label><select class="select" id="skCatSel" ${dis} onchange="skSet('${s.id}',{cat:this.value})">${CATS.map((c) => `<option value="${c.id}" ${c.id === s.cat ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select></div>
+      <div class="field"><label for="skTags">Search words</label><input class="input" id="skTags" value="${esc(s.tags || '')}" maxlength="120" placeholder="e.g. heart, sayang, love" ${dis} onchange="skSet('${s.id}',{tags:this.value})"><div class="sk-hint">Customers find the sticker by typing these words in the kiosk search.</div></div>
+      <label class="sk-row"><span><b style="font-weight:600">Show in Popular</b><small>Popular stickers open first on the kiosk.</small></span><span class="toggle"><input type="checkbox" ${s.popular ? 'checked' : ''} ${dis} onchange="skSet('${s.id}',{popular:this.checked})"><span></span></span></label>
+      <label class="sk-row"><span><b style="font-weight:600">Show on kiosk</b><small>Turn off to hide without deleting.</small></span><span class="toggle"><input type="checkbox" ${s.active ? 'checked' : ''} ${dis} onchange="skSet('${s.id}',{active:this.checked})"><span></span></span></label>
+      ${ad ? `<button class="btn danger" style="align-self:flex-start" onclick="skDelete('${s.id}')">${icon('trash', 16)} Delete sticker</button>` : ''}
+    </aside>` : ''}
+  </div>`;
+  const d = $('#skDrop'), fi = $('#skFiles');
+  if (d) {
+    fi.onchange = () => skUpload(fi.files);
+    d.addEventListener('dragover', (e) => { e.preventDefault(); d.classList.add('over'); });
+    d.addEventListener('dragleave', () => d.classList.remove('over'));
+    d.addEventListener('drop', (e) => { e.preventDefault(); d.classList.remove('over'); skUpload(e.dataTransfer.files); });
+  }
+  const nc = $('#skNc'); if (nc) nc.onkeydown = (e) => { if (e.key === 'Enter') skAddCat(); if (e.key === 'Escape') { skNewCat = false; skRender(); } };
+}
+async function skUpload(files) {
+  const cat = (skData.categories.find((c) => c.id === skCat) || skData.categories[0] || {}).id;
+  const arr = [...files];
+  const ok = arr.filter((f) => /^image\/(png|webp)$/.test(f.type) && f.size <= 6 * 1024 * 1024);
+  if (ok.length < arr.length) toast(`${arr.length - ok.length} file${arr.length - ok.length > 1 ? 's' : ''} skipped — use PNG or WEBP under 6 MB`, true);
+  if (!ok.length || !cat) return;
+  let n = 0;
+  for (const f of ok) {
+    toast(`Uploading ${n + 1} of ${ok.length}…`);
+    try {
+      const a = await api('POST', '/api/admin/assets', f, f.type);
+      const name = f.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').trim().slice(0, 40) || 'Sticker';
+      const st = await api('POST', '/api/admin/stickers', { assetId: a.id, name, cat, tags: name.toLowerCase() });
+      skData.stickers.unshift(st); n++;
+    } catch (e) { toast(`${f.name}: ${e.message}`, true); }
+  }
+  skRender();
+  if (n) toast(`${n} sticker${n > 1 ? 's' : ''} added — kiosks update within a minute`);
+}
+async function skSet(id, patch) {
+  try {
+    const st = await api('PUT', '/api/admin/stickers/' + id, patch);
+    const i = skData.stickers.findIndex((x) => x.id === id); if (i >= 0) skData.stickers[i] = st;
+    skRender(); toast('Saved');
+  } catch (e) { toast(e.message, true); skRender(); }
+}
+function skDelete(id) {
+  const s = skData.stickers.find((x) => x.id === id);
+  confirmBox('Delete sticker?', `“${esc(s.name)}” will be removed from all kiosks. Prints already made are not affected.`, 'Delete', async () => {
+    await api('DELETE', '/api/admin/stickers/' + id);
+    skData.stickers = skData.stickers.filter((x) => x.id !== id); sel.stickers = null; skRender(); toast('Sticker deleted');
+  }, true);
+}
+async function skSaveCats(cats, msg) {
+  try { const r = await api('PUT', '/api/admin/sticker-categories', { categories: cats }); skData.categories = r.categories; if (msg) toast(msg); return true; }
+  catch (e) { toast(e.message, true); return false; }
+}
+async function skAddCat() {
+  const n = ($('#skNc').value || '').trim(); skNewCat = false;
+  if (!n) { skRender(); return; }
+  const used = new Set(skData.categories.map((c) => c.col));
+  const col = SK_COLS.find((c) => !used.has(c)) || SK_COLS[skData.categories.length % SK_COLS.length];
+  const before = new Set(skData.categories.map((c) => c.id));
+  if (await skSaveCats([...skData.categories, { name: n, col }], `Category “${n}” added`)) { const nw = skData.categories.find((c) => !before.has(c.id)); if (nw) skCat = nw.id; }
+  skRender();
+}
+function skRenameCat() {
+  const c = skData.categories.find((x) => x.id === skCat);
+  modal('Rename category', `<div class="field"><label>Name</label><input class="input" id="skRn" maxlength="30" value="${esc(c.name)}"></div>`,
+    [{ label: 'Cancel' }, { label: 'Save', cls: 'primary', onClick: async () => { const v = $('#skRn').value.trim(); if (!v) return false;
+      if (!(await skSaveCats(skData.categories.map((x) => x.id === c.id ? { ...x, name: v } : x), 'Category renamed'))) return false; skRender(); } }]);
+}
+function skDelCat() {
+  const c = skData.categories.find((x) => x.id === skCat), n = skData.stickers.filter((x) => x.cat === c.id).length;
+  if (n) { toast(`Move or delete the ${n} sticker${n > 1 ? 's' : ''} in “${c.name}” first`, true); return; }
+  confirmBox('Delete category?', `“${esc(c.name)}” is empty and will be removed.`, 'Delete', async () => {
+    if (await skSaveCats(skData.categories.filter((x) => x.id !== c.id), 'Category deleted')) { skCat = 'all'; skRender(); }
+  }, true);
+}
+
 let kioskFilter = { q: '', status: '' };
 async function pageKiosks() {
   const d = await api('GET', '/api/admin/kiosks');
@@ -1921,7 +2089,7 @@ async function pageSettings() {
         ${auditLog.entries.map((a) => `<tr style="cursor:default"><td style="white-space:nowrap">${fmtDT(a.at)}</td><td>${esc(a.userName)}</td><td><code>${esc(a.action)}</code></td><td>${esc(a.target)}</td><td class="muted">${esc(a.detail)}</td></tr>`).join('') || '<tr><td colspan="5" class="empty">No changes yet</td></tr>'}</tbody></table></div></div>` : '<div id="sec-audit"></div>'}
       <div class="card" id="sec-system"><div class="card-h"><h3>System</h3></div><div class="card-b"><dl class="kv" style="max-width:520px">
         <dt>Storage</dt><dd>${s.storage === 'postgres' ? '<span class="badge green">PostgreSQL</span>' : '<span class="badge red">Temporary file</span>'}</dd>
-        <dt>Kiosk configuration version</dt><dd>v${s.configVersion}</dd><dt>Server</dt><dd>${esc(API)}</dd><dt>Dashboard version</dt><dd>1.4.0 · Phase 1</dd><dt>Server version</dt><dd>${esc(SERVER_VERSION || '—')}</dd></dl></div></div>
+        <dt>Kiosk configuration version</dt><dd>v${s.configVersion}</dd><dt>Server</dt><dd>${esc(API)}</dd><dt>Dashboard version</dt><dd>1.5.0 · Phase 1</dd><dt>Server version</dt><dd>${esc(SERVER_VERSION || '—')}</dd></dl></div></div>
       <div class="foot-meta"><span>Version 1.1.0</span><span>Last Updated: ${fmtDT(new Date(s.updatedAt).toISOString())}</span></div>
     </div>
   </div>`;
