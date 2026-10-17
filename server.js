@@ -196,7 +196,7 @@ const DEFAULT_SETTINGS = {
   business: { name: 'Crazy Moment Photo Print Station', email: '', phone: '', currency: 'MYR', timezone: 'Asia/Kuala_Lumpur', address: 'Melaka, Malaysia' },
   kiosk: { sessionMinutes: 10, extendMinutes: 5, idleSeconds: 30, language: 'en', showPrice: true },
   printer: { autoCut: true, quality: 'standard', border: 'white' },
-  payment: { duitnow: true, card: true, timeoutMinutes: 5 },
+  payment: { duitnow: true, timeoutMinutes: 5 }, // DuitNow QR (HitPay) sahaja — tiada kad
   templateCategories: ['General', 'Travel', 'Event'],
 };
 
@@ -473,7 +473,7 @@ function kioskConfig(req) {
   return {
     configVersion: s.configVersion, generatedAt: iso(now()),
     business: { name: s.business.name, currency: s.business.currency },
-    kiosk: s.kiosk, payment: s.payment, printer: s.printer, products, templates, stickers: kioskStickers(b),
+    kiosk: s.kiosk, payment: { duitnow: true, timeoutMinutes: s.payment.timeoutMinutes }, printer: s.printer, products, templates, stickers: kioskStickers(b),
   };
 }
 
@@ -515,7 +515,7 @@ function overview(req, dateKey, range) {
   const T = summarize(today), Y = summarize(yest);
   const kiosks = store.all('kiosks').sort((a, z) => a.id.localeCompare(z.id)).map(kioskStatus);
   const byMethod = {};
-  for (const m of ['duitnow', 'card']) {
+  for (const m of ['duitnow']) {
     const paid = today.filter((o) => isPaid(o) && o.payMethod === m);
     byMethod[m] = { amount: money(paid.reduce((a, o) => a + o.total, 0)), count: paid.length };
   }
@@ -737,7 +737,7 @@ async function handleKiosk(req, res, m, seg, q) {
       layout: prod ? prod.layout : null, size: prod ? sizeOf(prod) : '', photos: prod ? photosOf(prod) : 0,
       printType: prod ? printTypeOf(prod) : null, orientation: prod ? orientationOf(prod) : null, slots: prod ? slotsOf(prod) : null,
       qty, unitPrice, total: money(unitPrice * qty),
-      payMethod: body.payMethod === 'card' ? 'card' : 'duitnow', paymentStatus: payStatus,
+      payMethod: 'duitnow', paymentStatus: payStatus,
       paymentVerified: false, // Fasa 2: hanya webhook gateway boleh set true
       paymentRef: str(body.paymentRef, 60) || null,
       status, templateId: tmpl ? tmpl.id : null, templateName: tmpl ? tmpl.name : null,
@@ -1128,7 +1128,7 @@ async function handleAdmin(req, res, m, seg, q, p) {
     const rows = [['Order ID', 'Date', 'Time', 'Kiosk', 'Location', 'Product', 'Size', 'Qty', 'Unit Price (RM)', 'Total (RM)', 'Payment Method', 'Payment Status', 'Verified', 'Order Status', 'Template']];
     for (const o of filterOrders(q)) {
       const d = new Date(o.createdAt + TZ_OFFSET_MS).toISOString();
-      rows.push([o.id, d.slice(0, 10), d.slice(11, 16), o.kioskName, o.location, o.productName, o.size, o.qty, o.unitPrice.toFixed(2), o.total.toFixed(2), o.payMethod === 'card' ? 'Debit/Credit Card' : 'DuitNow QR', o.paymentStatus, o.paymentVerified ? 'yes' : 'no (demo)', o.status, o.templateName || '']);
+      rows.push([o.id, d.slice(0, 10), d.slice(11, 16), o.kioskName, o.location, o.productName, o.size, o.qty, o.unitPrice.toFixed(2), o.total.toFixed(2), 'DuitNow QR', o.paymentStatus, o.paymentVerified ? 'yes' : 'no (demo)', o.status, o.templateName || '']);
     }
     return send(res, 200, '﻿' + rows.map((r) => r.map(csvCell).join(',')).join('\r\n'), { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': `attachment; filename="crazy-moment-orders-${q.get('date') || 'all'}.csv"` });
   }
@@ -1159,9 +1159,8 @@ async function handleAdmin(req, res, m, seg, q, p) {
       if (b.kiosk) next.kiosk = { ...s.kiosk, sessionMinutes: num(b.kiosk.sessionMinutes, 3, 60, s.kiosk.sessionMinutes), extendMinutes: num(b.kiosk.extendMinutes, 1, 30, s.kiosk.extendMinutes), idleSeconds: num(b.kiosk.idleSeconds, 10, 600, s.kiosk.idleSeconds), language: ['en', 'ms'].includes(b.kiosk.language) ? b.kiosk.language : s.kiosk.language, showPrice: b.kiosk.showPrice !== false };
       if (b.printer) next.printer = { autoCut: b.printer.autoCut !== false, quality: ['standard', 'fine'].includes(b.printer.quality) ? b.printer.quality : 'standard', border: ['white', 'none'].includes(b.printer.border) ? b.printer.border : 'white' };
       if (b.payment) {
-        const pay = { duitnow: b.payment.duitnow !== false, card: b.payment.card !== false, timeoutMinutes: num(b.payment.timeoutMinutes, 1, 15, s.payment.timeoutMinutes) };
-        if (!pay.duitnow && !pay.card) return json(res, 400, { error: 'At least one payment method must be ON' });
-        next.payment = pay;
+        // DuitNow QR sahaja (HitPay) — hanya tempoh masa bayaran boleh diubah
+        next.payment = { duitnow: true, timeoutMinutes: num(b.payment.timeoutMinutes, 1, 15, s.payment.timeoutMinutes) };
       }
       if (Array.isArray(b.templateCategories)) next.templateCategories = [...new Set(b.templateCategories.map((c) => str(c, 30)).filter(Boolean))].slice(0, 30);
       next.configVersion = (s.configVersion || 1) + 1; next.updatedAt = now();

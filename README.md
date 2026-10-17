@@ -70,7 +70,7 @@ Kiosk tanpa kunci masih diterima (untuk ujian), tetapi dashboard tandakan **No k
 
 ## Had Fasa 1 (akan datang)
 
-- **Bayaran masih simulasi** — order ditanda *Demo*. Fasa 2: payment gateway DuitNow QR + terminal kad dengan webhook.
+- **Bayaran masih simulasi** — order ditanda *Demo*. Fasa 2: DuitNow QR melalui HitPay dengan webhook (pembayaran kad tidak digunakan).
 - **Status printer** belum dilaporkan — Fasa 3: agen printer DNP, Restart / Test Print dari dashboard.
 - Tetapan *Language*, *Idle Screen* dan *Printer* disimpan & dihantar ke kiosk, tetapi kiosk belum menggunakannya.
 

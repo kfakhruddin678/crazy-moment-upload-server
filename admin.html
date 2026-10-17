@@ -622,7 +622,6 @@ const I = {
   users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.5-5 6.5-5s5.7 1.5 6.5 5"/><circle cx="17" cy="9" r="2.8"/><path d="M17 14.5c2.3 0 4 1.2 4.6 4"/>',
   building:'<path d="M4 21V5l8-2v18M12 8l8 2v11M8 8h.01M8 12h.01M8 16h.01M16 13h.01M16 17h.01"/>',
   qr:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M17 20h4v-3"/>',
-  card:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/>',
   clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
   image:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/>',
   list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
@@ -684,9 +683,8 @@ const KST = { online: ['green', 'Online'], busy: ['amber', 'In Use'], offline: [
 const kState = (s) => { const [c, l] = KST[s] || ['grey', s]; return `<span class="st ${c}"><span class="dot ${c}"></span>${l}</span>`; };
 const PRN = { ready: ['green', 'Ready'], printing: ['amber', 'Printing'], low_media: ['amber', 'Low Media'], error: ['red', 'Error'], offline: ['red', 'Offline'], unknown: ['grey', 'Not reported'] };
 const printerSt = (p) => { const [c, l] = PRN[(p && p.status) || 'unknown'] || PRN.unknown; return `<span class="st ${c}">${l}</span>`; };
-const payMethod = (m) => m === 'card'
-  ? `<span style="display:inline-flex;gap:7px;align-items:center"><span style="color:var(--blue)">${icon('card', 18)}</span>Debit / Credit Card</span>`
-  : `<span style="display:inline-flex;gap:7px;align-items:center"><span style="color:var(--pink)">${icon('qr', 18)}</span>DuitNow QR</span>`;
+// Kaedah bayaran: DuitNow QR SAHAJA (HitPay). Pembayaran kad telah dibuang (Okt 2026).
+const payMethod = () => `<span style="display:inline-flex;gap:7px;align-items:center"><span style="color:var(--pink)">${icon('qr', 18)}</span>DuitNow QR</span>`;
 
 // ---------- Print layout preview ----------
 function layoutPreview(layout, bg, textColor, width = 130) {
@@ -780,7 +778,7 @@ const PAGES = [
   { id: 'kiosks', label: 'Kiosks', icon: 'kiosk', title: 'Kiosks', sub: 'Monitor and manage all kiosks in your network.' },
   { id: 'printer', label: 'Printer', icon: 'printer', title: 'Printers', sub: 'Monitor printers connected to your kiosks.', soon: 'Phase 3' },
   { id: 'orders', label: 'Orders', icon: 'orders', title: 'Orders', sub: 'View and manage all customer orders.' },
-  { id: 'payments', label: 'Payments', icon: 'payments', title: 'Payments', sub: 'Track payments made via DuitNow QR and Debit/Credit Card.', soon: 'Phase 2' },
+  { id: 'payments', label: 'Payments', icon: 'payments', title: 'Payments', sub: 'Track payments made via DuitNow QR (HitPay).', soon: 'Phase 2' },
   { id: 'settings', label: 'Settings', icon: 'settings', title: 'Settings', sub: 'Manage your Crazy Moment system.' },
 ];
 let route = 'dashboard', sel = {}; // sel[page] = selected item id
@@ -819,7 +817,7 @@ async function pageDashboard() {
   $('#bellCnt').textContent = errs; $('#bellCnt').classList.toggle('hidden', !errs);
   const k = d.kpi;
   const ks = d.kioskSummary, kTotal = d.kiosks.length;
-  const pm = d.payments.byMethod, payTotal = (pm.duitnow.amount + pm.card.amount) || 0;
+  const pm = d.payments.byMethod, payTotal = pm.duitnow.amount || 0;
   const pp = (v) => payTotal ? Math.round((v / payTotal) * 1000) / 10 : 0;
 
   $('#content').innerHTML = `${storageBanner()}
@@ -853,7 +851,6 @@ async function pageDashboard() {
       <div class="card"><div class="card-h"><h3>Payment Summary</h3><div class="r"><button class="btn sm" onclick="go('orders')">View All</button></div></div>
         <div class="card-b">
           <div class="pay-row"><div class="pay-ic" style="background:#E7F6EC;color:var(--green)">${icon('qr', 20)}</div><div style="flex:1"><div style="display:flex;justify-content:space-between"><b style="font-weight:600">DuitNow QR</b><span>${rm(pm.duitnow.amount)} <span class="muted">· ${pp(pm.duitnow.amount)}%</span></span></div><div class="bar"><i style="width:${pp(pm.duitnow.amount)}%;background:var(--green-dot)"></i></div></div></div>
-          <div class="pay-row"><div class="pay-ic" style="background:var(--blue-bg);color:var(--blue)">${icon('card', 20)}</div><div style="flex:1"><div style="display:flex;justify-content:space-between"><b style="font-weight:600">Credit / Debit Card</b><span>${rm(pm.card.amount)} <span class="muted">· ${pp(pm.card.amount)}%</span></span></div><div class="bar"><i style="width:${pp(pm.card.amount)}%;background:#3B82F6"></i></div></div></div>
           <div style="display:flex;justify-content:space-between;padding:14px 0 4px;font-weight:800;font-size:15px"><span>Total</span><span>${rm(d.payments.total)}</span></div>
           <div class="trio"><div><div class="l">Successful</div><div class="n" style="color:var(--green)">${d.payments.successful}</div></div><div><div class="l">Failed</div><div class="n" style="color:var(--red)">${d.payments.failed}</div></div><div><div class="l">Refunded</div><div class="n" style="color:var(--amber)">${d.payments.refunded}</div></div></div>
         </div></div>
@@ -2011,8 +2008,8 @@ function orderPanel(o) {
     <div style="display:flex;gap:16px;color:var(--ink-2);flex-wrap:wrap"><span style="display:flex;gap:6px;align-items:center">${icon('kiosk', 16)} ${esc(o.kioskName)}</span><span style="display:flex;gap:6px;align-items:center">${icon('calendar', 16)} ${fmtDT(o.createdAt)}</span></div></div>
   <div class="panel-sec"><h4>Product</h4><div style="display:flex;gap:16px">${orderThumb(o, 70)}
     <dl class="kv" style="flex:1"><dt>Product</dt><dd>${esc(o.productName)}</dd><dt>Size</dt><dd>${esc(o.size)}</dd><dt>Template</dt><dd>${esc(o.templateName || '—')}</dd><dt>Quantity</dt><dd>${o.qty}</dd><dt>Unit Price</dt><dd>${rm0(o.unitPrice)}</dd><dt>Total</dt><dd>${rm0(o.total)}</dd></dl></div></div>
-  <div class="panel-sec"><h4>Payment</h4><dl class="kv"><dt>Method</dt><dd>${o.payMethod === 'card' ? 'Debit / Credit Card' : 'DuitNow QR'}</dd><dt>Reference</dt><dd>${esc(o.paymentRef || '—')}</dd><dt>Amount</dt><dd>${rm0(o.total)}</dd><dt>Status</dt><dd>${payBadge(o.paymentStatus)}</dd><dt>Paid at</dt><dd>${fmtDT(o.paidAt)}</dd></dl>
-    ${o.paymentVerified ? '' : `<div class="note blue" style="margin-top:12px">${icon('info', 16)}<div>Demo payment — the kiosk simulated this payment. Real DuitNow/card confirmation comes in Phase 2.</div></div>`}</div>
+  <div class="panel-sec"><h4>Payment</h4><dl class="kv"><dt>Method</dt><dd>DuitNow QR</dd><dt>Reference</dt><dd>${esc(o.paymentRef || '—')}</dd><dt>Amount</dt><dd>${rm0(o.total)}</dd><dt>Status</dt><dd>${payBadge(o.paymentStatus)}</dd><dt>Paid at</dt><dd>${fmtDT(o.paidAt)}</dd></dl>
+    ${o.paymentVerified ? '' : `<div class="note blue" style="margin-top:12px">${icon('info', 16)}<div>Demo payment — the kiosk simulated this payment. Real DuitNow confirmation (via HitPay) comes in Phase 2.</div></div>`}</div>
   <div class="panel-sec"><h4>Print</h4><dl class="kv"><dt>Print Status</dt><dd>${orderBadge(o.status)}</dd><dt>Location</dt><dd>${esc(o.location)}</dd><dt>Copies</dt><dd>${o.qty}</dd><dt>Completed</dt><dd>${fmtDT(o.completedAt)}</dd></dl>
     ${o.note ? `<div class="hint" style="margin-top:8px">Note: ${esc(o.note)}</div>` : ''}</div>
   ${isAdmin() && o.status !== 'completed' ? `<div class="panel-foot">${o.status !== 'cancelled' ? `<button class="btn" onclick="setOrderStatus('${o.id}','cancelled')">Mark Cancelled</button>` : ''}<button class="btn primary" onclick="setOrderStatus('${o.id}','completed')">Mark Completed</button></div>` : ''}`;
@@ -2069,8 +2066,7 @@ async function pageSettings() {
             ${isAdmin() ? `<button class="btn block" onclick="saveSettings('printer')">${icon('check', 16)} Save Changes</button>` : ''}</div></div>
         <div class="card" id="sec-payment"><div class="card-h" style="padding-top:18px"><div style="width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--red-bg);color:var(--red)">${icon('payments', 22)}</div><div><h3 style="text-transform:none;font-size:15px;letter-spacing:0">Payment Settings</h3><div class="muted" style="font-size:12px">Payment methods and timeout.</div></div></div>
           <div class="card-b" style="padding-top:12px">
-            <div class="mtoggle"><div><b>DuitNow QR</b><span class="muted" style="font-size:12px">Customer scans QR to pay</span></div><label class="toggle"><input type="checkbox" id="payQR" ${pay.duitnow ? 'checked' : ''} ${ro}><span></span></label></div>
-            <div class="mtoggle"><div><b>Debit / Credit Card</b><span class="muted" style="font-size:12px">Pay using card terminal</span></div><label class="toggle"><input type="checkbox" id="payCard" ${pay.card ? 'checked' : ''} ${ro}><span></span></label></div>
+            <div class="mtoggle"><div><b>DuitNow QR</b><span class="muted" style="font-size:12px">Only payment method · via HitPay</span></div><span class="badge green">Always on</span></div>
             <div class="srow"><label>Payment Timeout</label><select class="select" id="payTO" ${ro}>${opt([[2, '2 minutes'], [3, '3 minutes'], [5, '5 minutes'], [10, '10 minutes']], pay.timeoutMinutes)}</select></div>
             ${isAdmin() ? `<button class="btn block" onclick="saveSettings('payment')">${icon('check', 16)} Save Changes</button>` : ''}</div></div>
         <div class="card" id="sec-users"><div class="card-h" style="padding-top:18px"><div style="width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--purple-bg);color:var(--purple)">${icon('users', 22)}</div><div><h3 style="text-transform:none;font-size:15px;letter-spacing:0">Users & Roles</h3><div class="muted" style="font-size:12px">Admin users and roles.</div></div></div>
@@ -2100,7 +2096,7 @@ async function saveSettings(part) {
     business: { business: { name: v('bName'), email: v('bEmail'), phone: v('bPhone'), address: v('bAddr') } },
     kiosk: { kiosk: { sessionMinutes: Number(v('kTimeout')), extendMinutes: Number(v('kExtend')), idleSeconds: Number(v('kIdle')), language: v('kLang'), showPrice: c('kPrice') } },
     printer: { printer: { autoCut: c('pCut'), quality: v('pQual'), border: v('pBorder') } },
-    payment: { payment: { duitnow: c('payQR'), card: c('payCard'), timeoutMinutes: Number(v('payTO')) } },
+    payment: { payment: { timeoutMinutes: Number(v('payTO')) } },
   }[part];
   try { await api('PUT', '/api/admin/settings', body); toast('Settings saved' + (part === 'business' ? '' : ' — kiosks will update')); render(); } catch (e) { toast(e.message, true); }
 }
@@ -2137,11 +2133,10 @@ async function pagePayments() {
   const d = await api('GET', `/api/admin/overview?date=${todayKey()}&range=today`);
   const pm = d.payments.byMethod;
   $('#content').innerHTML = `<div class="stack">
-    <div class="note blue">${icon('info', 18)}<div><b>Coming in Phase 2.</b> The kiosk will get real DuitNow QR and card terminal payments through a payment gateway. The gateway tells the server directly when a payment succeeds, so every payment here will be verified. Until then, payments are simulated on the kiosk and marked <span class="badge grey">Demo</span> in Orders.</div></div>
+    <div class="note blue">${icon('info', 18)}<div><b>Coming in Phase 2.</b> The kiosk will get real DuitNow QR payments through HitPay. The gateway tells the server directly when a payment succeeds, so every payment here will be verified. Until then, payments are simulated on the kiosk and marked <span class="badge grey">Demo</span> in Orders.</div></div>
     <div class="kpis">
       <div class="card kpi"><div class="ic green">${icon('money', 24)}</div><div><div class="lbl">Collected today (demo)</div><div class="val">${rm(d.payments.total)}</div><div class="sub">${d.payments.successful} payments</div></div></div>
       <div class="card kpi"><div class="ic red">${icon('qr', 24)}</div><div><div class="lbl">DuitNow QR</div><div class="val">${rm(pm.duitnow.amount)}</div><div class="sub">${pm.duitnow.count} payments</div></div></div>
-      <div class="card kpi"><div class="ic blue">${icon('card', 24)}</div><div><div class="lbl">Card</div><div class="val">${rm(pm.card.amount)}</div><div class="sub">${pm.card.count} payments</div></div></div>
     </div>
     <div><button class="btn" onclick="go('orders')">${icon('orders', 16)} See each payment in Orders</button></div></div>`;
 }
